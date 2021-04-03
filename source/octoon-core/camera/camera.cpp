@@ -3,7 +3,7 @@
 #include <octoon/runtime/except.h>
 #include <octoon/hal/graphics.h>
 
-namespace octoon::camera
+namespace octoon
 {
 	OctoonImplementSubClass(Camera, runtime::RttiInterface, "Camera")
 
@@ -50,7 +50,7 @@ namespace octoon::camera
 	void
 	Camera::setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept
 	{
-		fbo_[0] = framebuffer;
+		fbo_ = framebuffer;
 	}
 
 	void
@@ -181,12 +181,12 @@ namespace octoon::camera
 	{
 		std::uint32_t width = 1920, height = 1080;
 
-		if (!fbo_[0])
-			video::Renderer::instance()->getFramebufferSize(width, height);
+		if (!fbo_)
+			Renderer::instance()->getFramebufferSize(width, height);
 		else
 		{
-			width = fbo_[0]->getFramebufferDesc().getWidth();
-			height = fbo_[0]->getFramebufferDesc().getHeight();
+			width = fbo_->getFramebufferDesc().getWidth();
+			height = fbo_->getFramebufferDesc().getHeight();
 		}
 
 		math::float4 result;
@@ -214,13 +214,7 @@ namespace octoon::camera
 	const hal::GraphicsFramebufferPtr&
 	Camera::getFramebuffer() const noexcept
 	{
-		return fbo_[0];
-	}
-
-	const hal::GraphicsFramebufferPtr&
-	Camera::getSwapFramebuffer() const noexcept
-	{
-		return fbo_[1];
+		return fbo_;
 	}
 
 	void
@@ -236,8 +230,8 @@ namespace octoon::camera
 		colorTextureDesc.setTexMultisample(multisample);
 		colorTextureDesc.setTexDim(multisample > 0 ? hal::GraphicsTextureDim::Texture2DMultisample : hal::GraphicsTextureDim::Texture2D);
 		colorTextureDesc.setTexFormat(format);
-		colorTexture_[0] = video::Renderer::instance()->createTexture(colorTextureDesc);
-		if (!colorTexture_[0])
+		colorTexture_ = Renderer::instance()->getScriptableRenderContext()->createTexture(colorTextureDesc);
+		if (!colorTexture_)
 			throw runtime::runtime_error::create("createTexture() failed");
 
 		hal::GraphicsTextureDesc depthTextureDesc;
@@ -246,58 +240,19 @@ namespace octoon::camera
 		depthTextureDesc.setTexMultisample(multisample);
 		depthTextureDesc.setTexDim(multisample > 0 ? hal::GraphicsTextureDim::Texture2DMultisample : hal::GraphicsTextureDim::Texture2D);
 		depthTextureDesc.setTexFormat(depthStencil);
-		depthTexture_[0] = video::Renderer::instance()->createTexture(depthTextureDesc);
-		if (!depthTexture_[0])
+		depthTexture_ = Renderer::instance()->getScriptableRenderContext()->createTexture(depthTextureDesc);
+		if (!depthTexture_)
 			throw runtime::runtime_error::create("createTexture() failed");
 
 		hal::GraphicsFramebufferDesc framebufferDesc;
 		framebufferDesc.setWidth(w);
 		framebufferDesc.setHeight(h);
-		framebufferDesc.setFramebufferLayout(video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
-		framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_[0], 0, 0));
-		framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_[0], 0, 0));
+		framebufferDesc.setFramebufferLayout(Renderer::instance()->getScriptableRenderContext()->createFramebufferLayout(framebufferLayoutDesc));
+		framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_, 0, 0));
+		framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_, 0, 0));
 
-		fbo_[0] = video::Renderer::instance()->createFramebuffer(framebufferDesc);
-		if (!fbo_[0])
-			throw runtime::runtime_error::create("createFramebuffer() failed");
-	}
-
-	void
-	Camera::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, hal::GraphicsFormat format, hal::GraphicsFormat depthStencil) except
-	{
-		hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
-		framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(0, hal::GraphicsImageLayout::ColorAttachmentOptimal, format));
-		framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(1, hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, depthStencil));
-
-		hal::GraphicsTextureDesc colorTextureDesc;
-		colorTextureDesc.setWidth(w);
-		colorTextureDesc.setHeight(h);
-		colorTextureDesc.setTexMultisample(multisample);
-		colorTextureDesc.setTexDim(multisample > 0 ? hal::GraphicsTextureDim::Texture2DMultisample : hal::GraphicsTextureDim::Texture2D);
-		colorTextureDesc.setTexFormat(format);
-		colorTexture_[1] = video::Renderer::instance()->createTexture(colorTextureDesc);
-		if (!colorTexture_[1])
-			throw runtime::runtime_error::create("createTexture() failed");
-
-		hal::GraphicsTextureDesc depthTextureDesc;
-		depthTextureDesc.setWidth(w);
-		depthTextureDesc.setHeight(h);
-		depthTextureDesc.setTexMultisample(multisample);
-		depthTextureDesc.setTexDim(multisample > 0 ? hal::GraphicsTextureDim::Texture2DMultisample : hal::GraphicsTextureDim::Texture2D);
-		depthTextureDesc.setTexFormat(depthStencil);
-		depthTexture_[1] = video::Renderer::instance()->createTexture(depthTextureDesc);
-		if (!depthTexture_[1])
-			throw runtime::runtime_error::create("createTexture() failed");
-
-		hal::GraphicsFramebufferDesc framebufferDesc;
-		framebufferDesc.setWidth(w);
-		framebufferDesc.setHeight(h);
-		framebufferDesc.setFramebufferLayout(video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
-		framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_[1], 0, 0));
-		framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_[1], 0, 0));
-
-		fbo_[1] = video::Renderer::instance()->createFramebuffer(framebufferDesc);
-		if (!fbo_[1])
+		fbo_ = Renderer::instance()->getScriptableRenderContext()->createFramebuffer(framebufferDesc);
+		if (!fbo_)
 			throw runtime::runtime_error::create("createFramebuffer() failed");
 	}
 }

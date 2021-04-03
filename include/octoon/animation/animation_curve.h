@@ -3,7 +3,7 @@
 
 #include <octoon/animation/keyframe.h>
 
-namespace octoon::animation
+namespace octoon
 {
 	enum class AnimationMode
 	{

@@ -1,6 +1,6 @@
 #include <octoon/light/disk_light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(DiskLight, Light, "DiskLight")
 
@@ -12,7 +12,7 @@ namespace octoon::light
 	{
 	}
 
-	std::shared_ptr<video::RenderObject>
+	std::shared_ptr<RenderObject>
 	DiskLight::clone() const noexcept
 	{
 		auto light = std::make_shared<DiskLight>();

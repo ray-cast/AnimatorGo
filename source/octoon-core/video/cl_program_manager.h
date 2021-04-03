@@ -9,7 +9,7 @@
 
 #include "cl_program.h"
 
-namespace octoon::video
+namespace octoon
 {
     class CLProgramManager final
     {

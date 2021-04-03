@@ -9,9 +9,9 @@
 
 #define TEXTURE_ARRAY_COUNT 4
 
-namespace octoon::mesh
+namespace octoon
 {
-	struct RaycastHit
+	struct MeshHit
 	{
 		class Mesh* object;
 		std::size_t mesh;
@@ -34,7 +34,7 @@ namespace octoon::mesh
 		void setColorArray(const math::float4s& array) noexcept;
 		void setTangentArray(const math::float4s& array) noexcept;
 		void setTexcoordArray(const math::float2s& array, std::uint8_t n = 0) noexcept;
-		void setWeightArray(const skelecton::VertexWeights& array) noexcept;
+		void setWeightArray(const VertexWeights& array) noexcept;
 		void setIndicesArray(const math::uint1s& array, std::size_t n = 0) noexcept;
 		void setBindposes(const math::float4x4s& array) noexcept;
 
@@ -43,7 +43,7 @@ namespace octoon::mesh
 		void setColorArray(math::float4s&& array) noexcept;
 		void setTangentArray(math::float4s&& array) noexcept;
 		void setTexcoordArray(math::float2s&& array, std::uint8_t n = 0) noexcept;
-		void setWeightArray(skelecton::VertexWeights&& array) noexcept;
+		void setWeightArray(VertexWeights&& array) noexcept;
 		void setIndicesArray(math::uint1s&& array, std::size_t n = 0) noexcept;
 		void setBindposes(math::float4x4s&& array) noexcept;
 
@@ -52,7 +52,7 @@ namespace octoon::mesh
 		math::float4s& getTangentArray() noexcept;
 		math::float4s& getColorArray() noexcept;
 		math::float2s& getTexcoordArray(std::uint8_t n = 0) noexcept;
-		skelecton::VertexWeights& getWeightArray() noexcept;
+		VertexWeights& getWeightArray() noexcept;
 		math::uint1s& getIndicesArray(std::size_t n = 0) noexcept;
 		math::float4x4s& getBindposes() noexcept;
 
@@ -61,10 +61,10 @@ namespace octoon::mesh
 		const math::float4s& getTangentArray() const noexcept;
 		const math::float4s& getColorArray() const noexcept;
 		const math::float2s& getTexcoordArray(std::uint8_t n = 0) const noexcept;
-		const skelecton::VertexWeights& getWeightArray() const noexcept;
+		const VertexWeights& getWeightArray() const noexcept;
 		const math::uint1s& getIndicesArray(std::size_t n = 0) const noexcept;
 
-		const skelecton::Bones& getBoneArray(const skelecton::Bones& array) const noexcept;
+		const Bones& getBoneArray(const Bones& array) const noexcept;
 		const math::float4x4s& getBindposes() const noexcept;
 
 		std::size_t getNumVertices() const noexcept;
@@ -74,7 +74,7 @@ namespace octoon::mesh
 		void mergeVertices() noexcept;
 
 		bool mergeMeshes(const Mesh& mesh, bool force = false) noexcept;
-		bool mergeMeshes(const mesh::CombineMesh instances[], std::size_t numInstance, bool merge) noexcept;
+		bool mergeMeshes(const CombineMesh instances[], std::size_t numInstance, bool merge) noexcept;
 		bool mergeMeshes(const std::vector<CombineMesh>& instances, bool merge) noexcept;
 
 		void computeFaceNormals(std::vector<math::float3s>& faceNormals) noexcept;
@@ -93,8 +93,8 @@ namespace octoon::mesh
 		void setDirty(bool dirty) noexcept;
 		bool isDirty() const noexcept;
 
-		bool raycast(const math::Raycast& ray, RaycastHit& hit) noexcept;
-		bool raycastAll(const math::Raycast& ray, std::vector<RaycastHit>& hits) noexcept;
+		bool raycast(const math::Raycast& ray, MeshHit& hit) noexcept;
+		bool raycastAll(const math::Raycast& ray, std::vector<MeshHit>& hits) noexcept;
 
 		void clear() noexcept;
 		std::shared_ptr<Mesh> clone() const noexcept;
@@ -111,8 +111,8 @@ namespace octoon::mesh
 		math::float4x4s _bindposes;
 		math::BoundingBox _boundingBox;
 
-		std::vector<skelecton::Bone> _bones;
-		std::vector<skelecton::VertexWeight> _weights;
+		std::vector<Bone> _bones;
+		std::vector<VertexWeight> _weights;
 
 		std::vector<math::uint1s> _indices;
 		std::vector<math::BoundingBox> _boundingBoxs;

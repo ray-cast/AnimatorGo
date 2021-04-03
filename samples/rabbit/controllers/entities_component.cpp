@@ -13,7 +13,6 @@
 
 using namespace octoon;
 using namespace octoon::math;
-using namespace octoon::animation;
 
 namespace rabbit
 {
@@ -190,8 +189,8 @@ namespace rabbit
 				this->setupMorphAnimation(it, morphClip);
 
 				model->setName(it.name);
-				model->addComponent<AnimatorComponent>(animation::Animation(std::move(boneClips)), model->getComponent<SkinnedMeshRendererComponent>()->getTransforms());
-				model->addComponent<AnimatorComponent>(animation::Animation(std::move(morphClip)));
+				model->addComponent<AnimatorComponent>(Animation(std::move(boneClips)), model->getComponent<SkinnedMeshRendererComponent>()->getTransforms());
+				model->addComponent<AnimatorComponent>(Animation(std::move(morphClip)));
 
 				auto smr = model->getComponent<octoon::SkinnedMeshRendererComponent>();
 				if (smr)
@@ -251,7 +250,7 @@ namespace rabbit
 			if (envLight)
 				envLight->setEnvironmentMap(PMREMLoader::load(texture));
 
-			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
+			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::MeshBasicMaterial>();
 			material->setColorMap(texture);
 		}
 	}
@@ -274,7 +273,7 @@ namespace rabbit
 			if (envLight)
 				envLight->setEnvironmentMap(nullptr);
 
-			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
+			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::MeshBasicMaterial>();
 			material->setColorMap(nullptr);
 		}
 	}
@@ -292,7 +291,7 @@ namespace rabbit
 		auto mainCamera = GameObject::create("MainCamera");
 		mainCamera->addComponent<FirstPersonCameraComponent>();
 		mainCamera->addComponent<AudioListenerComponent>();
-		mainCamera->addComponent<AnimatorComponent>(animation::Animation(clip));
+		mainCamera->addComponent<AnimatorComponent>(Animation(clip));
 
 		auto camera = mainCamera->addComponent<FilmCameraComponent>();
 		camera->setFov((float)pmm.camera_keyframes[0].fov);
@@ -361,7 +360,7 @@ namespace rabbit
 	}
 
 	void
-	EntitiesComponent::setupBoneAnimation(const PmmModel& it, animation::AnimationClips<float>& clips) noexcept
+	EntitiesComponent::setupBoneAnimation(const PmmModel& it, AnimationClips<float>& clips) noexcept
 	{
 		std::size_t numBone = it.bone_init_frame.size();
 
@@ -427,12 +426,12 @@ namespace rabbit
 					auto qkey = math::Quaternion(key.quaternion.x, key.quaternion.y, key.quaternion.z, key.quaternion.w);
 
 					auto t = j / ((key.frame - keyLast.frame) * 20.0f);
-					auto euler = math::eulerAngles(math::slerp(qkeyLast, qkey, interpolationRotation->interpolator(t)));
+					auto eulerDelta = math::eulerAngles(math::slerp(qkeyLast, qkey, interpolationRotation->interpolator(t)));
 					auto frame = keyLast.frame + (key.frame - keyLast.frame) / ((key.frame - keyLast.frame) * 20.0f) * j;
 
-					rotationX.emplace_back((float)frame / 30.0f, euler.x);
-					rotationY.emplace_back((float)frame / 30.0f, euler.y);
-					rotationZ.emplace_back((float)frame / 30.0f, euler.z);
+					rotationX.emplace_back((float)frame / 30.0f, eulerDelta.x);
+					rotationY.emplace_back((float)frame / 30.0f, eulerDelta.y);
+					rotationZ.emplace_back((float)frame / 30.0f, eulerDelta.z);
 				}
 
 				translateX.emplace_back((float)key.frame / 30.0f, key.translation.x, interpolationX);
@@ -454,7 +453,7 @@ namespace rabbit
 	}
 
 	void
-	EntitiesComponent::setupMorphAnimation(const PmmModel& it, animation::AnimationClip<float>& clip) noexcept
+	EntitiesComponent::setupMorphAnimation(const PmmModel& it, AnimationClip<float>& clip) noexcept
 	{
 		for (std::size_t i = 0, keyframeCount = 1; i < it.morph_init_frame.size(); i++)
 		{
@@ -491,7 +490,7 @@ namespace rabbit
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
 		mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(octoon::math::Quaternion(octoon::math::radians(this->getContext()->profile->sunModule->rotation)));
 
-		auto envMaterial = octoon::material::MeshBasicMaterial::create(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
+		auto envMaterial = octoon::MeshBasicMaterial::create(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
 		envMaterial->setCullMode(octoon::hal::GraphicsCullMode::None);
 		envMaterial->setGamma(1.0f);
 		envMaterial->setDepthEnable(false);
@@ -502,7 +501,7 @@ namespace rabbit
 		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
 		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity);
 		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setOffset(this->getContext()->profile->environmentModule->offset);
-		enviromentLight->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(10000, 32, 24, math::PI * 0.5));
+		enviromentLight->addComponent<octoon::MeshFilterComponent>(octoon::SphereMesh(10000, 32, 24, math::PI * 0.5));
 		enviromentLight->addComponent<octoon::MeshRendererComponent>(envMaterial)->setRenderOrder(-2);
 
 		auto mainCamera = octoon::GameObject::create("MainCamera");
@@ -518,9 +517,9 @@ namespace rabbit
 		this->getContext()->profile->entitiesModule->sunLight = mainLight;
 		this->getContext()->profile->entitiesModule->enviromentLight = enviromentLight;
 		
-		auto planeGeometry = octoon::mesh::CubeMesh::create(1, 1, 1);
+		auto planeGeometry = octoon::CubeMesh::create(1, 1, 1);
 
-		auto material = std::make_shared<octoon::material::MeshStandardMaterial>();
+		auto material = std::make_shared<octoon::MeshStandardMaterial>();
 		material->setCullMode(octoon::hal::GraphicsCullMode::None);
 
 		this->sendMessage("editor:camera:set", mainCamera);

@@ -44,7 +44,7 @@ namespace octoon
 	{
 		auto transform = this->getComponent<TransformComponent>();
 
-		rectangleLight_ = std::make_shared<light::RectangleLight>();
+		rectangleLight_ = std::make_shared<RectangleLight>();
 		rectangleLight_->setLayer(this->getGameObject()->getLayer());
 		rectangleLight_->setColor(this->getColor());
 		rectangleLight_->setIntensity(this->getIntensity());

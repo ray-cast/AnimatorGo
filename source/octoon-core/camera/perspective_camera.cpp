@@ -1,7 +1,7 @@
 #include <octoon/camera/perspective_camera.h>
 #include <octoon/video/renderer.h>
 
-namespace octoon::camera
+namespace octoon
 {
 	OctoonImplementSubClass(PerspectiveCamera, Camera, "PerspectiveCamera")
 
@@ -126,12 +126,12 @@ namespace octoon::camera
 	{
 		std::uint32_t width = 1920, height = 1080;
 
-		if (!fbo_[0])
-			video::Renderer::instance()->getFramebufferSize(width, height);
+		if (!fbo_)
+			Renderer::instance()->getFramebufferSize(width, height);
 		else
 		{
-			width = fbo_[0]->getFramebufferDesc().getWidth();
-			height = fbo_[0]->getFramebufferDesc().getHeight();
+			width = fbo_->getFramebufferDesc().getWidth();
+			height = fbo_->getFramebufferDesc().getHeight();
 		}
 
 		if (width_ != width || height_ != height)
@@ -161,7 +161,7 @@ namespace octoon::camera
 	void
 	PerspectiveCamera::onMoveAfter() noexcept
 	{
-		video::RenderObject::onMoveAfter();
+		RenderObject::onMoveAfter();
 		needUpdateViewProject_= true;
 	}
 }

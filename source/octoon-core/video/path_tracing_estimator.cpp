@@ -1,7 +1,7 @@
 #include "path_tracing_estimator.h"
 #include "sobol.h"
 
-namespace octoon::video
+namespace octoon
 {
 	PathTracingEstimator::PathTracingEstimator(CLWContext context, std::shared_ptr<RadeonRays::IntersectionApi> intersector, const CLProgramManager* programManager)
 		: ClwClass(context, programManager, "../../system/Kernels/CL/rtx_path_estimator.cl", "")

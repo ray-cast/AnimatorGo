@@ -1,6 +1,6 @@
 #include <octoon/mesh/cone_mesh.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	OctoonImplementSubClass(ConeMesh, Mesh, "ConeMesh");
 

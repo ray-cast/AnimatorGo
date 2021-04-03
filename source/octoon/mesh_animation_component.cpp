@@ -405,13 +405,13 @@ namespace octoon
 		}
 	}
 	
-	const mesh::MeshPtr&
+	const MeshPtr&
 	MeshAnimationComponent::getMesh() const noexcept
 	{
 		return mesh_;
 	}
 
-	const animation::AnimatorStateInfo<float>&
+	const AnimatorStateInfo<float>&
 	MeshAnimationComponent::getCurrentAnimatorStateInfo() const noexcept
 	{
 		return animationState_;
@@ -495,7 +495,7 @@ namespace octoon
 				{
 					if (!mesh_)
 					{
-						mesh_ = std::make_shared<mesh::Mesh>();
+						mesh_ = std::make_shared<Mesh>();
 						mesh_->setIndicesArray(math::uint1s());
 
 						IPolyMeshSchema::Sample sample;
@@ -521,7 +521,7 @@ namespace octoon
 
 					if (!mesh_)
 					{
-						mesh_ = std::make_shared<mesh::Mesh>();
+						mesh_ = std::make_shared<Mesh>();
 						mesh_->setIndicesArray(math::uint1s());
 
 						read_uvs(schema, sample, this->mesh_->getTexcoordArray());
@@ -621,7 +621,7 @@ namespace octoon
 
 			if (IPolyMesh::matches(child_header))
 			{
-				auto material = std::make_shared<material::MeshStandardMaterial>();
+				auto material = std::make_shared<MeshStandardMaterial>();
 				material->setColor(math::float3(0.9f, 0.9f, 0.9f));
 
 				auto gameObject = GameObject::create(child.getName());

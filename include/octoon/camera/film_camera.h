@@ -3,7 +3,7 @@
 
 #include <octoon/camera/perspective_camera.h>
 
-namespace octoon::camera
+namespace octoon
 {
 	class OCTOON_EXPORT FilmCamera final : public Camera
 	{

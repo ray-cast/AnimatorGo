@@ -98,7 +98,7 @@ namespace octoon::bake
 	}
 
 	void
-	Lightmap::render(const camera::Camera& camera)
+	Lightmap::render(const Camera& camera)
 	{
 #if 0
 		for (std::uint8_t level = 0; level < this->mipLevel_; level++)
@@ -150,18 +150,18 @@ namespace octoon::bake
 	}
 
 	void
-	Lightmap::renderLight(const light::DirectionalLight& light)
+	Lightmap::renderLight(const DirectionalLight& light)
 	{
 		this->computeDirectLight(light);
 	}
 
 	void
-	Lightmap::renderLight(const light::EnvironmentLight& light)
+	Lightmap::renderLight(const EnvironmentLight& light)
 	{
 	}
 
 	void
-	Lightmap::computeDirectLight(const light::DirectionalLight& light)
+	Lightmap::computeDirectLight(const DirectionalLight& light)
 	{
 		auto lightDir = math::normalize(-light.getForward());
 		auto lightColor = light.getColor() * light.getIntensity() / math::PI;
@@ -184,7 +184,7 @@ namespace octoon::bake
 				auto nl = std::max(math::dot(lightDir, sourcePatch.normal), 0.0f);
 				if (nl > 0.0f)
 				{
-					mesh::RaycastHit hit;
+					MeshHit hit;
 					if (!this->mesh_->raycast(ray, hit))
 						this->directLightBuffer_[level][sourcePatch.texelIndex] += lightColor * sourcePatch.color * nl;
 				}
@@ -193,7 +193,7 @@ namespace octoon::bake
 	}
 
 	void
-	Lightmap::computeIndirectLightBounce(const camera::Camera& camera)
+	Lightmap::computeIndirectLightBounce(const Camera& camera)
 	{
 		std::memset(this->lightmap.data.data(), 0, this->lightmap.data.size() * sizeof(math::float3));
 
@@ -226,7 +226,7 @@ namespace octoon::bake
 					auto factor = cosi * cosj;
 					if (factor > 1e-4f)
 					{
-						mesh::RaycastHit hit;
+						MeshHit hit;
 						math::Raycast ray;
 						ray.origin = sourcePatch.position + sourcePatch.normal * 0.01f;
 						ray.normal = L;
@@ -243,7 +243,7 @@ namespace octoon::bake
 	}
 
 	void
-	Lightmap::setGeometry(const geometry::Geometry& geometry) noexcept
+	Lightmap::setGeometry(const Geometry& geometry) noexcept
 	{
 		mesh_ = geometry.getMesh();
 

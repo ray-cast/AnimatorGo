@@ -4,7 +4,7 @@
 #include <CLW.h>
 #include "clw_output.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class ClwTextureOutput : public ClwOutput
 	{

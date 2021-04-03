@@ -14,41 +14,41 @@ namespace octoon
 	{
 	}
 
-	AnimatorComponent::AnimatorComponent(animation::Animation<float>&& animation, GameObjects&& avatar) noexcept
+	AnimatorComponent::AnimatorComponent(Animation<float>&& animation, GameObjects&& avatar) noexcept
 		: AnimatorComponent()
 	{
 		this->setAvatar(std::move(avatar));
 		this->setAnimation(std::move(animation));
 	}
 
-	AnimatorComponent::AnimatorComponent(animation::Animation<float>&& animation, const GameObjects& avatar) noexcept
+	AnimatorComponent::AnimatorComponent(Animation<float>&& animation, const GameObjects& avatar) noexcept
 		: AnimatorComponent()
 	{
 		this->setAvatar(avatar);
 		this->setAnimation(std::move(animation));
 	}
 
-	AnimatorComponent::AnimatorComponent(const animation::Animation<float>& animation, GameObjects&& avatar) noexcept
+	AnimatorComponent::AnimatorComponent(const Animation<float>& animation, GameObjects&& avatar) noexcept
 		: AnimatorComponent()
 	{
 		this->setAvatar(std::move(avatar));
 		this->setAnimation(animation);
 	}
 
-	AnimatorComponent::AnimatorComponent(const animation::Animation<float>& animation, const GameObjects& avatar) noexcept
+	AnimatorComponent::AnimatorComponent(const Animation<float>& animation, const GameObjects& avatar) noexcept
 		: AnimatorComponent()
 	{
 		this->setAvatar(avatar);
 		this->setAnimation(animation);
 	}
 
-	AnimatorComponent::AnimatorComponent(animation::Animation<float>&& animation) noexcept
+	AnimatorComponent::AnimatorComponent(Animation<float>&& animation) noexcept
 		: AnimatorComponent()
 	{
 		animation_ = std::move(animation);
 	}
 
-	AnimatorComponent::AnimatorComponent(const animation::Animation<float>& animation) noexcept
+	AnimatorComponent::AnimatorComponent(const Animation<float>& animation) noexcept
 		: AnimatorComponent()
 	{
 		animation_ = animation;
@@ -148,18 +148,18 @@ namespace octoon
 	}
 
 	void
-	AnimatorComponent::setAnimation(animation::Animation<float>&& clips) noexcept
+	AnimatorComponent::setAnimation(Animation<float>&& clips) noexcept
 	{
 		animation_ = std::move(clips);
 	}
 
 	void
-	AnimatorComponent::setAnimation(const animation::Animation<float>& clips) noexcept
+	AnimatorComponent::setAnimation(const Animation<float>& clips) noexcept
 	{
 		animation_ = clips;
 	}
 
-	const animation::Animation<float>&
+	const Animation<float>&
 	AnimatorComponent::getAnimation() const noexcept
 	{
 		return animation_;
@@ -185,7 +185,7 @@ namespace octoon
 		return avatar_;
 	}
 
-	const animation::AnimatorStateInfo<float>&
+	const AnimatorStateInfo<float>&
 	AnimatorComponent::getCurrentAnimatorStateInfo() const noexcept
 	{
 		return animation_.state;

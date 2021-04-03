@@ -3,11 +3,11 @@
 
 #include <octoon/video/render_object.h>
 
-namespace octoon::light
+namespace octoon
 {
-	class OCTOON_EXPORT Light : public video::RenderObject, public video::RenderListener
+	class OCTOON_EXPORT Light : public RenderObject, public RenderListener
 	{
-		OctoonDeclareSubClass(Light, video::RenderObject)
+		OctoonDeclareSubClass(Light, RenderObject)
 	public:
 		Light() noexcept;
 		virtual ~Light() noexcept;
@@ -21,11 +21,11 @@ namespace octoon::light
 
 		const math::float3& getColor() const noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
-		void onPreRender(const camera::Camera& camera) noexcept;
-		void onPostRender(const camera::Camera& camera) noexcept;
+		void onPreRender(const Camera& camera) noexcept;
+		void onPostRender(const Camera& camera) noexcept;
 
 	private:
 		Light(const Light&) noexcept = delete;

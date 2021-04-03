@@ -1,9 +1,9 @@
-#ifndef OCTOON_SKELECTON_BONE_H_
-#define OCTOON_SKELECTON_BONE_H_
+#ifndef OCTOON_BONE_H_
+#define OCTOON_BONE_H_
 
 #include <octoon/model/modtypes.h>
 
-namespace octoon::skelecton
+namespace octoon
 {
 	class OCTOON_EXPORT Bone final
 	{

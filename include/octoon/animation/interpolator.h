@@ -1,7 +1,7 @@
 #ifndef OCTOON_INTERPOLATOR_H_
 #define OCTOON_INTERPOLATOR_H_
 
-namespace octoon::animation
+namespace octoon
 {
 	template<typename T>
 	class Interpolator

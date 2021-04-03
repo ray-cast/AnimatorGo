@@ -1,7 +1,7 @@
 #include <octoon/video/collector.h>
 #include <stdexcept>
 
-namespace octoon::video
+namespace octoon
 {
 	struct IdCompare
 	{

@@ -12,7 +12,7 @@
 #include "cl_program_manager.h"
 #include "scene_controller.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class ClwSceneController : public SceneController
 	{
@@ -20,7 +20,7 @@ namespace octoon::video
 		ClwSceneController(const CLWContext& context, const std::shared_ptr<RadeonRays::IntersectionApi>& api, const CLProgramManager* program_manager);
 
 		void cleanCache() noexcept;
-		void compileScene(const std::shared_ptr<RenderScene>& scene) noexcept override;
+		void compileScene(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene) noexcept override;
 		CompiledScene& getCachedScene(const std::shared_ptr<RenderScene>& scene) const noexcept(false);
 
 	private:
@@ -31,11 +31,11 @@ namespace octoon::video
 		void updateIntersector(const std::shared_ptr<RenderScene>& scene, ClwScene& out) const;
 		void updateLights(const std::shared_ptr<RenderScene>& scene, ClwScene& out);
 
-		void WriteLight(const std::shared_ptr<RenderScene>& scene, light::Light const& light, void* data) const;
+		void WriteLight(const std::shared_ptr<RenderScene>& scene, Light const& light, void* data) const;
 		void WriteTexture(const hal::GraphicsTexture& texture, std::size_t data_offset, void* data) const;
 		void WriteTextureData(hal::GraphicsTexture& texture, void* data) const;
 
-		std::optional<ClwScene::Material> getMaterialIndex(const material::MaterialPtr& material) const;
+		std::optional<ClwScene::Material> getMaterialIndex(const MaterialPtr& material) const;
 
 	private:
 		CLWContext context_;

@@ -48,7 +48,7 @@ namespace octoon
 		float shadowBias_;
 		float shadowRadius_;
 		math::uint2 shadowMapSize_;
-		std::shared_ptr<light::DirectionalLight> directionalLight_;
+		std::shared_ptr<DirectionalLight> directionalLight_;
 	};
 }
 

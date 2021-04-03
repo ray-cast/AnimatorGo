@@ -4,7 +4,7 @@
 #include <array>
 #include <octoon/video/compiled_scene.h>
 
-namespace octoon::video
+namespace octoon
 {
 	class Estimator
 	{

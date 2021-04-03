@@ -100,17 +100,17 @@ namespace rabbit
 	void
 	DragComponent::onEnable() noexcept
 	{
-		this->gizmoHoverMtl_ = std::make_shared<octoon::material::LineBasicMaterial>(octoon::math::float3(0, 1, 0));
-		this->gizmoSelectedMtl_ = std::make_shared<octoon::material::LineBasicMaterial>(octoon::math::float3(0, 0, 1));
+		this->gizmoHoverMtl_ = std::make_shared<octoon::LineBasicMaterial>(octoon::math::float3(0, 1, 0));
+		this->gizmoSelectedMtl_ = std::make_shared<octoon::LineBasicMaterial>(octoon::math::float3(0, 0, 1));
 
 		gizmoHover_ = octoon::GameObject::create("GizmoHover");
-		gizmoHover_->addComponent<octoon::MeshFilterComponent>(octoon::mesh::CubeWireframeMesh::create(1.0f, 1.0f, 1.0f));
+		gizmoHover_->addComponent<octoon::MeshFilterComponent>(octoon::CubeWireframeMesh::create(1.0f, 1.0f, 1.0f));
 		auto meshRenderHover = gizmoHover_->addComponent<octoon::MeshRendererComponent>(this->gizmoHoverMtl_);
 		meshRenderHover->setVisible(false);
 		meshRenderHover->setRenderOrder(1);
 
 		gizmoSelected_ = octoon::GameObject::create("GizmoSelect");
-		gizmoSelected_->addComponent<octoon::MeshFilterComponent>(octoon::mesh::CubeWireframeMesh::create(1.0f, 1.0f, 1.0f));
+		gizmoSelected_->addComponent<octoon::MeshFilterComponent>(octoon::CubeWireframeMesh::create(1.0f, 1.0f, 1.0f));
 		auto meshRenderSelected = gizmoSelected_->addComponent<octoon::MeshRendererComponent>(this->gizmoSelectedMtl_);
 		meshRenderSelected->setVisible(false);
 		meshRenderSelected->setRenderOrder(1);
@@ -161,7 +161,7 @@ namespace rabbit
 			auto hitObject = hit.object.lock();
 			if (hitObject)
 			{
-				octoon::mesh::MeshPtr mesh;
+				octoon::MeshPtr mesh;
 				auto skinnedMesh = hitObject->getComponent<octoon::SkinnedMeshRendererComponent>();
 				if (skinnedMesh)
 					mesh = skinnedMesh->getSkinnedMesh();
@@ -200,7 +200,7 @@ namespace rabbit
 			auto hitObject = hit.object.lock();
 			if (hitObject)
 			{
-				octoon::mesh::MeshPtr mesh;
+				octoon::MeshPtr mesh;
 				auto skinnedMesh = hit.object.lock()->getComponent<octoon::SkinnedMeshRendererComponent>();
 				if (skinnedMesh)
 					mesh = skinnedMesh->getSkinnedMesh();

@@ -4,7 +4,7 @@
 #include <octoon/light/light.h>
 #include <octoon/hal/graphics_texture.h>
 
-namespace octoon::light
+namespace octoon
 {
 	class OCTOON_EXPORT EnvironmentLight final : public Light
 	{
@@ -25,7 +25,7 @@ namespace octoon::light
 		void setEnvironmentMap(const hal::GraphicsTexturePtr& texture) noexcept;
 		const hal::GraphicsTexturePtr& getEnvironmentMap() const noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
 		EnvironmentLight(const EnvironmentLight&) noexcept = delete;

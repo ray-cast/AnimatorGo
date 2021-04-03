@@ -1,6 +1,6 @@
 #include <octoon/light/light_probe.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(LightProbe, Light, "LightProbe")
 
@@ -30,7 +30,7 @@ namespace octoon::light
 		return sh_;
 	}
 
-	std::shared_ptr<video::RenderObject>
+	std::shared_ptr<RenderObject>
 	LightProbe::clone() const noexcept
 	{
 		auto light = std::make_shared<LightProbe>();

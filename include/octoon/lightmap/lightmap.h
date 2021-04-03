@@ -33,14 +33,14 @@ namespace octoon::bake
 		std::uint32_t height() const noexcept;
 		const std::vector<math::float3>& fronBuffer() const noexcept;
 
-		void render(const camera::Camera& camera);
-		void renderLight(const light::DirectionalLight& light);
-		void renderLight(const light::EnvironmentLight& light);
+		void render(const Camera& camera);
+		void renderLight(const DirectionalLight& light);
+		void renderLight(const EnvironmentLight& light);
 
-		void computeDirectLight(const light::DirectionalLight& light);
-		void computeIndirectLightBounce(const camera::Camera& camera);
+		void computeDirectLight(const DirectionalLight& light);
+		void computeIndirectLightBounce(const Camera& camera);
 
-		void setGeometry(const geometry::Geometry& geometry) noexcept;
+		void setGeometry(const Geometry& geometry) noexcept;
 		void trySamplingConservativeTriangleRasterizerPatch(std::uint32_t mipmap, const math::float3& p1, const math::float3& p2, const math::float3& p3, const math::float2& tc1, const math::float2& tc2, const math::float2& tc3, const math::float3& n1, const math::float3& n2, const math::float3& n3, const math::float3& color) noexcept;
 
 	private:
@@ -83,7 +83,7 @@ namespace octoon::bake
 			std::vector<math::float3> data;
 		} lightmap;
 
-		mesh::MeshPtr mesh_;
+		MeshPtr mesh_;
 
 		std::uint32_t mipLevel_;
 

@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <octoon/animation/animation_curve.h>
 
-namespace octoon::animation
+namespace octoon
 {
 	template<typename _Elem = float, typename _Time = float>
 	class AnimationClip final

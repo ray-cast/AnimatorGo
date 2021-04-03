@@ -7,7 +7,7 @@
 #include "clw_class.h"
 #include "clw_scene.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class PathTracingEstimator final : public Estimator, protected ClwClass
 	{

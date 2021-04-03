@@ -3,7 +3,7 @@
 
 #include <octoon/light/light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	class OCTOON_EXPORT SpotLight final : public Light
 	{
@@ -30,10 +30,10 @@ namespace octoon::light
 		void setShadowMapSize(const math::uint2& size) noexcept;
 		const math::uint2& getShadowMapSize() const noexcept;
 
-		void setCamera(const std::shared_ptr<camera::Camera>& camera) noexcept;
-		const std::shared_ptr<camera::Camera>& getCamera() const noexcept;
+		void setCamera(const std::shared_ptr<Camera>& camera) noexcept;
+		const std::shared_ptr<Camera>& getCamera() const noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
 		SpotLight(const SpotLight&) noexcept = delete;
@@ -49,7 +49,7 @@ namespace octoon::light
 		math::float2 innerCone_;
 		math::float2 outerCone_;
 
-		std::shared_ptr<camera::Camera> shadowCamera_;
+		std::shared_ptr<Camera> shadowCamera_;
 	};
 }
 

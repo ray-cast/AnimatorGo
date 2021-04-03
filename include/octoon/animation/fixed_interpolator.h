@@ -3,7 +3,7 @@
 
 #include <octoon/animation/interpolator.h>
 
-namespace octoon::animation
+namespace octoon
 {
 	template<typename T>
 	class FixedInterpolator final : public Interpolator<T>

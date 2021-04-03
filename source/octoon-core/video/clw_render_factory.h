@@ -11,7 +11,7 @@ namespace RadeonRays
 	class IntersectionApi;
 }
 
-namespace octoon::video
+namespace octoon
 {
 	class ClwRenderFactory : public RenderFactory
 	{

@@ -374,7 +374,7 @@ namespace rabbit
 				envLight->setEnvironmentMap(state == Qt::Checked ? octoon::PMREMLoader::load(this->texture) : nullptr);
 			}
 
-			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
+			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::MeshBasicMaterial>();
 			material->setColorMap(state == Qt::Checked && backgroundToggle->isChecked() ? this->texture : nullptr);
 		}
 
@@ -440,9 +440,9 @@ namespace rabbit
 		if (meshRenderer)
 		{
 			auto material = meshRenderer->getMaterial();
-			if (material->isInstanceOf<octoon::material::MeshBasicMaterial>())
+			if (material->isInstanceOf<octoon::MeshBasicMaterial>())
 			{
-				auto basicMaterial = material->downcast<octoon::material::MeshBasicMaterial>();
+				auto basicMaterial = material->downcast<octoon::MeshBasicMaterial>();
 				basicMaterial->setOffset(this->profile_->environmentModule->offset);
 			}
 		}
@@ -470,9 +470,9 @@ namespace rabbit
 		if (meshRenderer)
 		{
 			auto material = meshRenderer->getMaterial();
-			if (material->isInstanceOf<octoon::material::MeshBasicMaterial>())
+			if (material->isInstanceOf<octoon::MeshBasicMaterial>())
 			{
-				auto basicMaterial = material->downcast<octoon::material::MeshBasicMaterial>();
+				auto basicMaterial = material->downcast<octoon::MeshBasicMaterial>();
 				basicMaterial->setOffset(this->profile_->environmentModule->offset);
 			}
 		}

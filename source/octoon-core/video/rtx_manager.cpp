@@ -27,7 +27,7 @@
 #define RPR_CREATION_FLAGS_ENABLE_GPU7 (1 << 9) 
 #define RPR_CREATION_FLAGS_ENABLE_METAL (1 << 10) 
 
-namespace octoon::video
+namespace octoon
 {
 	RtxManager::RtxManager()
 		: width_(0)
@@ -148,18 +148,6 @@ namespace octoon::video
 			this->configs_[i].controller = this->configs_[i].factory->createSceneController();
 			this->configs_[i].pipeline = this->configs_[i].factory->createPipeline();
 		}
-	}
-
-	void
-	RtxManager::setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false)
-	{
-		this->context_ = context;
-	}
-
-	const hal::GraphicsContextPtr&
-	RtxManager::getGraphicsContext() const noexcept(false)
-	{
-		return this->context_;
 	}
 
 	void
@@ -352,19 +340,19 @@ namespace octoon::video
 	}
 
 	void
-	RtxManager::prepareScene(const std::shared_ptr<RenderScene>& scene) noexcept
+	RtxManager::prepareScene(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene) noexcept
 	{
 		for (auto& c : configs_)
 		{
 			c.controller->cleanCache();
-			c.controller->compileScene(scene);
+			c.controller->compileScene(context, scene);
 		}
 	}
 
 	void
-	RtxManager::render(const std::shared_ptr<RenderScene>& scene)
+	RtxManager::render(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene)
 	{
-		this->prepareScene(scene);
+		this->prepareScene(context, scene);
 
 		for (auto& c : configs_)
 		{
@@ -381,7 +369,7 @@ namespace octoon::video
 				this->dirty_ = clwscene.dirty = false;
 			}
 
-			c.pipeline->render(compiledScene);
+			c.pipeline->render(context, compiledScene);
 		}
 
 		math::float4 viewport(0, 0, static_cast<float>(this->width_), static_cast<float>(this->height_));

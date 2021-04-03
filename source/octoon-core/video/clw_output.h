@@ -5,7 +5,7 @@
 
 #include "output.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class ClwOutput : public Output
 	{

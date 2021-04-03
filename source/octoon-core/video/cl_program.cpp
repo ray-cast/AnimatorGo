@@ -10,7 +10,7 @@
 #include <regex>
 #include <filesystem>
 
-namespace octoon::video
+namespace octoon
 {
 	inline std::uint32_t jenkins_one_at_a_time_hash(char const* key, size_t len)
 	{

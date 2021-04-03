@@ -1,7 +1,7 @@
 #include <octoon/light/spot_light.h>
 #include <octoon/camera/perspective_camera.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(SpotLight, Light, "SpotLight")
 
@@ -12,7 +12,7 @@ namespace octoon::light
 		, shadowBias_(0.1f)
 		, shadowRadius_(1.0f)
 	{
-		auto shadowCamera = std::make_shared<camera::PerspectiveCamera>();
+		auto shadowCamera = std::make_shared<PerspectiveCamera>();
 		shadowCamera->setFov(outerCone_.x);
 		shadowCamera->setNear(0.1f);
 		shadowCamera->setSensorSize(math::float2::One);
@@ -112,19 +112,19 @@ namespace octoon::light
 	}
 
 	void
-	SpotLight::setCamera(const std::shared_ptr<camera::Camera>& camera) noexcept
+	SpotLight::setCamera(const std::shared_ptr<Camera>& camera) noexcept
 	{
 		this->setDirty(true);
 		this->shadowCamera_ = camera;
 	}
 
-	const std::shared_ptr<camera::Camera>&
+	const std::shared_ptr<Camera>&
 	SpotLight::getCamera() const noexcept
 	{
 		return this->shadowCamera_;
 	}
 
-	std::shared_ptr<video::RenderObject>
+	std::shared_ptr<RenderObject>
 	SpotLight::clone() const noexcept
 	{
 		auto light = std::make_shared<SpotLight>();

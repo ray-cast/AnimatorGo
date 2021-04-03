@@ -85,12 +85,12 @@ namespace octoon::font
 		return instance;
 	}
 
-	model::PathGroups makeTextPaths(const std::wstring& string, const TextMeshing& params) noexcept(false)
+	PathGroups makeTextPaths(const std::wstring& string, const TextMeshing& params) noexcept(false)
 	{
 		assert(params.getFont());
 		assert(params.getPixelsSize() > 0);
 
-		auto addEdge = [](model::Path& contours, const FT_Vector* contour, const char* tags, std::size_t n) -> void
+		auto addEdge = [](Path& contours, const FT_Vector* contour, const char* tags, std::size_t n) -> void
 		{
 			math::float3 prev;
 			math::float3 cur(contour[(n - 1) % n].x / 64.0f, contour[(n - 1) % n].y / 64.0f, 0.0);
@@ -129,10 +129,10 @@ namespace octoon::font
 
 		auto addPath = [addEdge](const FT_GlyphSlot glyph, FT_Pos offset)
 		{
-			model::Paths paths(glyph->outline.n_contours);
+			Paths paths(glyph->outline.n_contours);
 
 			for (short i = 0; i < glyph->outline.n_contours; i++)
-				paths[i] = std::make_unique<model::Path>();
+				paths[i] = std::make_unique<Path>();
 
 			for (short startIndex = 0, i = 0; i < glyph->outline.n_contours; i++)
 			{
@@ -157,7 +157,7 @@ namespace octoon::font
 
 		auto offset = ftface->glyph->advance.x;
 
-		model::PathGroups groups;
+		PathGroups groups;
 
 		for (auto& ch : string)
 		{
@@ -176,7 +176,7 @@ namespace octoon::font
 				offset += ftface->glyph->advance.x / 64;
 			else
 			{
-				groups.push_back(std::make_shared<model::PathGroup>(addPath(ftface->glyph, offset)));
+				groups.push_back(std::make_shared<PathGroup>(addPath(ftface->glyph, offset)));
 
 				offset += ftface->glyph->bitmap_left + ftface->glyph->bitmap.width;
 			}
@@ -185,32 +185,32 @@ namespace octoon::font
 		return groups;
 	}
 
-	model::Contours makeTextContours(const model::Paths& paths, std::uint16_t bezierSteps) noexcept(false)
+	Contours makeTextContours(const Paths& paths, std::uint16_t bezierSteps) noexcept(false)
 	{
-		model::Contours groups;
+		Contours groups;
 
 		for (auto& path : paths)
-			groups.push_back(std::make_shared<model::Contour>(*path, bezierSteps));
+			groups.push_back(std::make_shared<Contour>(*path, bezierSteps));
 
 		return groups;
 	}
 
-	model::ContourGroups makeTextContours(const model::PathGroups& paths, std::uint16_t bezierSteps) noexcept(false)
+	ContourGroups makeTextContours(const PathGroups& paths, std::uint16_t bezierSteps) noexcept(false)
 	{
-		model::ContourGroups groups;
+		ContourGroups groups;
 
 		for (auto& path : paths)
-			groups.push_back(std::make_shared<model::ContourGroup>(*path, bezierSteps));
+			groups.push_back(std::make_shared<ContourGroup>(*path, bezierSteps));
 
 		return groups;
 	}
 
-	model::ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps, TextAlign align) noexcept(false)
+	ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps, TextAlign align) noexcept(false)
 	{
 		assert(params.getFont());
 		assert(params.getPixelsSize() > 0);
 
-		auto addPoints = [](model::Contour& contours, const FT_Vector* contour, const char* tags, std::size_t n, std::uint16_t bezierSteps) -> void
+		auto addPoints = [](Contour& contours, const FT_Vector* contour, const char* tags, std::size_t n, std::uint16_t bezierSteps) -> void
 		{
 			math::float3 prev;
 			math::float3 cur(contour[(n - 1) % n].x / 64.0f, contour[(n - 1) % n].y / 64.0f, 0.0);
@@ -249,10 +249,10 @@ namespace octoon::font
 
 		auto addContours = [addPoints](const FT_GlyphSlot glyph, FT_Pos offset, std::uint16_t bezierSteps)
 		{
-			model::Contours contours(glyph->outline.n_contours);
+			Contours contours(glyph->outline.n_contours);
 
 			for (short i = 0; i < glyph->outline.n_contours; i++)
-				contours[i] = std::make_unique<model::Contour>();
+				contours[i] = std::make_unique<Contour>();
 
 			for (short startIndex = 0, i = 0; i < glyph->outline.n_contours; i++)
 			{
@@ -271,7 +271,7 @@ namespace octoon::font
 					point.x += offset;
 			}
 
-			return std::make_shared<model::ContourGroup>(std::move(contours));
+			return std::make_shared<ContourGroup>(std::move(contours));
 		};
 
 		if (::FT_Set_Pixel_Sizes((FT_Face)(params.getFont()->getFont()), params.getPixelsSize(), params.getPixelsSize()))
@@ -281,7 +281,7 @@ namespace octoon::font
 
 		auto offset = 0;
 
-		model::ContourGroups groups;
+		ContourGroups groups;
 
 		for (auto& ch : string)
 		{
@@ -337,17 +337,17 @@ namespace octoon::font
 		return groups;
 	}
 
-	mesh::Mesh makeText(const std::wstring& string, const TextMeshing& params, float thickness, std::uint16_t bezierSteps) noexcept(false)
+	Mesh makeText(const std::wstring& string, const TextMeshing& params, float thickness, std::uint16_t bezierSteps) noexcept(false)
 	{
-		mesh::Mesh mesh = makeMesh(makeTextContours(string, params, bezierSteps), thickness, false);
+		Mesh mesh = makeMesh(makeTextContours(string, params, bezierSteps), thickness, false);
 		mesh.computeBoundingBox();
 
 		return mesh;
 	}
 
-	mesh::Mesh makeTextWireframe(const std::wstring& string, const TextMeshing& params, float thickness, std::uint16_t bezierSteps) noexcept(false)
+	Mesh makeTextWireframe(const std::wstring& string, const TextMeshing& params, float thickness, std::uint16_t bezierSteps) noexcept(false)
 	{
-		mesh::Mesh mesh = makeMeshWireframe(makeTextContours(string, params, bezierSteps), thickness);
+		Mesh mesh = makeMeshWireframe(makeTextContours(string, params, bezierSteps), thickness);
 		mesh.computeBoundingBox();
 
 		return mesh;

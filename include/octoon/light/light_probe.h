@@ -3,7 +3,7 @@
 
 #include <octoon/light/light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	class OCTOON_EXPORT LightProbe final : public Light
 	{
@@ -16,7 +16,7 @@ namespace octoon::light
 		void setCoeff(const math::SH9& sh) noexcept;
 		const math::SH9& getCoeff() const noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
 		LightProbe(const LightProbe&) noexcept = delete;

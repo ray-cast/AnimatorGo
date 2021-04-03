@@ -4,14 +4,14 @@
 #include <octoon/mesh/mesh.h>
 #include <octoon/model/contour.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	class OCTOON_EXPORT ShapeMesh final : public Mesh
 	{
 		OctoonDeclareSubClass(ShapeMesh, Mesh)
 	public:
 		ShapeMesh() noexcept;
-		ShapeMesh(const model::Contours& contours, float thickness) noexcept;
+		ShapeMesh(const Contours& contours, float thickness) noexcept;
 	};
 }
 

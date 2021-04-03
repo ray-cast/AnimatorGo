@@ -23,7 +23,7 @@
 
 namespace octoon
 {
-	void createBones(const model::Model& model, GameObjects& bones) noexcept(false)
+	void createBones(const Model& model, GameObjects& bones) noexcept(false)
 	{
 		bones.reserve(model.bones.size());
 
@@ -70,7 +70,7 @@ namespace octoon
 		}
 	}
 
-	void createClothes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones) noexcept(false)
+	void createClothes(const Model& model, GameObjectPtr& meshes, const GameObjects& bones) noexcept(false)
 	{
 		for (auto& it : model.softbodies)
 		{
@@ -107,7 +107,7 @@ namespace octoon
 		}
 	}
 
-	void createColliders(const model::Model& model, GameObjects& bones) noexcept(false)
+	void createColliders(const Model& model, GameObjects& bones) noexcept(false)
 	{
 		for (auto& it : model.rigidbodies)
 		{
@@ -123,19 +123,19 @@ namespace octoon
 			math::Quaternion rotation;
 			localTransform.getTransform(translate, rotation, scale);
 
-			if (it->shape == model::ShapeType::ShapeTypeSphere)
+			if (it->shape == ShapeType::ShapeTypeSphere)
 			{
 				auto collider = bone->addComponent<SphereColliderComponent>(it->scale.x > 0.0f ? it->scale.x : math::EPSILON_E3);
 				collider->setCenter(translate);
 				collider->setQuaternion(rotation);
 			}
-			else if (it->shape == model::ShapeType::ShapeTypeSquare)
+			else if (it->shape == ShapeType::ShapeTypeSquare)
 			{
 				auto collider = bone->addComponent<BoxColliderComponent>(math::max(math::float3(0.001, 0.001, 0.001), it->scale * 2.0f));
 				collider->setCenter(translate);
 				collider->setQuaternion(rotation);
 			}
-			else if (it->shape == model::ShapeType::ShapeTypeCapsule)
+			else if (it->shape == ShapeType::ShapeTypeCapsule)
 			{
 				auto collider = bone->addComponent<CapsuleColliderComponent>(it->scale.x > 0.0f ? it->scale.x : math::EPSILON_E3, it->scale.y);
 				collider->setCenter(translate);
@@ -144,7 +144,7 @@ namespace octoon
 		}
 	}
 
-	void createRigidbodies(const model::Model& model, GameObjects& bones) noexcept(false)
+	void createRigidbodies(const Model& model, GameObjects& bones) noexcept(false)
 	{
 		for (auto& it : model.rigidbodies)
 		{
@@ -177,7 +177,7 @@ namespace octoon
 		}
 	}
 
-	void createJoints(const model::Model& model, GameObjects& bones) noexcept(false)
+	void createJoints(const Model& model, GameObjects& bones) noexcept(false)
 	{
 		for (auto& it : model.joints)
 		{
@@ -302,7 +302,7 @@ namespace octoon
 		}
 	}
 
-	void createSolver(const model::Model& model, GameObjects& bones) noexcept(false)
+	void createSolver(const Model& model, GameObjects& bones) noexcept(false)
 	{
 		for (auto& it : model.iks)
 		{
@@ -324,7 +324,7 @@ namespace octoon
 		}
 	}
 
-	void createMorph(const model::Model& model, GameObjectPtr& mesh) noexcept(false)
+	void createMorph(const Model& model, GameObjectPtr& mesh) noexcept(false)
 	{
 		for (auto& it : model.morphs)
 		{
@@ -344,7 +344,7 @@ namespace octoon
 		}
 	}
 
-	void createMaterials(const model::Model& model, material::Materials& materials) noexcept(false)
+	void createMaterials(const Model& model, Materials& materials) noexcept(false)
 	{
 		materials.reserve(model.materials.size());
 
@@ -352,9 +352,9 @@ namespace octoon
 			materials.push_back(it);
 	}
 
-	void createMeshes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones, std::string_view path) noexcept(false)
+	void createMeshes(const Model& model, GameObjectPtr& meshes, const GameObjects& bones, std::string_view path) noexcept(false)
 	{
-		material::Materials materials;
+		Materials materials;
 		createMaterials(model, materials);
 
 		auto mesh = model.meshes[0];
@@ -383,7 +383,7 @@ namespace octoon
 	GameObjectPtr
 	MeshLoader::load(std::string_view filepath, bool cache) noexcept(false)
 	{
-		model::Model model;
+		Model model;
 
 		PmxLoader load;
 		load.doLoad(filepath, model);

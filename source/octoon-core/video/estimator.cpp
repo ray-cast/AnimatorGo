@@ -1,6 +1,6 @@
 #include "estimator.h"
 
-namespace octoon::video
+namespace octoon
 {
 	Estimator::Estimator() noexcept
 	{

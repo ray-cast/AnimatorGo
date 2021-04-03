@@ -1,6 +1,6 @@
 #include <octoon/mesh/cube_wireframe_mesh.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	OctoonImplementSubClass(CubeWireframeMesh, Mesh, "CubeWireframeMesh");
 

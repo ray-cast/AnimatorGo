@@ -89,7 +89,7 @@ namespace octoon
 	{
 		auto transform = this->getComponent<TransformComponent>();
 
-		spotLight_ = std::make_shared<light::SpotLight>();
+		spotLight_ = std::make_shared<SpotLight>();
 		spotLight_->setLayer(this->getGameObject()->getLayer());
 		spotLight_->setColor(this->getColor());
 		spotLight_->setIntensity(this->getIntensity());

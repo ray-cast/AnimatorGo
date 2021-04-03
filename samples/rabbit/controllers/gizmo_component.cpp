@@ -3,7 +3,7 @@
 
 namespace rabbit
 {
-	class GizmoMaterial final : public octoon::material::MeshBasicMaterial
+	class GizmoMaterial final : public octoon::MeshBasicMaterial
 	{
 	public:
 		GizmoMaterial(const octoon::math::float3& color, const octoon::math::float3& highlight)
@@ -54,9 +54,9 @@ namespace rabbit
 
 	TransformGizmo::TransformGizmo()
 	{
-		auto planeGeometry = octoon::mesh::PlaneMesh::create(50, 50);
+		auto planeGeometry = octoon::PlaneMesh::create(50, 50);
 
-		auto material = std::make_shared<octoon::material::MeshBasicMaterial>();
+		auto material = std::make_shared<octoon::MeshBasicMaterial>();
 		material->setCullMode(octoon::hal::GraphicsCullMode::None);
 
 		auto XY = octoon::GameObject::create("XY");
@@ -117,7 +117,7 @@ namespace rabbit
 				vertices *= 0.35f;
 			}
 
-			auto arrowGeometry = std::make_shared<octoon::mesh::Mesh>();
+			auto arrowGeometry = std::make_shared<octoon::Mesh>();
 			arrowGeometry->setVertexArray(arrowVertices);
 
 			auto handleX = octoon::GameObject::create();
@@ -147,9 +147,9 @@ namespace rabbit
 				vertices *= 0.25f;
 			}
 
-			auto lineXGeometry = octoon::mesh::CubeMesh::create(1.0f, 0.0f, 0.05f);
-			auto lineYGeometry = octoon::mesh::CubeMesh::create(0.05f, 1.0f, 0.0f);
-			auto lineZGeometry = octoon::mesh::CubeMesh::create(0.05f, 0.0f, 1.0f);
+			auto lineXGeometry = octoon::CubeMesh::create(1.0f, 0.0f, 0.05f);
+			auto lineYGeometry = octoon::CubeMesh::create(0.05f, 1.0f, 0.0f);
+			auto lineZGeometry = octoon::CubeMesh::create(0.05f, 0.0f, 1.0f);
 
 			auto handleLineX = octoon::GameObject::create();
 			handleLineX->addComponent<octoon::MeshFilterComponent>(lineXGeometry);
@@ -210,7 +210,7 @@ namespace rabbit
 		}
 
 	private:
-		std::shared_ptr<octoon::material::MeshBasicMaterial> pickerMaterial_;
+		std::shared_ptr<octoon::MeshBasicMaterial> pickerMaterial_;
 	};
 
 	GizmoComponent::GizmoComponent() noexcept

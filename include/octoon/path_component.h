@@ -13,13 +13,13 @@ namespace octoon
 		OctoonDeclareSubClass(PathComponent, GameComponent)
 	public:
 		PathComponent() noexcept;
-		PathComponent(model::Paths&& mesh, bool sharedPath = false) noexcept;
-		PathComponent(const model::Paths& mesh, bool sharedPath = false) noexcept;
+		PathComponent(Paths&& mesh, bool sharedPath = false) noexcept;
+		PathComponent(const Paths& mesh, bool sharedPath = false) noexcept;
 		virtual ~PathComponent() noexcept;
 
-		void setPath(model::Paths&& mesh, bool sharedPath = false) noexcept;
-		void setPath(const model::Paths& mesh, bool sharedPath = false) noexcept;
-		const model::Paths& getPath() const noexcept;
+		void setPath(Paths&& mesh, bool sharedPath = false) noexcept;
+		void setPath(const Paths& mesh, bool sharedPath = false) noexcept;
+		const Paths& getPath() const noexcept;
 
 		bool isSharedPath() const noexcept;
 
@@ -39,8 +39,8 @@ namespace octoon
 
 	private:
 		bool isSharedPath_;
-		model::Paths paths_;
-		mesh::MeshPtr mesh_;
+		Paths paths_;
+		MeshPtr mesh_;
 	};
 }
 

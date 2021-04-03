@@ -1,6 +1,6 @@
 #include <octoon/light/environment_light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(EnvironmentLight, Light, "EnvironmentLight")
 
@@ -80,7 +80,7 @@ namespace octoon::light
 		return environmentMap_;
 	}
 
-	std::shared_ptr<video::RenderObject>
+	std::shared_ptr<RenderObject>
 	EnvironmentLight::clone() const noexcept
 	{
 		return std::make_shared<EnvironmentLight>();

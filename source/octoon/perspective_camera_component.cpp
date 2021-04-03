@@ -5,9 +5,9 @@ namespace octoon
 	OctoonImplementSubClass(PerspectiveCameraComponent, CameraComponent, "PerspectiveCameraComponent")
 
 	PerspectiveCameraComponent::PerspectiveCameraComponent() noexcept
-		: CameraComponent(std::make_shared<camera::PerspectiveCamera>())
+		: CameraComponent(std::make_shared<PerspectiveCamera>())
 	{
-		camera_ = dynamic_cast<camera::PerspectiveCamera*>(CameraComponent::camera_.get());
+		camera_ = dynamic_cast<PerspectiveCamera*>(CameraComponent::camera_.get());
 	}
 
 	PerspectiveCameraComponent::PerspectiveCameraComponent(float fov, const math::float2& sensorSize, float znear, float zfar) noexcept

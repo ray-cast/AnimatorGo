@@ -30,12 +30,12 @@ namespace rabbit
 
 		void importMdl(std::string_view path) noexcept(false);
 
-		void repaintMaterial(const std::shared_ptr<octoon::material::Material>& material, QPixmap& pixmap, int w, int h);
+		void repaintMaterial(const std::shared_ptr<octoon::Material>& material, QPixmap& pixmap, int w, int h);
 
 		std::optional<std::string> getSelectedMaterial();
 
 		const std::map<std::string, nlohmann::json, std::less<>>& getMaterialList() const noexcept;
-		const std::shared_ptr<octoon::material::Material> getMaterial(std::string_view uuid) noexcept;
+		const std::shared_ptr<octoon::Material> getMaterial(std::string_view uuid) noexcept;
 
 	private:
 		void onEnable() noexcept override;
@@ -53,16 +53,16 @@ namespace rabbit
 
 		std::set<void*> materialSets_;
 		std::map<std::string, nlohmann::json, std::less<>> materialList_;
-		std::map<std::string, octoon::material::MaterialPtr, std::less<>> materials_;
-		std::map<octoon::material::MaterialPtr, std::string, std::less<>> materialsRemap_;
+		std::map<std::string, octoon::MaterialPtr, std::less<>> materials_;
+		std::map<octoon::MaterialPtr, std::string, std::less<>> materialsRemap_;
 
 		std::optional<std::string> selectedMaterial_;
 
-		std::shared_ptr<octoon::camera::PerspectiveCamera> camera_;
-		std::shared_ptr<octoon::geometry::Geometry> geometry_;
-		std::shared_ptr<octoon::light::DirectionalLight> light_;
-		std::shared_ptr<octoon::light::EnvironmentLight> envlight_;
-		std::shared_ptr<octoon::video::RenderScene> scene_;
+		std::shared_ptr<octoon::PerspectiveCamera> camera_;
+		std::shared_ptr<octoon::Geometry> geometry_;
+		std::shared_ptr<octoon::DirectionalLight> light_;
+		std::shared_ptr<octoon::EnvironmentLight> envlight_;
+		std::shared_ptr<octoon::RenderScene> scene_;
 	};
 }
 

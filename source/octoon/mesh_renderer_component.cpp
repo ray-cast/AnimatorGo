@@ -14,25 +14,25 @@ namespace octoon
 	{
 	}
 
-	MeshRendererComponent::MeshRendererComponent(material::MaterialPtr&& material) noexcept
+	MeshRendererComponent::MeshRendererComponent(MaterialPtr&& material) noexcept
 		: MeshRendererComponent()
 	{
 		this->setMaterial(std::move(material));
 	}
 
-	MeshRendererComponent::MeshRendererComponent(const material::MaterialPtr& material) noexcept
+	MeshRendererComponent::MeshRendererComponent(const MaterialPtr& material) noexcept
 		: MeshRendererComponent()
 	{
 		this->setMaterial(material);
 	}
 
-	MeshRendererComponent::MeshRendererComponent(material::Materials&& materials) noexcept
+	MeshRendererComponent::MeshRendererComponent(Materials&& materials) noexcept
 		: MeshRendererComponent()
 	{
 		this->setMaterials(std::move(materials));
 	}
 
-	MeshRendererComponent::MeshRendererComponent(const material::Materials& materials) noexcept
+	MeshRendererComponent::MeshRendererComponent(const Materials& materials) noexcept
 		: MeshRendererComponent()
 	{
 		this->setMaterials(materials);
@@ -104,7 +104,7 @@ namespace octoon
 				instance->setMaterials(this->getMaterials());
 			else
 			{
-				material::Materials materials;
+				Materials materials;
 				for (auto& it : this->getMaterials())
 					materials.push_back(it->clone());
 				instance->setMaterials(std::move(materials));
@@ -120,7 +120,7 @@ namespace octoon
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addMessageListener("octoon:mesh:update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 
-		this->geometry_ = std::make_shared<geometry::Geometry>();
+		this->geometry_ = std::make_shared<Geometry>();
 		this->geometry_->setOwnerListener(this);
 		this->geometry_->setVisible(this->getVisible());
 		this->geometry_->setGlobalIllumination(this->getGlobalIllumination());
@@ -150,12 +150,12 @@ namespace octoon
 	void
 	MeshRendererComponent::onMeshReplace(const std::any& mesh_) noexcept
 	{
-		assert(mesh_.type() == typeid(mesh::MeshPtr));
-		this->uploadMeshData(std::any_cast<mesh::MeshPtr>(mesh_));
+		assert(mesh_.type() == typeid(MeshPtr));
+		this->uploadMeshData(std::any_cast<MeshPtr>(mesh_));
 	}
 
 	void
-	MeshRendererComponent::onMaterialReplace(const material::Materials& material) noexcept
+	MeshRendererComponent::onMaterialReplace(const Materials& material) noexcept
 	{
 		this->uploadMaterialData(material);
 	}
@@ -176,7 +176,7 @@ namespace octoon
 	}
 
 	void
-	MeshRendererComponent::uploadMeshData(const mesh::MeshPtr& mesh) noexcept
+	MeshRendererComponent::uploadMeshData(const MeshPtr& mesh) noexcept
 	{
 		if (mesh && geometry_)
 		{			
@@ -190,7 +190,7 @@ namespace octoon
 	}
 
 	void
-	MeshRendererComponent::uploadMaterialData(const material::Materials& materials) noexcept
+	MeshRendererComponent::uploadMaterialData(const Materials& materials) noexcept
 	{
 		if (geometry_)
 			geometry_->setMaterials(materials);

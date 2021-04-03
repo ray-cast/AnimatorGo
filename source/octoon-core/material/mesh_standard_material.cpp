@@ -99,7 +99,7 @@ void main() {
 	fragColor = LinearToGamma(fragColor, 2.2);
 })";
 
-namespace octoon::material
+namespace octoon
 {
 	OctoonImplementSubClass(MeshStandardMaterial, Material, "MeshStandardMaterial");
 

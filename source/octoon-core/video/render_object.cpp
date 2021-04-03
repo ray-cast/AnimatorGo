@@ -1,7 +1,7 @@
 #include <octoon/video/render_object.h>
 #include <octoon/video/render_scene.h>
 
-namespace octoon::video
+namespace octoon
 {
 	OctoonImplementSubInterface(RenderObject, runtime::RttiInterface, "RenderObject")
 
@@ -160,7 +160,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderObject::onRenderBefore(const camera::Camera& camera) noexcept
+	RenderObject::onRenderBefore(const Camera& camera) noexcept
 	{
 		auto listener = this->getOwnerListener();
 		if (listener)
@@ -168,7 +168,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderObject::onRenderAfter(const camera::Camera& camera) noexcept
+	RenderObject::onRenderAfter(const Camera& camera) noexcept
 	{
 		auto listener = this->getOwnerListener();
 		if (listener)

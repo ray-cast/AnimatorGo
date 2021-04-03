@@ -2,9 +2,10 @@
 #define OCTOON_MATERIAL_H_
 
 #include <octoon/math/math.h>
+#include <octoon/material/shader.h>
 #include <octoon/hal/graphics_state.h>
 
-namespace octoon::material
+namespace octoon
 {
 	enum PropertyTypeInfo
 	{
@@ -28,20 +29,6 @@ namespace octoon::material
 
 		char* data;
 		hal::GraphicsTexturePtr texture;
-	};
-
-	class OCTOON_EXPORT Shader
-	{
-	public:
-		Shader() = default;
-		Shader(const std::string& vs_, const std::string& fs_)
-			: vs(vs_)
-			, fs(fs_)
-		{
-		}
-
-		std::string vs;
-		std::string fs;
 	};
 
 	class OCTOON_EXPORT Material : public runtime::RttiInterface

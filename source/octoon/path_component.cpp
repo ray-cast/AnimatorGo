@@ -10,12 +10,12 @@ namespace octoon
 	{
 	}
 
-	PathComponent::PathComponent(model::Paths&& mesh, bool sharedPath) noexcept
+	PathComponent::PathComponent(Paths&& mesh, bool sharedPath) noexcept
 	{
 		this->setPath(mesh, sharedPath);
 	}
 
-	PathComponent::PathComponent(const model::Paths& mesh, bool sharedPath) noexcept
+	PathComponent::PathComponent(const Paths& mesh, bool sharedPath) noexcept
 	{
 		this->setPath(mesh, sharedPath);
 	}
@@ -25,7 +25,7 @@ namespace octoon
 	}
 
 	void
-	PathComponent::setPath(model::Paths&& path, bool sharedPath) noexcept
+	PathComponent::setPath(Paths&& path, bool sharedPath) noexcept
 	{
 		paths_ = std::move(path);
 		isSharedPath_ = sharedPath;
@@ -33,14 +33,14 @@ namespace octoon
 	}
 
 	void
-	PathComponent::setPath(const model::Paths& path, bool sharedPath) noexcept
+	PathComponent::setPath(const Paths& path, bool sharedPath) noexcept
 	{
 		paths_ = path;
 		isSharedPath_ = sharedPath;
 		this->uploadPathData();
 	}
 
-	const model::Paths&
+	const Paths&
 	PathComponent::getPath() const noexcept
 	{
 		return paths_;
@@ -56,7 +56,7 @@ namespace octoon
 	PathComponent::uploadPathData() noexcept
 	{
 		if (!paths_.empty())
-			mesh_ = std::make_shared<mesh::Mesh>(model::makeMesh(font::makeTextContours(paths_), 1.0f, false));
+			mesh_ = std::make_shared<Mesh>(makeMesh(font::makeTextContours(paths_), 1.0f, false));
 		else
 			mesh_ = nullptr;
 
@@ -68,7 +68,7 @@ namespace octoon
 	{
 		auto instance = std::make_shared<PathComponent>();
 		instance->setName(instance->getName());
-		instance->setPath(isSharedPath_ ? paths_ : model::Paths(paths_), isSharedPath_);
+		instance->setPath(isSharedPath_ ? paths_ : Paths(paths_), isSharedPath_);
 
 		return instance;
 	}

@@ -9,8 +9,8 @@ namespace octoon
 	CircleHelper::create(float radius, std::uint32_t segments, float thetaStart, float thetaLength)
 	{
 		auto object = GameObject::create("GameObject");
-		object->addComponent<MeshFilterComponent>(mesh::CircleMesh::create(radius, segments, thetaStart, thetaLength));
-		object->addComponent<MeshRendererComponent>(std::make_shared<material::Material>());
+		object->addComponent<MeshFilterComponent>(CircleMesh::create(radius, segments, thetaStart, thetaLength));
+		object->addComponent<MeshRendererComponent>(std::make_shared<Material>());
 		return object;
 	}
 }

@@ -48,7 +48,7 @@ namespace octoon
 		hal::GraphicsTexturePtr radiance_;
 		hal::GraphicsTexturePtr backgroundMap_;
 		hal::GraphicsTexturePtr environmentMap_;
-		std::shared_ptr<light::EnvironmentLight> environmentLight_;
+		std::shared_ptr<EnvironmentLight> environmentLight_;
 	};
 }
 

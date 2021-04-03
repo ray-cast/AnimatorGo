@@ -3,7 +3,7 @@
 
 #include <octoon/light/light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	class OCTOON_EXPORT TubeLight final : public Light
 	{
@@ -12,7 +12,7 @@ namespace octoon::light
 		TubeLight() noexcept;
 		virtual ~TubeLight() noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
 		TubeLight(const TubeLight&) noexcept = delete;

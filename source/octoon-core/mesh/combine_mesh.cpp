@@ -1,24 +1,24 @@
 #include <octoon/mesh/combine_mesh.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	CombineMesh::CombineMesh() noexcept
 	{
 	}
 
-	CombineMesh::CombineMesh(const std::shared_ptr<mesh::Mesh>& mesh, const math::float4x4& transform) noexcept
+	CombineMesh::CombineMesh(const std::shared_ptr<Mesh>& mesh, const math::float4x4& transform) noexcept
 		: _mesh(mesh)
 		, _transform(transform)
 	{
 	}
 
 	void
-	CombineMesh::setMesh(const std::shared_ptr<mesh::Mesh>& other) noexcept
+	CombineMesh::setMesh(const std::shared_ptr<Mesh>& other) noexcept
 	{
 		_mesh = other;
 	}
 
-	const std::shared_ptr<mesh::Mesh>&
+	const std::shared_ptr<Mesh>&
 	CombineMesh::getMesh() const noexcept
 	{
 		return _mesh;

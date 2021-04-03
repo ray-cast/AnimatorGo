@@ -243,7 +243,7 @@ namespace octoon
 		return result_call.get();
 	}
 
-	typedef std::map<std::string, Material_parameter> Material;
+	typedef std::map<std::string, Material_parameter> MaterialMap;
 
 	void rough_to_gloss(mi::base::IInterface* ii)
 	{
@@ -270,7 +270,7 @@ namespace octoon
 		}
 	}
 
-	void setup_target_material(std::string_view target_model, mi::neuraylib::ITransaction* transaction, const mi::neuraylib::ICompiled_material* cm, Material& out_material)
+	void setup_target_material(std::string_view target_model, mi::neuraylib::ITransaction* transaction, const mi::neuraylib::ICompiled_material* cm, MaterialMap& out_material)
 	{
 		mi::base::Handle<const mi::neuraylib::IExpression_direct_call> parent_call(lookup_call("surface.scattering", cm));
 		mi::neuraylib::IFunction_definition::Semantics semantic(get_call_semantic(transaction, parent_call.get()));
@@ -501,9 +501,9 @@ namespace octoon
 		const mi::neuraylib::ICompiled_material* cm,
 		mi::neuraylib::IMdl_distiller_api* distiller_api,
 		mi::neuraylib::IImage_api* image_api,
-		Material& out_material)
+		MaterialMap& out_material)
 	{
-		for (Material::iterator it = out_material.begin(); it != out_material.end(); ++it)
+		for (MaterialMap::iterator it = out_material.begin(); it != out_material.end(); ++it)
 		{
 			Material_parameter& param = it->second;
 			if (param.bake_path.empty())
@@ -602,14 +602,14 @@ namespace octoon
 
 	void process_target_material(
 		const std::string& material_name,
-		const Material& material,
+		const MaterialMap& material,
 		bool save_baked_textures,
 		bool parallel,
 		mi::neuraylib::IMdl_impexp_api* mdl_impexp_api)
 	{
 		Canvas_exporter canvas_exporter(parallel);
 
-		for (Material::const_iterator it = material.begin(); it != material.end(); ++it)
+		for (MaterialMap::const_iterator it = material.begin(); it != material.end(); ++it)
 		{
 			const std::string& param_name = it->first;
 			const Material_parameter& param = it->second;
@@ -896,7 +896,7 @@ namespace octoon
 		{
 			auto material_db_name = std::string(module->get_material(i));
 			auto simple_name = material_db_name.substr(material_db_name.rfind(':') + 1);
-			auto material = std::make_shared<material::MeshStandardMaterial>(simple_name);
+			auto material = std::make_shared<MeshStandardMaterial>(simple_name);
 
 			auto materialDefinition = mi::base::make_handle(this->context_->transaction->access<mi::neuraylib::IMaterial_definition>(material_db_name.c_str()));
 			if (materialDefinition)
@@ -910,7 +910,7 @@ namespace octoon
 					auto compiled_material = mi::base::make_handle(compile_material_instance(materialInstance.get(), this->context_->executionContext.get(), false));
 					auto distilled_material = mi::base::make_handle(create_distilled_material(this->context_->distilling.get(), compiled_material.get(), target_model));
 
-					Material out_material;
+					MaterialMap out_material;
 					setup_target_material(
 						target_model,
 						this->context_->transaction.get(),
@@ -1224,11 +1224,11 @@ namespace octoon
 	}
 
 	void
-	MDLLoader::save(io::ostream& stream, const material::MeshStandardMaterial& animation) noexcept(false)
+	MDLLoader::save(io::ostream& stream, const MeshStandardMaterial& animation) noexcept(false)
 	{
 	}
 
-	const std::vector<std::shared_ptr<material::MeshStandardMaterial>>&
+	const std::vector<std::shared_ptr<MeshStandardMaterial>>&
 	MDLLoader::getMaterials() const noexcept
 	{
 		return this->materials_;

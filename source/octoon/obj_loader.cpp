@@ -55,12 +55,12 @@ namespace octoon
 		bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, std::string(filepath).c_str());
 		if (ret)
 		{
-			auto defaultMaterial = std::make_shared<material::MeshStandardMaterial>();
+			auto defaultMaterial = std::make_shared<MeshStandardMaterial>();
 
-			std::vector<std::shared_ptr<material::MeshStandardMaterial>> standardMaterials;
+			std::vector<std::shared_ptr<MeshStandardMaterial>> standardMaterials;
 			for (auto& material : materials)
 			{
-				auto standard = std::make_shared<material::MeshStandardMaterial>();
+				auto standard = std::make_shared<MeshStandardMaterial>();
 				standard->setColor(math::float3(material.diffuse[0], material.diffuse[1], material.diffuse[2]));
 				standard->setRoughness(material.roughness);
 				standard->setMetalness(material.metallic);
@@ -165,7 +165,7 @@ namespace octoon
 					offset += fnum;
 				}
 
-				auto mesh = std::make_shared<mesh::Mesh>();
+				auto mesh = std::make_shared<Mesh>();
 				mesh->setName(shape.name);
 				mesh->setVertexArray(std::move(vertices));
 				mesh->setNormalArray(std::move(normals));

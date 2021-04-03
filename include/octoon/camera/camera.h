@@ -4,11 +4,11 @@
 #include <octoon/video/render_object.h>
 #include <octoon/hal/graphics_types.h>
 
-namespace octoon::camera
+namespace octoon
 {
-	class OCTOON_EXPORT Camera : public video::RenderObject
+	class OCTOON_EXPORT Camera : public RenderObject
 	{
-		OctoonDeclareSubClass(Camera, video::RenderObject)
+		OctoonDeclareSubClass(Camera, RenderObject)
 	public:
 		Camera() noexcept;
 		virtual ~Camera() noexcept;
@@ -26,7 +26,6 @@ namespace octoon::camera
 		virtual bool getRenderToScreen() const noexcept;
 		virtual hal::GraphicsClearFlags getClearFlags() const noexcept;
 		virtual const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
-		virtual const hal::GraphicsFramebufferPtr& getSwapFramebuffer() const noexcept;
 
 		virtual math::float3 worldToScreen(const math::float3& pos) const noexcept;
 		virtual math::float3 worldToProject(const math::float3& pos) const noexcept;
@@ -47,7 +46,6 @@ namespace octoon::camera
 		virtual const math::float4x4& getViewProjectionInverse() const noexcept;
 
 		virtual void setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, hal::GraphicsFormat format = hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat depthStencil = hal::GraphicsFormat::X8_D24UNormPack32) except;
-		virtual void setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, hal::GraphicsFormat format = hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat depthStencil = hal::GraphicsFormat::X8_D24UNormPack32) except;
 
 	protected:
 		math::float4 clearColor_;
@@ -58,9 +56,9 @@ namespace octoon::camera
 
 		hal::GraphicsClearFlags clearflags_;
 
-		hal::GraphicsFramebufferPtr fbo_[2];
-		hal::GraphicsTexturePtr colorTexture_[2];
-		hal::GraphicsTexturePtr depthTexture_[2];
+		hal::GraphicsFramebufferPtr fbo_;
+		hal::GraphicsTexturePtr colorTexture_;
+		hal::GraphicsTexturePtr depthTexture_;
 
 		mutable math::float4x4 viewProject_;
 		mutable math::float4x4 viewProjectInverse_;

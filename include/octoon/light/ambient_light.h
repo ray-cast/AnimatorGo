@@ -3,7 +3,7 @@
 
 #include <octoon/light/light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	class OCTOON_EXPORT AmbientLight final : public Light
 	{
@@ -12,7 +12,7 @@ namespace octoon::light
 		AmbientLight() noexcept;
 		virtual ~AmbientLight() noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
 		AmbientLight(const AmbientLight&) noexcept = delete;

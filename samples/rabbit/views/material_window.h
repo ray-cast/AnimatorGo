@@ -31,7 +31,7 @@ namespace rabbit
 		~MaterialEditWindow();
 
 		void repaint();
-		void setMaterial(const std::shared_ptr<octoon::material::Material>& material);
+		void setMaterial(const std::shared_ptr<octoon::Material>& material);
 
 	private:
 		QWidget* createSummary();
@@ -190,7 +190,7 @@ namespace rabbit
 		QColorDialog subsurfaceColor_;
 		QCheckBox* receiveShadowCheck_;
 		QToolButton* backButton_;
-		std::shared_ptr<octoon::material::MeshStandardMaterial> material_;
+		std::shared_ptr<octoon::MeshStandardMaterial> material_;
 		octoon::GameObjectPtr behaviour_;
 	};
 

@@ -8,28 +8,28 @@
 #include <octoon/light/environment_light.h>
 #include <set>
 
-namespace octoon::video
+namespace octoon
 {
 	static std::size_t align16(std::size_t value)
 	{
 		return (value + 0xF) / 0x10 * 0x10;
 	}
 
-	static CameraType GetCameraType(const camera::Camera& camera)
+	static CameraType GetCameraType(const Camera& camera)
 	{
-		auto perspective = dynamic_cast<const camera::PerspectiveCamera*>(&camera);
+		auto perspective = dynamic_cast<const PerspectiveCamera*>(&camera);
 		if (perspective)
 		{
 			return CameraType::kPerspective;
 		}
 
-		auto film = dynamic_cast<const camera::FilmCamera*>(&camera);
+		auto film = dynamic_cast<const FilmCamera*>(&camera);
 		if (film)
 		{
 			return film->getAperture() > 0.f ? CameraType::kPhysicalPerspective : CameraType::kPerspective;
 		}
 
-		auto ortho = dynamic_cast<const camera::OrthographicCamera*>(&camera);
+		auto ortho = dynamic_cast<const OrthographicCamera*>(&camera);
 		if (ortho)
 		{
 			return CameraType::kOrthographic;
@@ -133,15 +133,15 @@ namespace octoon::video
 	}
 
 	void
-	ClwSceneController::compileScene(const std::shared_ptr<RenderScene>& scene) noexcept
+	ClwSceneController::compileScene(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene) noexcept
 	{
 		textureCollector.Clear();
 		materialCollector.Clear();
 
 		for (auto& light : scene->getLights())
 		{
-			if (light->isA<light::EnvironmentLight>()) {
-				auto env = light->downcast<light::EnvironmentLight>();
+			if (light->isA<EnvironmentLight>()) {
+				auto env = light->downcast<EnvironmentLight>();
 				if (env->getEnvironmentMap())
 					textureCollector.Collect(env->getEnvironmentMap());
 				if (env->getBackgroundMap())
@@ -158,9 +158,9 @@ namespace octoon::video
 			for (std::size_t i = 0; i < geometry->getMaterials().size(); ++i)
 			{
 				auto& mat = geometry->getMaterial(i);
-				if (mat->isInstanceOf<material::MeshStandardMaterial>())
+				if (mat->isInstanceOf<MeshStandardMaterial>())
 				{
-					auto standard = mat->downcast<material::MeshStandardMaterial>();
+					auto standard = mat->downcast<MeshStandardMaterial>();
 					if (standard->getOpacity() > 0)
 					{
 						if (standard->getColorMap())
@@ -224,7 +224,7 @@ namespace octoon::video
 			bool should_update_materials = !out->material_bundle || materialCollector.NeedsUpdate(out->material_bundle.get(),
 				[](runtime::RttiInterface* ptr)->bool
 				{
-					auto mat = ptr->downcast<material::Material>();
+					auto mat = ptr->downcast<Material>();
 					return mat->isDirty();
 				});
 
@@ -292,7 +292,7 @@ namespace octoon::video
 	}
 
 	std::optional<ClwScene::Material>
-	ClwSceneController::getMaterialIndex(const material::MaterialPtr& material) const
+	ClwSceneController::getMaterialIndex(const MaterialPtr& material) const
 	{
 		auto it = materialidToOffset_.find(material.get());
 		if (it != materialidToOffset_.end())
@@ -319,10 +319,10 @@ namespace octoon::video
 		data[0].p = RadeonRays::float3(camera->getTranslate().x, camera->getTranslate().y, camera->getTranslate().z);
 		data[0].aspect_ratio = float(viewport.width) / viewport.height;
 
-		if (camera->isA<camera::PerspectiveCamera>())
+		if (camera->isA<PerspectiveCamera>())
 		{
 			auto filmSize_ = 36.0f;
-			auto perspective = camera->downcast<camera::PerspectiveCamera>();
+			auto perspective = camera->downcast<PerspectiveCamera>();
 			auto ratio = std::tan(math::radians(perspective->getFov()) * 0.5f) * 2.0f;
 			auto focalLength = filmSize_ / ratio;
 
@@ -332,9 +332,9 @@ namespace octoon::video
 			data[0].dim = RadeonRays::float2(filmSize_ * viewport.width / viewport.height, filmSize_);
 			data[0].zcap = RadeonRays::float2(perspective->getNear(), perspective->getFar());
 		}
-		else if (camera->isA<camera::FilmCamera>())
+		else if (camera->isA<FilmCamera>())
 		{
-			auto film = camera->downcast<camera::FilmCamera>();
+			auto film = camera->downcast<FilmCamera>();
 			auto filmSize_ = film->getFilmSize();
 
 			data[0].aperture = film->getAperture();
@@ -467,7 +467,7 @@ namespace octoon::video
 	}
 
 	void
-	ClwSceneController::WriteLight(const std::shared_ptr<RenderScene>& scene, const light::Light& light, void* data) const
+	ClwSceneController::WriteLight(const std::shared_ptr<RenderScene>& scene, const Light& light, void* data) const
 	{
 		auto clwLight = reinterpret_cast<ClwScene::Light*>(data);
 
@@ -475,30 +475,30 @@ namespace octoon::video
 		auto& direction = light.getForward();
 		auto power = light.getColor() * light.getIntensity();
 
-		if (light.isA<light::PointLight>())
+		if (light.isA<PointLight>())
 		{
 			clwLight->type = ClwScene::kPoint;
 			clwLight->p = RadeonRays::float3(translate.x, translate.y, translate.z);
 			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
 		}
-		else if (light.isA<light::DirectionalLight>())
+		else if (light.isA<DirectionalLight>())
 		{
 			clwLight->type = ClwScene::kDirectional;
 			clwLight->d = RadeonRays::float3(direction.x, direction.y, direction.z);
 			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
 		}
-		else if (light.isA<light::SpotLight>())
+		else if (light.isA<SpotLight>())
 		{
 			clwLight->type = ClwScene::kSpot;
 			clwLight->p = RadeonRays::float3(translate.x, translate.y, translate.z);
 			clwLight->d = RadeonRays::float3(direction.x, direction.y, direction.z);
 			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
-			clwLight->ia = light.downcast<light::SpotLight>()->getInnerCone().x;
-			clwLight->oa = light.downcast<light::SpotLight>()->getOuterCone().x;
+			clwLight->ia = light.downcast<SpotLight>()->getInnerCone().x;
+			clwLight->oa = light.downcast<SpotLight>()->getOuterCone().x;
 		}
-		else if (light.isA<light::EnvironmentLight>())
+		else if (light.isA<EnvironmentLight>())
 		{
-			auto& ibl = static_cast<light::EnvironmentLight const&>(light);
+			auto& ibl = static_cast<EnvironmentLight const&>(light);
 			clwLight->type = ClwScene::kIbl;
 			clwLight->multiplier = ibl.getIntensity();
 			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
@@ -539,10 +539,10 @@ namespace octoon::video
 			{
 				WriteLight(scene, *light, lights + numLightsWritten);
 
-				if (light->isA<light::EnvironmentLight>())
+				if (light->isA<EnvironmentLight>())
 				{
 					out.envmapidx = numLightsWritten;
-					out.showBackground = light->downcast<light::EnvironmentLight>()->getShowBackground();
+					out.showBackground = light->downcast<EnvironmentLight>()->getShowBackground();
 				}
 
 				auto power = light->getColor() * light->getIntensity();
@@ -593,7 +593,7 @@ namespace octoon::video
 		std::unique_ptr<Iterator> mat_iter(materialCollector.CreateIterator());
 		for (std::size_t i = 0; mat_iter->IsValid(); mat_iter->Next(), i++)
 		{
-			auto mat = mat_iter->ItemAs<material::MeshStandardMaterial>();
+			auto mat = mat_iter->ItemAs<MeshStandardMaterial>();
 
 			auto& material = materials[i];
 			material.offset = 0;

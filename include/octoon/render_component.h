@@ -7,15 +7,15 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT RenderComponent : public GameComponent, public video::RenderListener
+	class OCTOON_EXPORT RenderComponent : public GameComponent, public RenderListener
 	{
 		OctoonDeclareSubInterface(RenderComponent, GameComponent)
 	public:
 		RenderComponent() noexcept;
-		explicit RenderComponent(material::Materials&& material, bool sharedMaterial = false) noexcept;
-		explicit RenderComponent(material::MaterialPtr&& material, bool sharedMaterial = false) noexcept;
-		explicit RenderComponent(const material::Materials& material, bool sharedMaterial = false) noexcept;
-		explicit RenderComponent(const material::MaterialPtr& material, bool sharedMaterial = false) noexcept;
+		explicit RenderComponent(Materials&& material, bool sharedMaterial = false) noexcept;
+		explicit RenderComponent(MaterialPtr&& material, bool sharedMaterial = false) noexcept;
+		explicit RenderComponent(const Materials& material, bool sharedMaterial = false) noexcept;
+		explicit RenderComponent(const MaterialPtr& material, bool sharedMaterial = false) noexcept;
 		virtual ~RenderComponent() noexcept;
 
 		virtual void setVisible(bool visable) noexcept = 0;
@@ -24,13 +24,13 @@ namespace octoon
 		virtual void setRenderOrder(std::int32_t order) noexcept = 0;
 		virtual std::int32_t getRenderOrder() const noexcept = 0;
 
-		void setMaterial(material::MaterialPtr&& material, std::size_t n = 0, bool sharedMaterial = false) noexcept;
-		void setMaterial(const material::MaterialPtr& material, std::size_t n = 0, bool sharedMaterial = false) noexcept;
-		const material::MaterialPtr& getMaterial(std::size_t n = 0) const noexcept;
+		void setMaterial(MaterialPtr&& material, std::size_t n = 0, bool sharedMaterial = false) noexcept;
+		void setMaterial(const MaterialPtr& material, std::size_t n = 0, bool sharedMaterial = false) noexcept;
+		const MaterialPtr& getMaterial(std::size_t n = 0) const noexcept;
 
-		void setMaterials(material::Materials&& material, bool sharedMaterial = false) noexcept;
-		void setMaterials(const material::Materials& material, bool sharedMaterial = false) noexcept;
-		const material::Materials& getMaterials() const noexcept;
+		void setMaterials(Materials&& material, bool sharedMaterial = false) noexcept;
+		void setMaterials(const Materials& material, bool sharedMaterial = false) noexcept;
+		const Materials& getMaterials() const noexcept;
 
 		bool isSharedMaterial() const noexcept;
 		void isSharedMaterial(bool sharedMaterial) noexcept;
@@ -38,10 +38,10 @@ namespace octoon
 		std::size_t getNumMaterials() const noexcept;
 
 	protected:
-		virtual void onPreRender(const camera::Camera& camera) noexcept override;
-		virtual void onPostRender(const camera::Camera& camera) noexcept override;
+		virtual void onPreRender(const Camera& camera) noexcept override;
+		virtual void onPostRender(const Camera& camera) noexcept override;
 
-		virtual void onMaterialReplace(const material::Materials& material) noexcept;
+		virtual void onMaterialReplace(const Materials& material) noexcept;
 
 	private:
 		RenderComponent(const RenderComponent&) = delete;
@@ -49,7 +49,7 @@ namespace octoon
 
 	private:
 		bool isSharedMaterial_;
-		material::Materials materials_;
+		Materials materials_;
 	};
 }
 

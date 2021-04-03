@@ -3,7 +3,7 @@
 
 #include <octoon/light/light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	class OCTOON_EXPORT PointLight final : public Light
 	{
@@ -24,9 +24,9 @@ namespace octoon::light
 		void setShadowMapSize(const math::uint2& size) noexcept;
 		const math::uint2& getShadowMapSize() const noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
-		const std::shared_ptr<camera::Camera>& getCamera() const noexcept;
+		const std::shared_ptr<Camera>& getCamera() const noexcept;
 
 	private:
 		PointLight(const PointLight&) noexcept = delete;
@@ -38,7 +38,7 @@ namespace octoon::light
 		float shadowBias_;
 		float shadowRadius_;
 		math::uint2 shadowSize_;
-		std::shared_ptr<camera::Camera> shadowCamera_;
+		std::shared_ptr<Camera> shadowCamera_;
 	};
 }
 

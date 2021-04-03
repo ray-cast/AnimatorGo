@@ -3,7 +3,7 @@
 
 #include <octoon/light/light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	class OCTOON_EXPORT DiskLight final : public Light
 	{
@@ -12,7 +12,7 @@ namespace octoon::light
 		DiskLight() noexcept;
 		virtual ~DiskLight() noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
 		DiskLight(const DiskLight&) noexcept = delete;

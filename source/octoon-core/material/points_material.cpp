@@ -1,6 +1,6 @@
 #include <octoon/material/points_material.h>
 
-namespace octoon::material
+namespace octoon
 {
 static const char* point_vert = R"(
 #include <common>

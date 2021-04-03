@@ -7,12 +7,12 @@ namespace octoon
 	OctoonImplementSubInterface(CameraComponent, GameComponent, "CameraComponent")
 
 	CameraComponent::CameraComponent() noexcept
-		: camera_(std::make_shared<camera::Camera>())
+		: camera_(std::make_shared<Camera>())
 	{
 		camera_->setOwnerListener(this);
 	}
 
-	CameraComponent::CameraComponent(std::shared_ptr<camera::Camera>&& camera) noexcept
+	CameraComponent::CameraComponent(std::shared_ptr<Camera>&& camera) noexcept
 		: camera_(camera)
 	{
 		camera_->setOwnerListener(this);
@@ -93,14 +93,6 @@ namespace octoon
 		auto feature = this->tryGetFeature<VideoFeature>();
 		if (feature)
 			return feature->getFramebuffer();
-		return nullptr;
-	}
-
-	hal::GraphicsFramebufferPtr
-	CameraComponent::getSwapFramebuffer() const noexcept
-	{
-		if (camera_->getSwapFramebuffer())
-			return camera_->getSwapFramebuffer();
 		return nullptr;
 	}
 
@@ -198,12 +190,6 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, hal::GraphicsFormat format, hal::GraphicsFormat depthStencil) except
-	{
-		camera_->setupSwapFramebuffers(w, h, multisample, format, depthStencil);
-	}
-
-	void
 	CameraComponent::onActivate() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
@@ -248,12 +234,12 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::onPreRender(const camera::Camera& camera) noexcept
+	CameraComponent::onPreRender(const Camera& camera) noexcept
 	{
 	}
 
 	void
-	CameraComponent::onPostRender(const camera::Camera& camera) noexcept
+	CameraComponent::onPostRender(const Camera& camera) noexcept
 	{
 	}
 

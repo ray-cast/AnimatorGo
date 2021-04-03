@@ -1,30 +1,25 @@
 #ifndef OCTOON_VIDEO_FORWARD_RENDERER_H_
 #define OCTOON_VIDEO_FORWARD_RENDERER_H_
 
-#include <octoon/hal/graphics_context.h>
 #include <octoon/video/render_scene.h>
+#include <octoon/video/lights_shadow_caster_pass.h>
+#include <octoon/video/draw_object_pass.h>
+#include <octoon/video/draw_skybox_pass.h>
 
-#include "forward_output.h"
-#include "forward_pipeline.h"
-#include "forward_scene_controller.h"
-
-namespace octoon::video
+namespace octoon
 {
 	class OCTOON_EXPORT ForwardRenderer final
 	{
 	public:
-		ForwardRenderer(const hal::GraphicsContextPtr& context) noexcept;
+		ForwardRenderer() noexcept;
 		virtual ~ForwardRenderer() noexcept;
 
-		void setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept;
-		void getFramebufferSize(std::uint32_t& w, std::uint32_t& h) const noexcept;
+		void render(const std::shared_ptr<ScriptableRenderContext>& context, const RenderingData& scene);
 
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
-		void render(const std::shared_ptr<RenderScene>& scene) noexcept;
-
 	private:
-		void prepareScene(const std::shared_ptr<RenderScene>& scene) noexcept;
+		void setupFramebuffers(const std::shared_ptr<ScriptableRenderContext>& context, std::uint32_t w, std::uint32_t h) except;
 
 	private:
 		ForwardRenderer(const ForwardRenderer&) = delete;
@@ -34,10 +29,21 @@ namespace octoon::video
 		std::uint32_t width_;
 		std::uint32_t height_;
 
-		ForwardScene profile_;
-		hal::GraphicsContextPtr context_;
-		std::unique_ptr<ForwardPipeline> pipeline_;
-		std::unique_ptr<ForwardSceneController> controller_;
+		std::unique_ptr<LightsShadowCasterPass> lightsShadowCasterPass_;
+		std::unique_ptr<DrawObjectPass> drawOpaquePass_;
+		std::unique_ptr<DrawObjectPass> drawTranparentPass_;
+		std::unique_ptr<DrawSkyboxPass> drawSkyboxPass_;
+
+		hal::GraphicsFramebufferPtr fbo_;
+		hal::GraphicsFramebufferPtr fbo2_;
+		hal::GraphicsTexturePtr colorTexture_;
+		hal::GraphicsTexturePtr depthTexture_;
+		hal::GraphicsTexturePtr colorTexture2_;
+		hal::GraphicsTexturePtr depthTexture2_;
+
+		std::shared_ptr<Material> overrideMaterial_;
+
+		std::unordered_map<std::intptr_t, std::shared_ptr<hal::GraphicsTexture>> lightTextures_;
 	};
 }
 

@@ -5,7 +5,7 @@
 #include <functional>
 #include <octoon/video/render_object.h>
 
-namespace octoon::video
+namespace octoon
 {
     class Bundle
     {

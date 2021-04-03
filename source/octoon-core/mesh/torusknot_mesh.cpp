@@ -1,6 +1,6 @@
 #include <octoon/mesh/torusknot_mesh.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	OctoonImplementSubClass(TorusKnotMesh, Mesh, "TorusKnotMesh");
 

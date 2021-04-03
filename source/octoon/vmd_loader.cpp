@@ -177,7 +177,7 @@ namespace octoon
 		return std::strncmp(type, "vmd", 3) == 0;
 	}
 
-	animation::Animation<float>
+	Animation<float>
 	VMDLoader::load(io::istream& stream) noexcept(false)
 	{
 		VMD vmd;
@@ -250,7 +250,7 @@ namespace octoon
 			}
 		}
 
-		std::map<std::string, animation::AnimationClip<float>> motions;
+		std::map<std::string, AnimationClip<float>> motions;
 
 		for (auto& it : vmd.MotionLists)
 		{
@@ -258,16 +258,16 @@ namespace octoon
 				motions[it.name].setName(sjis2utf8(vmd.Header.name));
 
 			auto& clip = motions[it.name];
-			clip.getCurve("Position.X").insert(animation::Keyframe<float, float>((float)it.frame, it.location.x));
-			clip.getCurve("Position.Y").insert(animation::Keyframe<float, float>((float)it.frame, it.location.y));
-			clip.getCurve("Position.Z").insert(animation::Keyframe<float, float>((float)it.frame, it.location.z));
-			clip.getCurve("Rotation.X").insert(animation::Keyframe<float, float>((float)it.frame, it.rotate.x));
-			clip.getCurve("Rotation.Y").insert(animation::Keyframe<float, float>((float)it.frame, it.rotate.y));
-			clip.getCurve("Rotation.Z").insert(animation::Keyframe<float, float>((float)it.frame, it.rotate.z));
-			clip.getCurve("Rotation.W").insert(animation::Keyframe<float, float>((float)it.frame, it.rotate.w));
+			clip.getCurve("Position.X").insert(Keyframe<float, float>((float)it.frame, it.location.x));
+			clip.getCurve("Position.Y").insert(Keyframe<float, float>((float)it.frame, it.location.y));
+			clip.getCurve("Position.Z").insert(Keyframe<float, float>((float)it.frame, it.location.z));
+			clip.getCurve("Rotation.X").insert(Keyframe<float, float>((float)it.frame, it.rotate.x));
+			clip.getCurve("Rotation.Y").insert(Keyframe<float, float>((float)it.frame, it.rotate.y));
+			clip.getCurve("Rotation.Z").insert(Keyframe<float, float>((float)it.frame, it.rotate.z));
+			clip.getCurve("Rotation.W").insert(Keyframe<float, float>((float)it.frame, it.rotate.w));
 		}
 
-		animation::Animation animation;
+		Animation animation;
 		animation.setName(sjis2utf8(vmd.Header.name));
 		for (auto& it : motions)
 			animation.addClip(it.second);
@@ -275,7 +275,7 @@ namespace octoon
 	}
 
 	void
-	VMDLoader::save(io::ostream& stream, const animation::Animation<float>& animation) noexcept(false)
+	VMDLoader::save(io::ostream& stream, const Animation<float>& animation) noexcept(false)
 	{
 		VMD vmd;
 		std::memset(&vmd.Header, 0, sizeof(vmd.Header));

@@ -1,6 +1,6 @@
 #include "clw_output.h"
 
-namespace octoon::video
+namespace octoon
 {
 	ClwOutput::ClwOutput(CLWContext context, std::uint32_t w, std::uint32_t h)
 		: Output(w, h)

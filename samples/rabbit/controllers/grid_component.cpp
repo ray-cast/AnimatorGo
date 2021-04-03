@@ -28,13 +28,13 @@ namespace rabbit
 	void
 	GridComponent::onEnable() noexcept
 	{
-		auto material = std::make_shared<octoon::material::LineBasicMaterial>(octoon::math::float3(0.5f, 0.5f, 0.5f));
+		auto material = std::make_shared<octoon::LineBasicMaterial>(octoon::math::float3(0.5f, 0.5f, 0.5f));
 		material->setDepthEnable(false);
 		material->setDepthWriteEnable(false);
 
 		this->gizmo_ = octoon::GameObject::create("CoordinateSystem");
 		this->gizmo_->addComponent<octoon::BoxColliderComponent>(100, 100, 1);
-		this->gizmo_->addComponent<octoon::MeshFilterComponent>(octoon::mesh::PlaneMesh::create(100.0f, 100.0f, 20, 20, true));
+		this->gizmo_->addComponent<octoon::MeshFilterComponent>(octoon::PlaneMesh::create(100.0f, 100.0f, 20, 20, true));
 		this->gizmo_->addComponent<octoon::MeshRendererComponent>(material)->setRenderOrder(-1);
 
 		auto transform = this->gizmo_->getComponent<octoon::TransformComponent>();

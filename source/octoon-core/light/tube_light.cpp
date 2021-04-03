@@ -1,6 +1,6 @@
 #include <octoon/light/tube_light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(TubeLight, Light, "TubeLight")
 
@@ -12,7 +12,7 @@ namespace octoon::light
 	{
 	}
 
-	std::shared_ptr<video::RenderObject>
+	std::shared_ptr<RenderObject>
 	TubeLight::clone() const noexcept
 	{
 		auto light = std::make_shared<TubeLight>();

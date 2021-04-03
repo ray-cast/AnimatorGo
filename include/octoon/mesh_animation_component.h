@@ -27,9 +27,9 @@ namespace octoon
 
 		void uploadMeshData() noexcept;
 
-		const mesh::MeshPtr& getMesh() const noexcept;
+		const MeshPtr& getMesh() const noexcept;
 
-		const animation::AnimatorStateInfo<float>& getCurrentAnimatorStateInfo() const noexcept override;
+		const AnimatorStateInfo<float>& getCurrentAnimatorStateInfo() const noexcept override;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -60,9 +60,9 @@ namespace octoon
 		bool needUpdate_;
 		bool enableAnimation_;
 
-		mesh::MeshPtr mesh_;
+		MeshPtr mesh_;
 
-		animation::AnimatorStateInfo<float> animationState_;
+		AnimatorStateInfo<float> animationState_;
 
 		std::shared_ptr<AnimationData> animationData_;
 	};

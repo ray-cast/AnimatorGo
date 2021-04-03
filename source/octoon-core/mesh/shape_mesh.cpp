@@ -1,7 +1,7 @@
 #include <octoon/mesh/shape_mesh.h>
 #include <GL/glu.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	static std::vector<math::float3> g_tris;
 
@@ -39,9 +39,9 @@ namespace octoon::mesh
 	{
 	}
 
-	ShapeMesh::ShapeMesh(const model::Contours& contours, float thickness) noexcept
+	ShapeMesh::ShapeMesh(const Contours& contours, float thickness) noexcept
 	{
-		std::vector<math::double3> vertices(model::sum(contours) * 2);
+		std::vector<math::double3> vertices(sum(contours) * 2);
 
 		GLUtesselator* tobj = gluNewTess();
 

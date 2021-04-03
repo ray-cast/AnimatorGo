@@ -442,10 +442,10 @@ namespace octoon
 		bool doCanRead(const char* type) const noexcept;
 
 		bool doLoad(std::string_view filepath, PMX& pmx) noexcept;
-		bool doLoad(std::string_view filepath, model::Model& model) noexcept;
+		bool doLoad(std::string_view filepath, Model& model) noexcept;
 
 		bool doSave(io::ostream& stream, const PMX& pmx) noexcept;
-		bool doSave(io::ostream& stream, const model::Model& model) noexcept;
+		bool doSave(io::ostream& stream, const Model& model) noexcept;
 	};
 }
 

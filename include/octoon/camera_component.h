@@ -13,12 +13,12 @@ namespace octoon
 		UI
 	};
 
-	class OCTOON_EXPORT CameraComponent : public GameComponent, public video::RenderListener
+	class OCTOON_EXPORT CameraComponent : public GameComponent, public RenderListener
 	{
 		OctoonDeclareSubClass(CameraComponent, GameComponent)
 	public:
 		CameraComponent() noexcept;
-		CameraComponent(std::shared_ptr<camera::Camera>&& camera) noexcept;
+		CameraComponent(std::shared_ptr<Camera>&& camera) noexcept;
 		virtual ~CameraComponent() noexcept;
 
 		void setClearColor(const math::float4& color) noexcept;
@@ -30,7 +30,6 @@ namespace octoon
 		CameraType getCameraType() const noexcept;
 		hal::GraphicsClearFlags getClearFlags() const noexcept;
 		hal::GraphicsFramebufferPtr getFramebuffer() const noexcept;
-		hal::GraphicsFramebufferPtr getSwapFramebuffer() const noexcept;
 
 		math::float3 worldToScreen(const math::float3& pos) const noexcept;
 		math::float3 worldToProject(const math::float3& pos) const noexcept;
@@ -59,8 +58,8 @@ namespace octoon
 		void onMoveBefore() noexcept override;
 		void onMoveAfter() noexcept override;
 
-		void onPreRender(const camera::Camera& camera) noexcept override;
-		void onPostRender(const camera::Camera& camera) noexcept override;
+		void onPreRender(const Camera& camera) noexcept override;
+		void onPostRender(const Camera& camera) noexcept override;
 
 		void onLayerChangeAfter() noexcept override;
 
@@ -70,7 +69,7 @@ namespace octoon
 
 	protected:
 		CameraType cameraType_;
-		std::shared_ptr<camera::Camera> camera_;
+		std::shared_ptr<Camera> camera_;
 	};
 }
 

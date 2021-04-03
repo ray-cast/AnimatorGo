@@ -12,7 +12,7 @@
 #include <GL/glx.h>
 #endif
 
-namespace octoon::video
+namespace octoon
 {
 	ClwTextureOutput::ClwTextureOutput(CLWContext context, std::uint32_t texture, std::uint32_t w, std::uint32_t h)
 		: ClwOutput(context, w, h)

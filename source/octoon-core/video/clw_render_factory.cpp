@@ -9,7 +9,7 @@
 #include <radeon_rays.h>
 #include <radeon_rays_cl.h>
 
-namespace octoon::video
+namespace octoon
 {
 	ClwRenderFactory::ClwRenderFactory(CLWContext context, std::string_view cache_path) noexcept
 		: context_(context)

@@ -200,13 +200,15 @@ void main()
 			std::uint32_t width = 64 << (mipNums - 1);
 			std::uint32_t height = 32 << (mipNums - 1);
 
+			auto renderContext = Renderer::instance()->getScriptableRenderContext();
+
 			hal::GraphicsTextureDesc textureDesc;
 			textureDesc.setSize(width, height);
 			textureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
 			textureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32SFloat);
 			textureDesc.setMipBase(0);
 			textureDesc.setMipNums(8);
-			auto colorTexture = video::Renderer::instance()->createTexture(textureDesc);
+			auto colorTexture = renderContext->createTexture(textureDesc);
 			if (!colorTexture)
 				throw runtime::runtime_error::create("createTexture() failed");
 
@@ -216,7 +218,7 @@ void main()
 			depthTextureDesc.setTexFormat(hal::GraphicsFormat::D16UNorm);
 			depthTextureDesc.setMipBase(0);
 			depthTextureDesc.setMipNums(8);
-			auto depthTexture = video::Renderer::instance()->createTexture(depthTextureDesc);
+			auto depthTexture = renderContext->createTexture(depthTextureDesc);
 			if (!depthTexture)
 				throw runtime::runtime_error::create("createTexture() failed");
 
@@ -231,48 +233,48 @@ void main()
 				hal::GraphicsFramebufferDesc framebufferDesc;
 				framebufferDesc.setWidth(width >> i);
 				framebufferDesc.setHeight(height >> i);
-				framebufferDesc.setFramebufferLayout(video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
+				framebufferDesc.setFramebufferLayout(renderContext->createFramebufferLayout(framebufferLayoutDesc));
 				framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture, i, 0));
 				framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture, i, 0));
 
-				framebuffers[i] = video::Renderer::instance()->createFramebuffer(framebufferDesc);
+				framebuffers[i] = renderContext->createFramebuffer(framebufferDesc);
 				if (!framebuffers[i])
 					throw runtime::runtime_error::create("createFramebuffer() failed");
 			}
 
-			auto irradiance = material::Material::create(std::make_shared<material::Shader>(pmrem_vert, irradiance_frag));
+			auto irradiance = Material::create(std::make_shared<Shader>(pmrem_vert, irradiance_frag));
 			irradiance->set("environmentMap", environmentMap);
 			irradiance->setDepthEnable(false);
 			irradiance->setDepthWriteEnable(false);
 
-			auto radiance = material::Material::create(std::make_shared<material::Shader>(pmrem_vert, radiance_frag));
+			auto radiance = Material::create(std::make_shared<Shader>(pmrem_vert, radiance_frag));
 			radiance->set("environmentMap", environmentMap);
 			radiance->set("environmentSize", (float)environmentMap->getTextureDesc().getWidth() * environmentMap->getTextureDesc().getHeight());
 			radiance->setDepthEnable(false);
 			radiance->setDepthWriteEnable(false);
 
-			auto copyMaterial = material::Material::create(std::make_shared<material::Shader>(pmrem_vert, copy_frag));
+			auto copyMaterial = Material::create(std::make_shared<Shader>(pmrem_vert, copy_frag));
 			copyMaterial->set("environmentMap", environmentMap);
 			copyMaterial->setDepthEnable(false);
 			copyMaterial->setDepthWriteEnable(false);
 
-			geometry::Geometry irradianceGeometry;
-			irradianceGeometry.setMesh(mesh::PlaneMesh::create(2.0f, 2.0f));
+			Geometry irradianceGeometry;
+			irradianceGeometry.setMesh(PlaneMesh::create(2.0f, 2.0f));
 			irradianceGeometry.setMaterial(irradiance);
 
-			geometry::Geometry radianceGeometry;
-			radianceGeometry.setMesh(mesh::PlaneMesh::create(2.0f, 2.0f));
+			Geometry radianceGeometry;
+			radianceGeometry.setMesh(PlaneMesh::create(2.0f, 2.0f));
 			radianceGeometry.setMaterial(radiance);
 
-			geometry::Geometry copyGeometry;
-			copyGeometry.setMesh(mesh::PlaneMesh::create(2.0f, 2.0f));
+			Geometry copyGeometry;
+			copyGeometry.setMesh(PlaneMesh::create(2.0f, 2.0f));
 			copyGeometry.setMaterial(copyMaterial);
 
-			camera::OrthographicCamera camera(-1.0f, 1.0f, -1.0f, 1.0f, 0.01f, 100.f);
+			OrthographicCamera camera(-1.0f, 1.0f, -1.0f, 1.0f, 0.01f, 100.f);
 
 			for (std::uint8_t i = 0; i < mipNums; i++)
 			{
-				auto scene = std::make_shared<video::RenderScene>();
+				auto scene = std::make_shared<RenderScene>();
 				scene->addCamera(&camera);
 
 				camera.setFramebuffer(framebuffers[i]);
@@ -283,7 +285,7 @@ void main()
 				else
 					scene->addGeometry(&radianceGeometry);
 
-				video::Renderer::instance()->render(scene);
+				Renderer::instance()->render(scene);
 			}
 
 			return colorTexture;

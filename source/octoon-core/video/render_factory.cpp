@@ -1,6 +1,6 @@
 #include "render_factory.h"
 
-namespace octoon::video
+namespace octoon
 {
 	RenderFactory::RenderFactory() noexcept
 	{

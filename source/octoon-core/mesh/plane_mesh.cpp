@@ -1,6 +1,6 @@
 #include <octoon/mesh/plane_mesh.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	OctoonImplementSubClass(PlaneMesh, Mesh, "PlaneMesh");
 

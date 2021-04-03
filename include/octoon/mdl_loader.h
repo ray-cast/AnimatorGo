@@ -23,9 +23,9 @@ namespace octoon
 		void load(std::string_view moduleName, io::istream& stream) noexcept(false);
 		void load(std::string_view moduleName, std::string_view source = "", std::string_view target_model = "ue4") noexcept(false);
 
-		void save(io::ostream& stream, const material::MeshStandardMaterial& material) noexcept(false);
+		void save(io::ostream& stream, const MeshStandardMaterial& material) noexcept(false);
 
-		const std::vector<std::shared_ptr<material::MeshStandardMaterial>>& getMaterials() const noexcept;
+		const std::vector<std::shared_ptr<MeshStandardMaterial>>& getMaterials() const noexcept;
 
 	private:
 		std::string preprocessSource(std::string_view source);
@@ -38,7 +38,7 @@ namespace octoon
 		bool verboseLogging_;
 		std::set<std::string> modulePaths_;
 		std::unique_ptr<MDLContext> context_;
-		std::vector<std::shared_ptr<material::MeshStandardMaterial>> materials_;
+		std::vector<std::shared_ptr<MeshStandardMaterial>> materials_;
 	};
 }
 

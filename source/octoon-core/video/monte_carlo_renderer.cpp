@@ -3,7 +3,7 @@
 #include "clw_texture_output.h"
 #include "clw_scene.h"
 
-namespace octoon::video
+namespace octoon
 {
 	int constexpr kTileSizeX = 2560;
 	int constexpr kTileSizeY = 1440;
@@ -75,7 +75,7 @@ namespace octoon::video
 	}
 
 	void
-	MonteCarloRenderer::render(const CompiledScene& scene)
+	MonteCarloRenderer::render(const std::shared_ptr<ScriptableRenderContext>& context, const CompiledScene& scene)
 	{
 		auto output = findFirstNonZeroOutput(true, true);
 		if (output)

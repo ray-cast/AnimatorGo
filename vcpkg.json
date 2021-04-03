@@ -18,6 +18,8 @@
     "zlib",
     "qt5",
     "libvorbis",
-    "tinyobjloader"
+    "tinyobjloader",
+    "bullet3",
+    "alembic"
   ]
 }

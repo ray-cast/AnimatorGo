@@ -322,33 +322,6 @@ namespace octoon
 				return false;
 			}
 
-			if (stage == GraphicsShaderStageFlagBits::VertexBit)
-			{
-				glslopt_shader_type glslopt_type = glslopt_shader_type::kGlslOptShaderVertex;
-				if (stage == GraphicsShaderStageFlagBits::FragmentBit)
-					glslopt_type = glslopt_shader_type::kGlslOptShaderFragment;
-
-				auto ctx = glslopt_initialize(glslopt_target::kGlslTargetOpenGLES30);
-				if (ctx)
-				{
-					glslopt_shader* glslopt_shader = glslopt_optimize(ctx, glslopt_type, shader.sourceCode, 0);
-					bool optimizeOk = glslopt_get_status(glslopt_shader);
-					if (!optimizeOk)
-					{
-						glslopt_cleanup(ctx);
-						FreeGLSLShader(&shader);
-						return false;
-					}
-
-					out = glslopt_get_output(glslopt_shader);
-					glslopt_cleanup(ctx);
-				}
-			}
-			else
-			{
-				out = shader.sourceCode;
-			}
-
 			out = shader.sourceCode;
 
 			FreeGLSLShader(&shader);

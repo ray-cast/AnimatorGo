@@ -13,13 +13,11 @@
     "openal-soft",
     "glew",
     "glfw3",
-    "alembic",
     "x264",
     "x265",
     "zlib",
     "qt5",
     "libvorbis",
-    "tinyobjloader",
-    "bullet3"
+    "tinyobjloader"
   ]
 }

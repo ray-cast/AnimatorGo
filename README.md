@@ -58,7 +58,7 @@ Rabbit Toolbox 的多层材质描述基于双向散射分布函数（bsdf），�
 * Linux (Only tested on Ubuntu, Centos)
 * HTML5
 * Android (future)
-* ios (future)
+* ios (Requires : automake autoconf)
 * mac (future)
 
 支持的渲染后端:

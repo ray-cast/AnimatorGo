@@ -4,6 +4,8 @@
 #include <limits>
 #include <sstream>
 #include <fstream>
+#include <vector>
+#include <cassert>
 
 namespace octoon
 {

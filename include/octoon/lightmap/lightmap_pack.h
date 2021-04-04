@@ -5,6 +5,8 @@
 #include <memory> // std::unique_ptr
 #include <string> // std::to_string
 #include <algorithm> // std::sort
+#include <stdexcept>
+#include <cmath>
 
 namespace octoon
 {

@@ -1,7 +1,9 @@
 #ifndef OCTOON_PATH_ITERPOLATOR_H_
 #define OCTOON_PATH_ITERPOLATOR_H_
 
+#include <octoon/math/mathutil.h>
 #include <octoon/animation/interpolator.h>
+#include <algorithm>
 
 namespace octoon
 {
@@ -46,7 +48,7 @@ namespace octoon
 			T t = 0.5f;
 			T x = this->evalX(t);
 
-			while (std::fabs(x - time) > math::EPSILON_E4)
+			while (std::abs(x - time) > math::EPSILON_E4)
 			{
 				if (x < time)
 					min = t;

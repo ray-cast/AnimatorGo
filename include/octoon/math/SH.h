@@ -969,7 +969,7 @@ namespace octoon
 
 					const detail::Vector3<value_t> dir = CalcCubeNormal<face, value_t>(u, v);
 
-					const SH<value_t, N> sh = ProjectOntoSH<N, value_t>(dir);
+					const detail::SH<value_t, N> sh = ProjectOntoSH<N, value_t>(dir);
 
 					for (std::uint8_t i = 0; i < N; ++i)
 						result.coeff[i] += sample * sh.coeff[i] * weight;

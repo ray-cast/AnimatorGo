@@ -2,6 +2,7 @@
 #define OCTOON_FIXED_INTERPOLATOR_H_
 
 #include <octoon/animation/interpolator.h>
+#include <utility>
 
 namespace octoon
 {

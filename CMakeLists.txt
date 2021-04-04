@@ -119,6 +119,8 @@ SET(CMAKE_CXX_STANDARD 17)
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 SET(CMAKE_CXX_EXTENSIONS OFF)
 
+INCLUDE(cmake/CXXModules.cmake)
+
 # 设置编译文件后缀
 SET(CMAKE_DEBUG_POSTFIX "_d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET(CMAKE_RELEASE_POSTFIX "" CACHE STRING "Adds a postfix for release-built libraries.")

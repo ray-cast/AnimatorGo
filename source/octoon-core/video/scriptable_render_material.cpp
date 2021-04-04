@@ -5,7 +5,7 @@
 #include <octoon/hal/graphics.h>
 #include <regex>
 
-static char* common = R"(
+static const char* common = R"(
 #define PI 3.14159265359
 #define PI2 6.28318530718
 #define PI_HALF 1.5707963267949
@@ -72,7 +72,7 @@ vec3 linePlaneIntersect( in vec3 pointOnLine, in vec3 lineDirection, in vec3 poi
 }
 
 )";
-static char* packing = R"(
+static const char* packing = R"(
 vec3 packNormalToRGB( const in vec3 normal ) {
 	return normalize( normal ) * 0.5 + 0.5;
 }
@@ -116,7 +116,7 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 }
 )";
 
-static char* encodings_pars_fragment = R"(
+static const char* encodings_pars_fragment = R"(
 // For a discussion of what this is, please read this: http://lousodrome.net/blog/light/2013/05/26/gamma-correct-and-hdr-rendering-in-a-32-bits-buffer/
 
 vec4 LinearToLinear( in vec4 value ) {
@@ -197,7 +197,7 @@ vec4 LogLuvToLinear( in vec4 value ) {
 }
 
 )";
-static char* cube_uv_reflection_fragment = R"(
+static const char* cube_uv_reflection_fragment = R"(
 #ifdef ENVMAP_TYPE_CUBE_UV
 #define cubeUV_textureSize (1024.0)
 
@@ -332,37 +332,37 @@ vec4 textureLatlongUV(sampler2D texture, vec3 reflectedDirection, vec2 offset, f
 }
 
 )";
-static char* begin_vertex = R"(
+static const char* begin_vertex = R"(
 vec3 transformed = vec3( POSITION0 );
 )";
-static char* worldpos_vertex = R"(
+static const char* worldpos_vertex = R"(
 #if defined ( USE_SHADOWMAP )
 	vec4 worldPosition = modelMatrix * vec4( transformed, 1.0 );
 #endif
 )";
-static char* project_vertex = R"(
+static const char* project_vertex = R"(
 vec4 mvPosition = modelViewMatrix * vec4( transformed, 1.0 );
 gl_Position = projectionMatrix * mvPosition;
 )";
-static char* beginnormal_vertex = R"(
+static const char* beginnormal_vertex = R"(
 vec3 objectNormal = vec3( NORMAL0 );
 )";
-static char* normal_pars_vertex = R"(
+static const char* normal_pars_vertex = R"(
 	out vec3 vNormal;
 )";
-static char* normal_flip = R"(
+static const char* normal_flip = R"(
 #ifdef DOUBLE_SIDED
 	float flipNormal = ( float( gl_FrontFacing ) * 2.0 - 1.0 );
 #else
 	float flipNormal = 1.0;
 #endif
 )";
-static char* normal_pars_fragment = R"(
+static const char* normal_pars_fragment = R"(
 #ifndef FLAT_SHADED
 in vec3 vNormal;
 #endif
 )";
-static char* normal_fragment = R"(
+static const char* normal_fragment = R"(
 #ifdef FLAT_SHADED
 	// Workaround for Adreno/Nexus5 not able able to do dFdx( vViewPosition ) ...
 	vec3 fdx = vec3( dFdx( vViewPosition.x ), dFdx( vViewPosition.y ), dFdx( vViewPosition.z ) );
@@ -379,7 +379,7 @@ static char* normal_fragment = R"(
 #endif
 
 )";
-static char* normalmap_pars_fragment = R"(
+static const char* normalmap_pars_fragment = R"(
 #ifdef USE_NORMALMAP
 
 	uniform sampler2D normalMap;
@@ -408,152 +408,152 @@ static char* normalmap_pars_fragment = R"(
 
 #endif
 )";
-static char* defaultnormal_vertex = R"(
+static const char* defaultnormal_vertex = R"(
 vec3 transformedNormal = normalMatrix * objectNormal;
 #ifdef FLIP_SIDED
 	transformedNormal = - transformedNormal;
 #endif
 vNormal = normalize( transformedNormal );
 )";
-static char* color_pars_vertex = R"(
+static const char* color_pars_vertex = R"(
 #ifdef USE_COLOR
 	out vec3 vColor;
 #endif
 )";
-static char* color_pars_fragment = R"(
+static const char* color_pars_fragment = R"(
 #ifdef USE_COLOR
 	in vec3 vColor;
 #endif
 )";
-static char* color_vertex = R"(
+static const char* color_vertex = R"(
 #ifdef USE_COLOR
 	vColor.xyz = color.xyz;
 #endif
 )";
-static char* color_fragment = R"(
+static const char* color_fragment = R"(
 #ifdef USE_COLOR
 	diffuseColor.rgb *= vColor;
 #endif
 )";
-static char* uv_pars_vertex = R"(
+static const char* uv_pars_vertex = R"(
 	out vec2 vUv;
 	uniform vec4 offsetRepeat;
 )";
-static char* uv_vertex = R"(
+static const char* uv_vertex = R"(
 	vUv = TEXCOORD0 * offsetRepeat.zw + offsetRepeat.xy;
 )";
-static char* uv_pars_fragment = R"(
+static const char* uv_pars_fragment = R"(
 	in vec2 vUv;
 )";
-static char* uv2_pars_vertex = R"(
+static const char* uv2_pars_vertex = R"(
 	out vec2 vUv2;
 )";
-static char* uv2_vertex = R"(
+static const char* uv2_vertex = R"(
 	vUv2 = TEXCOORD1;
 )";
-static char* uv2_pars_fragment = R"(
+static const char* uv2_pars_fragment = R"(
 	in vec2 vUv2;
 )";
-static char* map_fragment = R"(
+static const char* map_fragment = R"(
 #ifdef USE_MAP
 	vec4 texelColor = texture2D( map, vUv );
 	texelColor = GammaToLinear( texelColor, gamma);
 	diffuseColor *= texelColor;
 #endif
 )";
-static char* map_pars_fragment = R"(
+static const char* map_pars_fragment = R"(
 #ifdef USE_MAP
 	uniform sampler2D map;
 #endif
 )";
-static char* map_particle_pars_fragment = R"(
+static const char* map_particle_pars_fragment = R"(
 #ifdef USE_MAP
 	uniform vec4 offsetRepeat;
 	uniform sampler2D map;
 #endif
 )";
-static char* map_particle_fragment = R"(
+static const char* map_particle_fragment = R"(
 #ifdef USE_MAP
 	vec4 mapTexel = texture2D( map, vec2( gl_PointCoord.x, 1.0 - gl_PointCoord.y ) * offsetRepeat.zw + offsetRepeat.xy );
 	diffuseColor *= GammaToLinear(mapTexel);
 #endif
 )";
-static char* premultiplied_alpha_fragment = R"(
+static const char* premultiplied_alpha_fragment = R"(
 #ifdef PREMULTIPLIED_ALPHA
 	fragColor.rgb *= fragColor.a;
 #endif
 )";
-static char* bumpmap_pars_fragment = R"(
+static const char* bumpmap_pars_fragment = R"(
 #ifdef USE_BUMAPMAP
 	uniform sampler2D bumpMap;
 #endif
 )";
-static char* smoothnessmap_pars_fragment = R"(
+static const char* smoothnessmap_pars_fragment = R"(
 #ifdef USE_SMOOTHNESSMAP
 	uniform sampler2D smoothnessMap;
 #endif
 )";
-static char* roughnessmap_pars_fragment = R"(
+static const char* roughnessmap_pars_fragment = R"(
 #ifdef USE_ROUGHNESSMAP
 	uniform sampler2D roughnessMap;
 #endif
 )";
-static char* roughnessmap_fragment = R"(
+static const char* roughnessmap_fragment = R"(
 float roughnessFactor = roughness;
 #ifdef USE_ROUGHNESSMAP
 	vec4 texelRoughness = texture2D( roughnessMap, vUv );
 	roughnessFactor *= texelRoughness.r;
 #endif
 )";
-static char* specularmap_pars_fragment = R"(
+static const char* specularmap_pars_fragment = R"(
 #ifdef USE_SPECULARMAP
 	uniform sampler2D specularMap;
 #endif
 )";
-static char* specularmap_fragment = R"(
+static const char* specularmap_fragment = R"(
 float specularFactor = specular;
 #ifdef USE_SPECULARMAP
 	vec4 texelSpecular = texture2D( specularMap, vUv );
 	specularFactor *= texelSpecular.r;
 #endif
 )";
-static char* metalnessmap_pars_fragment = R"(
+static const char* metalnessmap_pars_fragment = R"(
 #ifdef USE_METALNESSMAP
 	uniform sampler2D metalnessMap;
 #endif
 )";
-static char* metalnessmap_fragment = R"(
+static const char* metalnessmap_fragment = R"(
 float metalnessFactor = metalness;
 #ifdef USE_METALNESSMAP
 	vec4 texelMetalness = texture2D( metalnessMap, vUv );
 	metalnessFactor *= texelMetalness.r;
 #endif
 )";
-static char* anisotropymap_pars_fragment = R"(
+static const char* anisotropymap_pars_fragment = R"(
 #ifdef USE_ANISOTROPYMAP
 	uniform sampler2D anisotropyMap;
 #endif
 )";
-static char* anisotropymap_fragment = R"(
+static const char* anisotropymap_fragment = R"(
 float anisotropyFactor = anisotropy;
 #ifdef USE_ANISOTROPYMAP
 	vec4 texelAnisotropy = texture2D( anisotropyMap, vUv );
 	anisotropyFactor *= texelAnisotropy.r;
 #endif
 )";
-static char* sheenmap_pars_fragment = R"(
+static const char* sheenmap_pars_fragment = R"(
 #ifdef USE_SHEENMAP
 	uniform sampler2D sheenMap;
 #endif
 )";
-static char* sheenmap_fragment = R"(
+static const char* sheenmap_fragment = R"(
 float sheenFactor = sheen;
 #ifdef USE_SHEENMAP
 	vec4 texelSheen = texture2D( sheenMap, vUv );
 	sheenFactor *= texelSheen.r;
 #endif
 )";
-static char* subsurfacemap_pars_fragment = R"(
+static const char* subsurfacemap_pars_fragment = R"(
 #ifdef USE_SUBSURFACEMAP
 	uniform sampler2D subsurfaceMap;
 #endif
@@ -561,7 +561,7 @@ static char* subsurfacemap_pars_fragment = R"(
 	uniform sampler2D subsurfaceColorMap;
 #endif
 )";
-static char* subsurfacemap_fragment = R"(
+static const char* subsurfacemap_fragment = R"(
 float subsurfaceFactor = subsurface;
 #ifdef USE_SUBSURFACEMAP
 	vec4 texelSubsurface = texture2D( subsurfaceMap, vUv );
@@ -573,64 +573,64 @@ vec3 subsurfaceColorFactor = subsurfaceColor;
 	subsurfaceColorFactor *= texelSubsurface.rgb;
 #endif
 )";
-static char* clearcoatmap_pars_fragment = R"(
+static const char* clearcoatmap_pars_fragment = R"(
 #ifdef USE_CLEARCOATMAP
 	uniform sampler2D clearCoatMap;
 #endif
 )";
-static char* clearcoatmap_fragment = R"(
+static const char* clearcoatmap_fragment = R"(
 float clearCoatFactor = clearCoat;
 #ifdef USE_CLEARCOATMAP
 	vec4 texelClearcoat = texture2D( clearCoatMap, vUv );
 	clearCoatFactor *= texelClearcoat.r;
 #endif
 )";
-static char* clearcoatRoughnessmap_pars_fragment = R"(
+static const char* clearcoatRoughnessmap_pars_fragment = R"(
 #ifdef USE_CLEARCOATROUGHNESSMAP
 	uniform sampler2D clearCoatRoughnessMap;
 #endif
 )";
-static char* clearcoatRoughnessmap_fragment = R"(
+static const char* clearcoatRoughnessmap_fragment = R"(
 float clearCoatRoughnessFactor = clearCoatRoughness;
 #ifdef USE_CLEARCOATROUGHNESSMAP
 	vec4 texelClearcoatRoughness = texture2D( clearCoatRoughnessMap, vUv );
 	clearCoatRoughnessFactor *= texelClearcoatRoughness.r;
 #endif
 )";
-static char* emissivemap_pars_fragment = R"(
+static const char* emissivemap_pars_fragment = R"(
 #ifdef USE_EMISSIVEMAP
 	uniform sampler2D emissiveMap;
 #endif
 )";
-static char* emissivemap_fragment = R"(
+static const char* emissivemap_fragment = R"(
 #ifdef USE_EMISSIVEMAP
 	vec4 emissiveColor = texture2D( emissiveMap, vUv );
 	emissiveColor.rgb = GammaToLinear(emissiveColor, 2.2).rgb;
 	totalEmissiveRadiance *= emissiveColor.rgb;
 #endif
 )";
-static char* alphatest_fragment = R"(
+static const char* alphatest_fragment = R"(
 #ifdef ALPHATEST
 	if ( diffuseColor.a < ALPHATEST ) discard;
 #endif
 )";
-static char* opacitymap_pars_fragment = R"(
+static const char* opacitymap_pars_fragment = R"(
 #ifdef USE_OPACITYMAP
 	uniform sampler2D opacityMap;
 #endif
 )";
-static char* opacitymap_fragment = R"(
+static const char* opacitymap_fragment = R"(
 #ifdef USE_OPACITYMAP
 	diffuseColor.a *= texture2D( opacityMap, vUv ).g;
 #endif
 )";
-static char* aomap_pars_fragment = R"(
+static const char* aomap_pars_fragment = R"(
 #ifdef USE_AOMAP
 	uniform sampler2D aoMap;
 	uniform float aoMapIntensity;
 #endif
 )";
-static char* envmap_pars_fragment = R"(
+static const char* envmap_pars_fragment = R"(
 #if defined( USE_ENVMAP ) || defined( PHYSICAL )
 	uniform float envMapIntensity;
 #endif
@@ -654,12 +654,12 @@ static char* envmap_pars_fragment = R"(
 	#endif
 #endif
 )";
-static char* lightmap_pars_fragment = R"(
+static const char* lightmap_pars_fragment = R"(
 uniform bool lightMapEnable;
 uniform sampler2D lightMap;
 uniform float lightMapIntensity;
 )";
-static char* tonemapping_pars_fragment = R"(
+static const char* tonemapping_pars_fragment = R"(
 vec3 ACES(vec3 x)
 {
 	const float A = 2.51f;
@@ -670,12 +670,12 @@ vec3 ACES(vec3 x)
 	return (x * (A * x + B)) / (x * (C * x + D) + E);
 }
 )";
-static char* tonemapping_fragment = R"(
+static const char* tonemapping_fragment = R"(
 #if defined( TONE_MAPPING )
   fragColor.rgb = ACES( fragColor.rgb );
 #endif
 )";
-static char* bsdfs = R"(
+static const char* bsdfs = R"(
 float punctualLightIntensityToIrradianceFactor( const in float lightDistance, const in float cutoffDistance, const in float decayExponent ) {
 
 	if( decayExponent > 0.0 ) {
@@ -1048,7 +1048,7 @@ float BlinnExponentToGGXRoughness( const in float blinnExponent ) {
 	return sqrt( 2.0 / ( blinnExponent + 2.0 ) );
 }
 )";
-static char* lights_pars = R"(
+static const char* lights_pars = R"(
 uniform vec3 ambientLightColor;
 
 vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
@@ -1446,7 +1446,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 
 #endif
 )";
-static char* lights_physical_pars_fragment = R"(
+static const char* lights_physical_pars_fragment = R"(
 struct PhysicalMaterial {
 
 	vec3	diffuseColor;
@@ -1589,7 +1589,7 @@ float computeSpecularOcclusion( const in float dotNV, const in float ambientOccl
 }
 )";
 
-static char* lights_physical_fragment = R"(
+static const char* lights_physical_fragment = R"(
 PhysicalMaterial material;
 material.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );
 material.roughness = clamp( roughnessFactor, 0.04, 1.0 );
@@ -1605,7 +1605,7 @@ material.roughness = clamp( roughnessFactor, 0.04, 1.0 );
 	material.clearCoatRoughness = clamp( clearCoatRoughnessFactor, 0.04, 1.0 );
 #endif
 )";
-static char* lights_template = R"(
+static const char* lights_template = R"(
 /**
  * This is a template that can be used to light a material, it uses pluggable
  * RenderEquations (RE)for specific lighting scenarios.
@@ -1757,7 +1757,7 @@ IncidentLight directLight;
 #endif
 )";
 
-static char* shadowmap_vertex = R"(
+static const char* shadowmap_vertex = R"(
 #ifdef USE_SHADOWMAP
 
 	#if NUM_DIR_LIGHTS > 0
@@ -1800,7 +1800,7 @@ static char* shadowmap_vertex = R"(
 
 #endif
 )";
-static char* shadowmap_pars_vertex = R"(
+static const char* shadowmap_pars_vertex = R"(
 #ifdef USE_SHADOWMAP
 
 	#if NUM_DIR_LIGHTS > 0
@@ -1835,7 +1835,7 @@ static char* shadowmap_pars_vertex = R"(
 #endif
 
 )";
-static char* shadowmap_pars_fragment = R"(
+static const char* shadowmap_pars_fragment = R"(
 #ifdef USE_SHADOWMAP
 
 	#if NUM_DIR_LIGHTS > 0

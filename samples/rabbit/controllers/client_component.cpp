@@ -61,12 +61,12 @@ namespace rabbit
 			}
 			else
 			{
-				throw std::runtime_error(u8"请求错误");
+				throw std::runtime_error((const char*)u8"请求错误");
 			}
 		}
 		else
 		{
-			throw std::runtime_error(u8"请求超时");
+			throw std::runtime_error((const char*)u8"请求超时");
 		}
 	}
 
@@ -102,12 +102,12 @@ namespace rabbit
 				}
 				else
 				{
-					throw std::runtime_error(u8"请求错误");
+					throw std::runtime_error((const char*)u8"请求错误");
 				}
 			}
 			else
 			{
-				throw std::runtime_error(u8"请求超时");
+				throw std::runtime_error((const char*)u8"请求超时");
 			}
 		}
 	}
@@ -144,12 +144,12 @@ namespace rabbit
 			}
 			else
 			{
-				throw std::runtime_error(u8"请求错误");
+				throw std::runtime_error((const char*)u8"请求错误");
 			}
 		}
 		else
 		{
-			throw std::runtime_error(u8"请求超时");
+			throw std::runtime_error((const char*)u8"请求超时");
 		}
 	}
 
@@ -186,12 +186,12 @@ namespace rabbit
 				}
 				else
 				{
-					throw std::runtime_error(u8"请求错误");
+					throw std::runtime_error((const char*)u8"请求错误");
 				}
 			}
 			else
 			{
-				throw std::runtime_error(u8"请求超时");
+				throw std::runtime_error((const char*)u8"请求超时");
 			}
 		}
 	}
@@ -224,12 +224,12 @@ namespace rabbit
 				}
 				else
 				{
-					throw std::runtime_error(u8"请求错误");
+					throw std::runtime_error((const char*)u8"请求错误");
 				}
 			}
 			else
 			{
-				throw std::runtime_error(u8"请求超时");
+				throw std::runtime_error((const char*)u8"请求超时");
 			}
 		}
 	}
@@ -257,12 +257,12 @@ namespace rabbit
 				}
 				else
 				{
-					throw std::runtime_error(u8"请求错误");
+					throw std::runtime_error((const char*)u8"请求错误");
 				}
 			}
 			else
 			{
-				throw std::runtime_error(u8"请求超时");
+				throw std::runtime_error((const char*)u8"请求超时");
 			}
 		}
 
@@ -293,7 +293,7 @@ namespace rabbit
 				}
 				else
 				{
-					throw std::runtime_error(u8"请求超时");
+					throw std::runtime_error((const char*)u8"请求超时");
 				}
 			}
 
@@ -318,7 +318,7 @@ namespace rabbit
 		}
 		else
 		{
-			throw std::runtime_error(u8"请求超时");
+			throw std::runtime_error((const char*)u8"请求超时");
 		}
 	}
 

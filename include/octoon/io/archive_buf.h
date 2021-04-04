@@ -152,8 +152,8 @@ namespace octoon
 
 			std::size_t size() const noexcept;
 
-			char* type_name() const noexcept;
-			char* type_name(type_t type) const noexcept;
+			const char* type_name() const noexcept;
+			const char* type_name(type_t type) const noexcept;
 
 			type_t type() const noexcept;
 

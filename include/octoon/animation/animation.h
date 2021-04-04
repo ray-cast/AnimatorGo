@@ -90,7 +90,7 @@ namespace octoon
 		explicit Animation(std::string_view _name) noexcept
 			: name(_name)
 		{
-			state.finish = false
+			state.finish = false;
 		}
 
 		void setName(std::string_view _name) noexcept

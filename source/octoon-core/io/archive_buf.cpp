@@ -408,13 +408,13 @@ namespace octoon
 			return (type_t)_data.index();
 		}
 
-		char*
+		const char*
 		archivebuf::type_name() const noexcept
 		{
 			return this->type_name(this->type());
 		}
 
-		char*
+		const char*
 		archivebuf::type_name(type_t type) const noexcept
 		{
 			switch (type)

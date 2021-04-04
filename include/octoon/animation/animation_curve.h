@@ -2,6 +2,7 @@
 #define OCTOON_ANIMATION_CURVE_H_
 
 #include <octoon/animation/keyframe.h>
+#include <algorithm>
 
 namespace octoon
 {

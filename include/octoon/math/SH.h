@@ -19,8 +19,6 @@ namespace octoon
 
 		namespace detail
 		{
-
-
 			template<typename T, std::uint8_t N>
 			class SH final
 			{
@@ -40,9 +38,9 @@ namespace octoon
 				template<typename S, typename = std::enable_if<std::is_pointer<S>::value>>
 				explicit SH(S coeffs[N]) noexcept
 				{
-					for (size_t i = 0; i < N; n++)
+					for (size_t i = 0; i < N; i++)
 					{
-						assert(xyz[i] <= std::numeric_limits<typename trait::_typeaddition<S>::value_type>::max());
+						assert(coeffs[i] <= std::numeric_limits<typename trait::type_addition<S>::value_type>::max());
 						coeff[i] = coeffs[i];
 					}
 				}
@@ -99,7 +97,7 @@ namespace octoon
 							coeff[i] *= CosineA2;
 				}
 
-				friend SH<T, N> operator+(const SH<T, N>& sh1, const SH<T, N>& scale) noexcept
+				friend SH<T, N> operator+(const SH<T, N>& sh1, const SH<T, N>& sh2) noexcept
 				{
 					SH<T, N> result;
 					for (SH<T, N>::size_t i = 0; i < N; ++i)
@@ -171,7 +169,7 @@ namespace octoon
 				friend SH<detail::Vector3<T>, N> operator+(const SH<detail::Vector3<T>, N>& sh1, const S& scale) noexcept
 				{
 					SH<detail::Vector3<T>, N> result;
-					for (SH<detail::Vector3<T>, N>::size_t i = 0; i < N; ++i)
+					for (std::uint8_t i = 0; i < N; ++i)
 						result.coeff[i] = sh1.coeff[i] + scale;
 					return result;
 				}
@@ -180,7 +178,7 @@ namespace octoon
 				friend SH<detail::Vector3<T>, N> operator-(const SH<detail::Vector3<T>, N>& sh1, const S& scale) noexcept
 				{
 					SH<detail::Vector3<T>, N> result;
-					for (SH<detail::Vector3<T>, N>::size_t i = 0; i < N; ++i)
+					for (std::uint8_t i = 0; i < N; ++i)
 						result.coeff[i] = sh1.coeff[i] - scale;
 					return result;
 				}
@@ -189,7 +187,7 @@ namespace octoon
 				friend SH<detail::Vector3<T>, N> operator*(const SH<detail::Vector3<T>, N>& sh1, const S& scale) noexcept
 				{
 					SH<detail::Vector3<T>, N> result;
-					for (SH<detail::Vector3<T>, N>::size_t i = 0; i < N; ++i)
+					for (std::uint8_t i = 0; i < N; ++i)
 						result.coeff[i] = sh1.coeff[i] * scale;
 					return result;
 				}
@@ -198,7 +196,7 @@ namespace octoon
 				friend SH<detail::Vector3<T>, N> operator/(const SH<detail::Vector3<T>, N>& sh1, const S& scale) noexcept
 				{
 					SH<detail::Vector3<T>, N> result;
-					for (SH<detail::Vector3<T>, N>::size_t i = 0; i < N; ++i)
+					for (std::uint8_t i = 0; i < N; ++i)
 						result.coeff[i] = sh1.coeff[i] / scale;
 					return result;
 				}
@@ -273,7 +271,7 @@ namespace octoon
 		inline T dot(const detail::SH<T, N>& a, const detail::SH<T, N>& b) noexcept
 		{
 			T result = T(0);
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result += a.coeff[i] * b.coeff[i];
 			return result;
 		}
@@ -294,7 +292,7 @@ namespace octoon
 		inline detail::SH<T, N> min(const detail::SH<T, N>& a, const detail::SH<T, N>& b) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::min(a.coeff[i], b.coeff[i]);
 			return result;
 		}
@@ -303,7 +301,7 @@ namespace octoon
 		inline detail::SH<T, N> max(const detail::SH<T, N>& a, const detail::SH<T, N>& b) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::max(a.coeff[i], b.coeff[i]);
 			return result;
 		}
@@ -325,7 +323,7 @@ namespace octoon
 		inline detail::SH<T, N> negate(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = -sh.coeff[i];
 			return result;
 		}
@@ -334,7 +332,7 @@ namespace octoon
 		inline detail::SH<T, N> isfinite(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::isfinite(sh.coeff[i]);
 			return result;
 		}
@@ -343,7 +341,7 @@ namespace octoon
 		inline detail::SH<T, N> abs(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::abs(sh.coeff[i]);
 			return result;
 		}
@@ -352,7 +350,7 @@ namespace octoon
 		inline detail::SH<T, N> cos(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::cos(sh.coeff[i]);
 			return result;
 		}
@@ -361,7 +359,7 @@ namespace octoon
 		inline detail::SH<T, N> sin(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::sin(sh.coeff[i]);
 			return result;
 		}
@@ -370,7 +368,7 @@ namespace octoon
 		inline detail::SH<T, N> tan(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::tan(sh.coeff[i]);
 			return result;
 		}
@@ -379,7 +377,7 @@ namespace octoon
 		inline detail::SH<T, N> acos(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::acos(sh.coeff[i]);
 			return result;
 		}
@@ -388,7 +386,7 @@ namespace octoon
 		inline detail::SH<T, N> asin(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::asin(sh.coeff[i]);
 			return result;
 		}
@@ -397,7 +395,7 @@ namespace octoon
 		inline detail::SH<T, N> atan(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::atan(sh.coeff[i]);
 			return result;
 		}
@@ -406,7 +404,7 @@ namespace octoon
 		inline detail::SH<T, N> exp(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::exp(sh.coeff[i]);
 			return result;
 		}
@@ -415,7 +413,7 @@ namespace octoon
 		inline detail::SH<T, N> exp2(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::exp2(sh.coeff[i]);
 			return result;
 		}
@@ -424,7 +422,7 @@ namespace octoon
 		inline detail::SH<T, N> sqrt(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::sqrt(sh.coeff[i]);
 			return result;
 		}
@@ -433,7 +431,7 @@ namespace octoon
 		inline detail::SH<T, N> log(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::log(sh.coeff[i]);
 			return result;
 		}
@@ -442,7 +440,7 @@ namespace octoon
 		inline detail::SH<T, N> log2(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::log2(sh.coeff[i]);
 			return result;
 		}
@@ -451,7 +449,7 @@ namespace octoon
 		inline detail::SH<T, N> log10(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::log10(sh.coeff[i]);
 			return result;
 		}
@@ -460,7 +458,7 @@ namespace octoon
 		inline detail::SH<T, N> pow(const detail::SH<T, N>& sh, T y) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::pow(sh.coeff[i], y);
 			return result;
 		}
@@ -469,7 +467,7 @@ namespace octoon
 		inline detail::SH<T, N> pow(const detail::SH<T, N>& a, const detail::SH<T, N>& b) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::pow(a.coeff[i], b.coeff[i]);
 			return result;
 		}
@@ -478,7 +476,7 @@ namespace octoon
 		inline detail::SH<T, N> ceil(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::ceil(sh.coeff[i]);
 			return result;
 		}
@@ -487,7 +485,7 @@ namespace octoon
 		inline detail::SH<T, N> floor(const detail::SH<T, N>& sh) noexcept
 		{
 			detail::SH<T, N> result;
-			for (detail::SH<T, N>::size_t i = 0; i < N; ++i)
+			for (std::uint8_t i = 0; i < N; ++i)
 				result.coeff[i] = std::ceil(sh.coeff[i]);
 			return result;
 		}
@@ -495,7 +493,7 @@ namespace octoon
 		template<std::uint8_t N, typename T, typename = std::enable_if_t<N == 4>>
 		inline detail::SH<T, 4> ProjectOntoSH(const detail::Vector3<T>& dir) noexcept
 		{
-			SH<T, 4> sh;
+			detail::SH<T, 4> sh;
 			sh.coeff[0] = 0.282095f;
 			sh.coeff[1] = -0.488603f * dir.y;
 			sh.coeff[2] = 0.488603f * dir.z;
@@ -519,7 +517,7 @@ namespace octoon
 			const T xz = x * z;
 			const T yz = y * z;
 
-			SH<T, 9> sh;
+			detail::SH<T, 9> sh;
 			sh.coeff[0] = 0.282095f;
 			sh.coeff[1] = -0.488603f * y;
 			sh.coeff[2] = 0.488603f * z;
@@ -548,7 +546,7 @@ namespace octoon
 			const T xz = x * z;
 			const T yz = y * z;
 
-			SH<T, 16> sh;
+			detail::SH<T, 16> sh;
 			sh.coeff[0] = 0.282095f;
 			sh.coeff[1] = -0.488603f * y;
 			sh.coeff[2] = 0.488603f * z;
@@ -590,35 +588,35 @@ namespace octoon
 			const T y4 = y2 * y2;
 			const T z4 = z2 * z2;
 
-			SH<T, 25> sh;
-			sh.coeff[0] = 0.5f / std::sqrt(M_PI);
-			sh.coeff[1] = -std::sqrt(3.0f / (M_PI * 4)) * y;
-			sh.coeff[2] = std::sqrt(3.0f / (M_PI * 4)) * z;
-			sh.coeff[3] = -std::sqrt(3.0f / (M_PI * 4)) * x;
+			detail::SH<T, 25> sh;
+			sh.coeff[0] = 0.5f / std::sqrt(PI);
+			sh.coeff[1] = -std::sqrt(3.0f / (PI * 4)) * y;
+			sh.coeff[2] = std::sqrt(3.0f / (PI * 4)) * z;
+			sh.coeff[3] = -std::sqrt(3.0f / (PI * 4)) * x;
 
-			sh.coeff[4] = std::sqrt(15.0f / (M_PI * 4)) * xy;
-			sh.coeff[5] = -std::sqrt(15.0f / (M_PI * 4)) * yz;
-			sh.coeff[6] = std::sqrt(5.0f / (M_PI * 16)) * (3.0f * z2 - 1.0f);
-			sh.coeff[7] = -std::sqrt(15.0f / (M_PI * 4)) * xz;
-			sh.coeff[8] = std::sqrt(15.0f / (M_PI * 16)) * (x2 - y2);
+			sh.coeff[4] = std::sqrt(15.0f / (PI * 4)) * xy;
+			sh.coeff[5] = -std::sqrt(15.0f / (PI * 4)) * yz;
+			sh.coeff[6] = std::sqrt(5.0f / (PI * 16)) * (3.0f * z2 - 1.0f);
+			sh.coeff[7] = -std::sqrt(15.0f / (PI * 4)) * xz;
+			sh.coeff[8] = std::sqrt(15.0f / (PI * 16)) * (x2 - y2);
 
-			sh.coeff[9] = -std::sqrt(70.0f / (M_PI * 64)) * y * (3 * x2 - y2);
-			sh.coeff[10] = std::sqrt(105.0f / (M_PI * 4)) * y * xz;
-			sh.coeff[11] = -std::sqrt(21.0f / (M_PI * 16)) * y * (-1.0f + 5.0f * z2);
-			sh.coeff[12] = std::sqrt(7.0f / (M_PI * 16)) * z * (5.0f * z2 - 3.0f);
-			sh.coeff[13] = -std::sqrt(42.0f / (M_PI * 64)) * x * (-1.0f + 5.0f * z2);
-			sh.coeff[14] = std::sqrt(105.0f / (M_PI * 16)) * z * (x2 - y2);
-			sh.coeff[15] = -std::sqrt(70.0f / (M_PI * 64)) * x * (x2 - 3.0f * y2);
+			sh.coeff[9] = -std::sqrt(70.0f / (PI * 64)) * y * (3 * x2 - y2);
+			sh.coeff[10] = std::sqrt(105.0f / (PI * 4)) * y * xz;
+			sh.coeff[11] = -std::sqrt(21.0f / (PI * 16)) * y * (-1.0f + 5.0f * z2);
+			sh.coeff[12] = std::sqrt(7.0f / (PI * 16)) * z * (5.0f * z2 - 3.0f);
+			sh.coeff[13] = -std::sqrt(42.0f / (PI * 64)) * x * (-1.0f + 5.0f * z2);
+			sh.coeff[14] = std::sqrt(105.0f / (PI * 16)) * z * (x2 - y2);
+			sh.coeff[15] = -std::sqrt(70.0f / (PI * 64)) * x * (x2 - 3.0f * y2);
 
-			sh.coeff[16] = std::sqrt(35.0f / (M_PI * 16)) * 3.0f * xy * (x2 - y2);
-			sh.coeff[17] = -std::sqrt(70.0f / (M_PI * 64)) * 3.0f * yz * (3.0f * x2 - y2);
-			sh.coeff[18] = std::sqrt(5.0f / (M_PI * 16)) * 3.0f * xy * (-1.0f + 7.0f * z2);
-			sh.coeff[19] = -std::sqrt(10.0f / (M_PI * 64)) * 3.0f * yz * (-3.0f + 7.0f * z2);
-			sh.coeff[20] = (105.0f * z4 - 90.0f * z2 + 9.0f) / (16.0f * std::sqrt(M_PI));
-			sh.coeff[21] = -std::sqrt(10.0f / (M_PI * 64)) * 3.0f * xz * (-3.0f + 7.0f * z2);
-			sh.coeff[22] = std::sqrt(5.0f / (M_PI * 64)) * 3.0f * (x2 - y2) * (-1.0f + 7.0f * z2);
-			sh.coeff[23] = -std::sqrt(70.0f / (M_PI * 64)) * 3.0f * xz * (x2 - 3.0f * y2);
-			sh.coeff[24] = std::sqrt(35.0f / (M_PI * 256)) * 3.0f * (x4 - 6.0f * y2 * x2 + y4);
+			sh.coeff[16] = std::sqrt(35.0f / (PI * 16)) * 3.0f * xy * (x2 - y2);
+			sh.coeff[17] = -std::sqrt(70.0f / (PI * 64)) * 3.0f * yz * (3.0f * x2 - y2);
+			sh.coeff[18] = std::sqrt(5.0f / (PI * 16)) * 3.0f * xy * (-1.0f + 7.0f * z2);
+			sh.coeff[19] = -std::sqrt(10.0f / (PI * 64)) * 3.0f * yz * (-3.0f + 7.0f * z2);
+			sh.coeff[20] = (105.0f * z4 - 90.0f * z2 + 9.0f) / (16.0f * std::sqrt(PI));
+			sh.coeff[21] = -std::sqrt(10.0f / (PI * 64)) * 3.0f * xz * (-3.0f + 7.0f * z2);
+			sh.coeff[22] = std::sqrt(5.0f / (PI * 64)) * 3.0f * (x2 - y2) * (-1.0f + 7.0f * z2);
+			sh.coeff[23] = -std::sqrt(70.0f / (PI * 64)) * 3.0f * xz * (x2 - 3.0f * y2);
+			sh.coeff[24] = std::sqrt(35.0f / (PI * 256)) * 3.0f * (x4 - 6.0f * y2 * x2 + y4);
 
 			return sh;
 		}
@@ -626,52 +624,54 @@ namespace octoon
 		template<std::uint8_t N, typename T, typename = std::enable_if_t<N == 36>>
 		inline detail::SH<T, 36> ProjectOntoSH(const detail::Vector3<T>& dir) noexcept
 		{
-			sh.coeff[0] = 0.5f / std::sqrt(M_PI);
-			sh.coeff[1] = -0.5f / std::sqrt(M_PI / 3.0f) * dir->y;
-			sh.coeff[2] = 0.5f / std::sqrt(M_PI / 3.0f) * dir->z;
-			sh.coeff[3] = -0.5f / std::sqrt(M_PI / 3.0f) * dir->x;
-			sh.coeff[4] = 0.5f / std::sqrt(M_PI / 15.0f) * dir->x * dir->y;
-			sh.coeff[5] = -0.5f / std::sqrt(M_PI / 15.0f) * dir->y * dir->z;
-			sh.coeff[6] = 0.25f / std::sqrt(M_PI / 5.0f) * (3.0f * dir->z * dir->z - 1.0f);
-			sh.coeff[7] = -0.5f / std::sqrt(M_PI / 15.0f) * dir->x * dir->z;
-			sh.coeff[8] = 0.25f / std::sqrt(M_PI / 15.0f) * (dir->x * dir->x - dir->y * dir->y);
-			sh.coeff[9] = -std::sqrt(70.0f / M_PI) / 8.0f * dir->y * (3.0f * dir->x * dir->x - dir->y * dir->y);
-			sh.coeff[10] = std::sqrt(105.0f / M_PI) / 2.0f * dir->x * dir->y * dir->z;
-			sh.coeff[11] = -std::sqrt(42.0 / M_PI) / 8.0f * dir->y * (-1.0f + 5.0f * dir->z * dir->z);
-			sh.coeff[12] = std::sqrt(7.0f / M_PI) / 4.0f * dir->z * dir->z * dir->z * 5.0f - 3.0f * dir->z;
-			sh.coeff[13] = std::sqrt(42.0 / M_PI) / 8.0f * dir->x * (1.0f - 5.0f * dir->z * dir->z);
-			sh.coeff[14] = std::sqrt(105.0f / M_PI) / 4.0f * dir->z * (dir->x * dir->x - dir->y * dir->y);
-			sh.coeff[15] = -std::sqrt(70.0f / M_PI) / 8.0f * dir->x * (dir->x * dir->x - 3.0f * dir->y * dir->y);
-			sh.coeff[16] = std::sqrt(35.0f / M_PI) * dir->x * dir->y * (dir->x * dir->x - dir->y * dir->y) * 0.75;
+			detail::SH<T, 36> sh;
+			sh.coeff[0] = 0.5f / std::sqrt(PI);
+			sh.coeff[1] = -0.5f / std::sqrt(PI / 3.0f) * dir->y;
+			sh.coeff[2] = 0.5f / std::sqrt(PI / 3.0f) * dir->z;
+			sh.coeff[3] = -0.5f / std::sqrt(PI / 3.0f) * dir->x;
+			sh.coeff[4] = 0.5f / std::sqrt(PI / 15.0f) * dir->x * dir->y;
+			sh.coeff[5] = -0.5f / std::sqrt(PI / 15.0f) * dir->y * dir->z;
+			sh.coeff[6] = 0.25f / std::sqrt(PI / 5.0f) * (3.0f * dir->z * dir->z - 1.0f);
+			sh.coeff[7] = -0.5f / std::sqrt(PI / 15.0f) * dir->x * dir->z;
+			sh.coeff[8] = 0.25f / std::sqrt(PI / 15.0f) * (dir->x * dir->x - dir->y * dir->y);
+			sh.coeff[9] = -std::sqrt(70.0f / PI) / 8.0f * dir->y * (3.0f * dir->x * dir->x - dir->y * dir->y);
+			sh.coeff[10] = std::sqrt(105.0f / PI) / 2.0f * dir->x * dir->y * dir->z;
+			sh.coeff[11] = -std::sqrt(42.0 / PI) / 8.0f * dir->y * (-1.0f + 5.0f * dir->z * dir->z);
+			sh.coeff[12] = std::sqrt(7.0f / PI) / 4.0f * dir->z * dir->z * dir->z * 5.0f - 3.0f * dir->z;
+			sh.coeff[13] = std::sqrt(42.0 / PI) / 8.0f * dir->x * (1.0f - 5.0f * dir->z * dir->z);
+			sh.coeff[14] = std::sqrt(105.0f / PI) / 4.0f * dir->z * (dir->x * dir->x - dir->y * dir->y);
+			sh.coeff[15] = -std::sqrt(70.0f / PI) / 8.0f * dir->x * (dir->x * dir->x - 3.0f * dir->y * dir->y);
+			sh.coeff[16] = std::sqrt(35.0f / PI) * dir->x * dir->y * (dir->x * dir->x - dir->y * dir->y) * 0.75;
 			sh.coeff[17] = 3.0f * dir->z * sh.coeff[9];
-			sh.coeff[18] = std::sqrt(5.0f / M_PI) * dir->x * dir->y * (7.0f * dir->z * dir->z - 1.0f) * 0.75;
-			sh.coeff[19] = std::sqrt(10.0f / M_PI) * dir->y * dir->z * (3.0f - 7.0f * dir->z * dir->z) * 0.375f;
-			sh.coeff[20] = 3.0f / (16.0f * std::sqrt(M_PI)) * (35.0f * dir->z * dir->z * dir->z * dir->z - 30.f * dir->z * dir->z + 3.0f);
-			sh.coeff[21] = std::sqrt(10.0f / M_PI) * dir->x * dir->z * (3.0f - 7.0f * dir->z * dir->z) * 0.375f;
-			sh.coeff[22] = std::sqrt(5.0f / M_PI) * (dir->x * dir->x - dir->y * dir->y) * (7.0f * dir->z * dir->z - 1.0f) * 0.375f;
+			sh.coeff[18] = std::sqrt(5.0f / PI) * dir->x * dir->y * (7.0f * dir->z * dir->z - 1.0f) * 0.75;
+			sh.coeff[19] = std::sqrt(10.0f / PI) * dir->y * dir->z * (3.0f - 7.0f * dir->z * dir->z) * 0.375f;
+			sh.coeff[20] = 3.0f / (16.0f * std::sqrt(PI)) * (35.0f * dir->z * dir->z * dir->z * dir->z - 30.f * dir->z * dir->z + 3.0f);
+			sh.coeff[21] = std::sqrt(10.0f / PI) * dir->x * dir->z * (3.0f - 7.0f * dir->z * dir->z) * 0.375f;
+			sh.coeff[22] = std::sqrt(5.0f / PI) * (dir->x * dir->x - dir->y * dir->y) * (7.0f * dir->z * dir->z - 1.0f) * 0.375f;
 			sh.coeff[23] = 3.0 * dir->z * sh.coeff[15];
-			sh.coeff[24] = std::sqrt(35.0f / M_PI) * (dir->x * dir->x * dir->x * dir->x - 6.0f * dir->x * dir->x * dir->y * dir->y + dir->y * dir->y * dir->y * dir->y) * 3.0f / 16.0f;
-			sh.coeff[25] = -std::sqrt(154.0f / M_PI) * dir->y * (5.0f * dir->x * dir->x * dir->x * dir->x - 10.0f * dir->x * dir->x * dir->y * dir->y + dir->y * dir->y * dir->y * dir->y) * 3.0f / 32.0f;
-			sh.coeff[26] = std::sqrt(385.0f / M_PI) * dir->x * dir->y * dir->z * (dir->x * dir->x - dir->y * dir->y) * 0.75f;
-			sh.coeff[27] = std::sqrt(770.0f / M_PI) / 32.0f * dir->y * (3.0f * dir->x * dir->x - dir->y * dir->y) * (1.0f - 9.0f * dir->z * dir->z);
-			sh.coeff[28] = std::sqrt(1155.0f / M_PI) / 4.0f * dir->x * dir->y * dir->z * (3.0f * dir->z * dir->z - 1.0f);
-			sh.coeff[29] = std::sqrt(165.0f / M_PI) / 16.0f * dir->y * (14.0f * dir->z * dir->z - 21.0f * dir->z * dir->z * dir->z * dir->z - 1.0f);
-			sh.coeff[30] = std::sqrt(11.0f / M_PI) / 16.0f * dir->z * (63.0f * dir->z * dir->z * dir->z * dir->z - 70.0f * dir->z * dir->z + 15.0f);
-			sh.coeff[31] = std::sqrt(165.0f / M_PI) / 16.0f * dir->x * (14.0f * dir->z * dir->z - 21.0f * dir->z * dir->z * dir->z * dir->z - 1.0f);
-			sh.coeff[32] = std::sqrt(1155.0f / M_PI) / 8.0f * dir->z * (dir->x * dir->x - dir->y * dir->y) * (3.0f * dir->z * dir->z - 1.0f);
-			sh.coeff[33] = std::sqrt(770.0f / M_PI) / 32.0f * dir->x * (dir->x * dir->x - 3.0f * dir->y * dir->y) * (1.0f - 9.0f * dir->z * dir->z);
-			sh.coeff[34] = 3.0f / 16.0f * std::sqrt(385.0f / M_PI) * dir->z * (dir->x * dir->x * dir->x * dir->x - 6.0 * dir->x * dir->x * dir->y * dir->y + dir->y * dir->y * dir->y * dir->y);
-			sh.coeff[35] = -3.0f / 32.0f * std::sqrt(154.0f / M_PI) * dir->x * (dir->x * dir->x * dir->x * dir->x - 10.0f * dir->x * dir->x * dir->y * dir->y + 5.0f * dir->y * dir->y * dir->y * dir->y);
+			sh.coeff[24] = std::sqrt(35.0f / PI) * (dir->x * dir->x * dir->x * dir->x - 6.0f * dir->x * dir->x * dir->y * dir->y + dir->y * dir->y * dir->y * dir->y) * 3.0f / 16.0f;
+			sh.coeff[25] = -std::sqrt(154.0f / PI) * dir->y * (5.0f * dir->x * dir->x * dir->x * dir->x - 10.0f * dir->x * dir->x * dir->y * dir->y + dir->y * dir->y * dir->y * dir->y) * 3.0f / 32.0f;
+			sh.coeff[26] = std::sqrt(385.0f / PI) * dir->x * dir->y * dir->z * (dir->x * dir->x - dir->y * dir->y) * 0.75f;
+			sh.coeff[27] = std::sqrt(770.0f / PI) / 32.0f * dir->y * (3.0f * dir->x * dir->x - dir->y * dir->y) * (1.0f - 9.0f * dir->z * dir->z);
+			sh.coeff[28] = std::sqrt(1155.0f / PI) / 4.0f * dir->x * dir->y * dir->z * (3.0f * dir->z * dir->z - 1.0f);
+			sh.coeff[29] = std::sqrt(165.0f / PI) / 16.0f * dir->y * (14.0f * dir->z * dir->z - 21.0f * dir->z * dir->z * dir->z * dir->z - 1.0f);
+			sh.coeff[30] = std::sqrt(11.0f / PI) / 16.0f * dir->z * (63.0f * dir->z * dir->z * dir->z * dir->z - 70.0f * dir->z * dir->z + 15.0f);
+			sh.coeff[31] = std::sqrt(165.0f / PI) / 16.0f * dir->x * (14.0f * dir->z * dir->z - 21.0f * dir->z * dir->z * dir->z * dir->z - 1.0f);
+			sh.coeff[32] = std::sqrt(1155.0f / PI) / 8.0f * dir->z * (dir->x * dir->x - dir->y * dir->y) * (3.0f * dir->z * dir->z - 1.0f);
+			sh.coeff[33] = std::sqrt(770.0f / PI) / 32.0f * dir->x * (dir->x * dir->x - 3.0f * dir->y * dir->y) * (1.0f - 9.0f * dir->z * dir->z);
+			sh.coeff[34] = 3.0f / 16.0f * std::sqrt(385.0f / PI) * dir->z * (dir->x * dir->x * dir->x * dir->x - 6.0 * dir->x * dir->x * dir->y * dir->y + dir->y * dir->y * dir->y * dir->y);
+			sh.coeff[35] = -3.0f / 32.0f * std::sqrt(154.0f / PI) * dir->x * (dir->x * dir->x * dir->x * dir->x - 10.0f * dir->x * dir->x * dir->y * dir->y + 5.0f * dir->y * dir->y * dir->y * dir->y);
+			return sh;
 		}
 
 		template<typename T>
 		inline detail::SH<T, 4> ProjectOntoH4(const detail::Vector3<T>& dir) noexcept
 		{
 			detail::SH<T, 4> result;
-			result[0] = (1.0f / std::sqrt(2.0f * M_PI));
-			result[1] = std::sqrt(1.5f / M_PI) * dir.y;
-			result[2] = std::sqrt(1.5f / M_PI) * (2 * dir.z - 1.0f);
-			result[3] = std::sqrt(1.5f / M_PI) * dir.x;
+			result[0] = (1.0f / std::sqrt(2.0f * PI));
+			result[1] = std::sqrt(1.5f / PI) * dir.y;
+			result[2] = std::sqrt(1.5f / PI) * (2 * dir.z - 1.0f);
+			result[3] = std::sqrt(1.5f / PI) * dir.x;
 
 			return result;
 		}
@@ -680,10 +680,10 @@ namespace octoon
 		inline detail::Vector3<T> EvalSH4Cosine(const detail::Vector3<T>& dir, const detail::SH<detail::Vector3<T>, 4>& sh) noexcept
 		{
 			detail::SH<T, 4> dirSH = ProjectOntoSH4(dir);
-			dirSH.coeff[0] *= CosineA0;
-			dirSH.coeff[1] *= CosineA1;
-			dirSH.coeff[2] *= CosineA1;
-			dirSH.coeff[3] *= CosineA1;
+			dirSH.coeff[0] *= detail::SH<T, 4>::CosineA0;
+			dirSH.coeff[1] *= detail::SH<T, 4>::CosineA1;
+			dirSH.coeff[2] *= detail::SH<T, 4>::CosineA1;
+			dirSH.coeff[3] *= detail::SH<T, 4>::CosineA1;
 
 			detail::SH<T, 4> result;
 			for (std::uint8_t i = 0; i < 4; ++i)
@@ -696,15 +696,15 @@ namespace octoon
 		inline detail::Vector3<T> EvalSH9Cosine(const detail::Vector3<T>& dir, const detail::SH<detail::Vector3<T>, 9>& sh) noexcept
 		{
 			detail::SH<T, 9> dirSH = ProjectOntoSH9(dir);
-			dirSH.coeff[0] *= CosineA0;
-			dirSH.coeff[1] *= CosineA1;
-			dirSH.coeff[2] *= CosineA1;
-			dirSH.coeff[3] *= CosineA1;
-			dirSH.coeff[4] *= CosineA2;
-			dirSH.coeff[5] *= CosineA2;
-			dirSH.coeff[6] *= CosineA2;
-			dirSH.coeff[7] *= CosineA2;
-			dirSH.coeff[8] *= CosineA2;
+			dirSH.coeff[0] *= detail::SH<T, 9>::CosineA0;
+			dirSH.coeff[1] *= detail::SH<T, 9>::CosineA1;
+			dirSH.coeff[2] *= detail::SH<T, 9>::CosineA1;
+			dirSH.coeff[3] *= detail::SH<T, 9>::CosineA1;
+			dirSH.coeff[4] *= detail::SH<T, 9>::CosineA2;
+			dirSH.coeff[5] *= detail::SH<T, 9>::CosineA2;
+			dirSH.coeff[6] *= detail::SH<T, 9>::CosineA2;
+			dirSH.coeff[7] *= detail::SH<T, 9>::CosineA2;
+			dirSH.coeff[8] *= detail::SH<T, 9>::CosineA2;
 
 			detail::Vector3<T> result;
 			for (std::uint8_t i = 0; i < 9; ++i)
@@ -735,7 +735,7 @@ namespace octoon
 				{ 0, 0, 0, 1.0f / rt2, 0, 0, 0, (3.0f / 8.0f) * rt52, 0 }
 			};
 
-			SH<T, 4> hBasis;
+			detail::SH<T, 4> hBasis;
 
 			for (std::uint8_t row = 0; row < 4; ++row)
 			{
@@ -764,7 +764,7 @@ namespace octoon
 				{ 0, 0, 0, 0, 0, 0, 0, 0, 1.0f / rt2 }
 			};
 
-			SH<T, 6> hBasis;
+			detail::SH<T, 6> hBasis;
 
 			for (std::uint8_t row = 0; row < 6; ++row)
 			{
@@ -791,7 +791,7 @@ namespace octoon
 				{ 0, 0, 0, 1.0f / rt2, 0, 0, 0, (3.0f / 8.0f) * rt52, 0 }
 			};
 
-			SH<detail::Vector3<T>, 4> hBasis;
+			detail::SH<detail::Vector3<T>, 4> hBasis;
 
 			for (std::uint8_t row = 0; row < 4; ++row)
 			{
@@ -820,7 +820,7 @@ namespace octoon
 				{ 0, 0, 0, 0, 0, 0, 0, 0, 1.0f / rt2 }
 			};
 
-			SH<detail::Vector3<T>, 6> hBasis;
+			detail::SH<detail::Vector3<T>, 6> hBasis;
 
 			for (std::uint8_t row = 0; row < 6; ++row)
 			{
@@ -953,7 +953,7 @@ namespace octoon
 			assert(data);
 			assert(w == h);
 
-			SH<detail::Vector3<value_t>, N> result(detail::Vector3<value_t>::Zero);
+			detail::SH<detail::Vector3<value_t>, N> result(detail::Vector3<value_t>::Zero);
 
 			for (std::uint32_t y = 0; y < h; ++y)
 			{
@@ -989,7 +989,7 @@ namespace octoon
 
 			double weightSum = 0.0;
 
-			SH<detail::Vector3<value_t>, N> result(detail::Vector3<value_t>::Zero);
+			detail::SH<detail::Vector3<value_t>, N> result(detail::Vector3<value_t>::Zero);
 			result += CalcCubefaceToSH<N, value_t, data_t, SHCubeFace::FACE_POS_X>(w, h, data, channel, weightSum);
 			result += CalcCubefaceToSH<N, value_t, data_t, SHCubeFace::FACE_NEG_X>(w, h, data, channel, weightSum);
 			result += CalcCubefaceToSH<N, value_t, data_t, SHCubeFace::FACE_POS_Y>(w, h, data, channel, weightSum);
@@ -997,7 +997,7 @@ namespace octoon
 			result += CalcCubefaceToSH<N, value_t, data_t, SHCubeFace::FACE_POS_Z>(w, h, data, channel, weightSum);
 			result += CalcCubefaceToSH<N, value_t, data_t, SHCubeFace::FACE_NEG_Z>(w, h, data, channel, weightSum);
 
-			const double norm = (4.0 * M_PI) / weightSum;
+			const double norm = (4.0 * PI) / weightSum;
 			return result * norm;
 		}
 

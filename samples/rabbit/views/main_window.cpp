@@ -287,7 +287,7 @@ namespace rabbit
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour)
 				{
-					QString fileName = QFileDialog::getOpenFileName(this, u8"打开项目", "", tr("All Files(*.pmm *.pmx *.abc *.mdl);; PMM Files (*.pmm);; PMX Files (*.pmx);; Abc Files (*.abc);; Material Files (*.mdl)"));
+					QString fileName = QFileDialog::getOpenFileName(this, (const char*)u8"打开项目", "", tr("All Files(*.pmm *.pmx *.abc *.mdl);; PMM Files (*.pmm);; PMX Files (*.pmx);; Abc Files (*.abc);; Material Files (*.mdl)"));
 					if (!fileName.isEmpty())
 					{
 						try
@@ -297,7 +297,7 @@ namespace rabbit
 						catch (const std::exception& e)
 						{
 							QMessageBox msg(this);
-							msg.setWindowTitle(u8"错误");
+							msg.setWindowTitle((const char*)u8"错误");
 							msg.setText(e.what());
 							msg.setIcon(QMessageBox::Information);
 							msg.setStandardButtons(QMessageBox::Ok);
@@ -311,7 +311,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -340,8 +340,8 @@ namespace rabbit
 				else
 				{
 					QMessageBox msg(this);
-					msg.setWindowTitle(u8"提示");
-					msg.setText(u8"请加载一个.pmm工程");
+					msg.setWindowTitle((const char*)u8"提示");
+					msg.setText((const char*)u8"请加载一个.pmm工程");
 					msg.setIcon(QMessageBox::Information);
 					msg.setStandardButtons(QMessageBox::Ok);
 
@@ -355,7 +355,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -385,8 +385,8 @@ namespace rabbit
 				else
 				{
 					QMessageBox msg(this);
-					msg.setWindowTitle(u8"提示");
-					msg.setText(u8"请加载一个.pmm工程");
+					msg.setWindowTitle((const char*)u8"提示");
+					msg.setText((const char*)u8"请加载一个.pmm工程");
 					msg.setIcon(QMessageBox::Information);
 					msg.setStandardButtons(QMessageBox::Ok);
 
@@ -399,7 +399,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -426,8 +426,8 @@ namespace rabbit
 				else
 				{
 					QMessageBox msg(this);
-					msg.setWindowTitle(u8"提示");
-					msg.setText(u8"请加载一个.pmm工程");
+					msg.setWindowTitle((const char*)u8"提示");
+					msg.setText((const char*)u8"请加载一个.pmm工程");
 					msg.setIcon(QMessageBox::Information);
 					msg.setStandardButtons(QMessageBox::Ok);
 
@@ -438,7 +438,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -464,8 +464,8 @@ namespace rabbit
 				else
 				{
 					QMessageBox msg(this);
-					msg.setWindowTitle(u8"提示");
-					msg.setText(u8"请加载一个.pmm工程");
+					msg.setWindowTitle((const char*)u8"提示");
+					msg.setText((const char*)u8"请加载一个.pmm工程");
 					msg.setIcon(QMessageBox::Information);
 					msg.setStandardButtons(QMessageBox::Ok);
 
@@ -476,7 +476,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -497,7 +497,7 @@ namespace rabbit
 				{
 					if (enable)
 					{
-						QString fileName = QFileDialog::getOpenFileName(this, u8"打开项目", "", tr("All Files(*.wav *.mp3 *.flac *.ogg);; Wav Files (*.wav);; MP3 Files (*.mp3);; FLAC Files (*.flac);; OGG Files (*.ogg)"));
+						QString fileName = QFileDialog::getOpenFileName(this, (const char*)u8"打开项目", "", tr("All Files(*.wav *.mp3 *.flac *.ogg);; Wav Files (*.wav);; MP3 Files (*.mp3);; FLAC Files (*.flac);; OGG Files (*.ogg)"));
 						if (!fileName.isEmpty())
 						{
 							behaviour->loadAudio(fileName.toUtf8().data());
@@ -513,7 +513,7 @@ namespace rabbit
 				catch (const std::exception & e)
 				{
 					QMessageBox msg(this);
-					msg.setWindowTitle(u8"错误");
+					msg.setWindowTitle((const char*)u8"错误");
 					msg.setText(e.what());
 					msg.setIcon(QMessageBox::Information);
 					msg.setStandardButtons(QMessageBox::Ok);
@@ -551,8 +551,8 @@ namespace rabbit
 				else
 				{
 					QMessageBox msg(this);
-					msg.setWindowTitle(u8"提示");
-					msg.setText(u8"请加载一个.pmm工程");
+					msg.setWindowTitle((const char*)u8"提示");
+					msg.setText((const char*)u8"请加载一个.pmm工程");
 					msg.setIcon(QMessageBox::Information);
 					msg.setStandardButtons(QMessageBox::Ok);
 
@@ -566,7 +566,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -587,15 +587,15 @@ namespace rabbit
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
 				{
-					QString fileName = QFileDialog::getSaveFileName(this, u8"保存图像", "", tr("PNG Files (*.png)"));
+					QString fileName = QFileDialog::getSaveFileName(this, (const char*)u8"保存图像", "", tr("PNG Files (*.png)"));
 					if (!fileName.isEmpty())
 						behaviour->renderPicture(fileName.toUtf8().data());
 				}
 				else
 				{
 					QMessageBox msg(this);
-					msg.setWindowTitle(u8"提示");
-					msg.setText(u8"请加载一个.pmm工程");
+					msg.setWindowTitle((const char*)u8"提示");
+					msg.setText((const char*)u8"请加载一个.pmm工程");
 					msg.setIcon(QMessageBox::Information);
 					msg.setStandardButtons(QMessageBox::Ok);
 
@@ -606,7 +606,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -643,7 +643,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -680,8 +680,8 @@ namespace rabbit
 			else
 			{
 				QMessageBox msg(this);
-				msg.setWindowTitle(u8"提示");
-				msg.setText(u8"获取核心组件失败");
+				msg.setWindowTitle((const char*)u8"提示");
+				msg.setText((const char*)u8"获取核心组件失败");
 				msg.setIcon(QMessageBox::Information);
 				msg.setStandardButtons(QMessageBox::Ok);
 
@@ -691,7 +691,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -726,8 +726,8 @@ namespace rabbit
 			else
 			{
 				QMessageBox msg(this);
-				msg.setWindowTitle(u8"提示");
-				msg.setText(u8"获取核心组件失败");
+				msg.setWindowTitle((const char*)u8"提示");
+				msg.setText((const char*)u8"获取核心组件失败");
 				msg.setIcon(QMessageBox::Information);
 				msg.setStandardButtons(QMessageBox::Ok);
 
@@ -737,7 +737,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -772,8 +772,8 @@ namespace rabbit
 			else
 			{
 				QMessageBox msg(this);
-				msg.setWindowTitle(u8"提示");
-				msg.setText(u8"获取核心组件失败");
+				msg.setWindowTitle((const char*)u8"提示");
+				msg.setText((const char*)u8"获取核心组件失败");
 				msg.setIcon(QMessageBox::Information);
 				msg.setStandardButtons(QMessageBox::Ok);
 
@@ -783,7 +783,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -818,8 +818,8 @@ namespace rabbit
 			else
 			{
 				QMessageBox msg(this);
-				msg.setWindowTitle(u8"提示");
-				msg.setText(u8"获取核心组件失败");
+				msg.setWindowTitle((const char*)u8"提示");
+				msg.setText((const char*)u8"获取核心组件失败");
 				msg.setIcon(QMessageBox::Information);
 				msg.setStandardButtons(QMessageBox::Ok);
 
@@ -829,7 +829,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -853,7 +853,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -880,7 +880,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -911,7 +911,7 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
+			msg.setWindowTitle((const char*)u8"错误");
 			msg.setText(e.what());
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
@@ -1030,8 +1030,8 @@ namespace rabbit
 					if (!lightComponent->createLight((LightType)lightData.toInt()))
 					{
 						QMessageBox msg(this);
-						msg.setWindowTitle(u8"错误");
-						msg.setText(u8"不支持的光源类型");
+						msg.setWindowTitle((const char*)u8"错误");
+						msg.setText((const char*)u8"不支持的光源类型");
 						msg.setIcon(QMessageBox::Information);
 						msg.setStandardButtons(QMessageBox::Ok);
 
@@ -1179,8 +1179,8 @@ namespace rabbit
 		catch (const std::exception& e)
 		{
 			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
-			msg.setText(u8"当前您的显卡可能并不支持OpenCL，或正在使用核显");
+			msg.setWindowTitle((const char*)u8"错误");
+			msg.setText((const char*)u8"当前您的显卡可能并不支持OpenCL，或正在使用核显");
 			msg.setIcon(QMessageBox::Information);
 			msg.setStandardButtons(QMessageBox::Ok);
 

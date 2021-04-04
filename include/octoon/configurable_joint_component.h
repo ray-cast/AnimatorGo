@@ -70,11 +70,11 @@ namespace octoon
 		GameComponentPtr clone() const noexcept;
 
 	private:
-		void ConfigurableJointComponent::onActivate() except;
-		void ConfigurableJointComponent::onDeactivate() noexcept;
+		void onActivate() except override;
+		void onDeactivate() noexcept override;
 
-		void ConfigurableJointComponent::onAttachComponent(const GameComponentPtr& component) noexcept;
-		void ConfigurableJointComponent::onDetachComponent(const GameComponentPtr& component) noexcept;
+		void onAttachComponent(const GameComponentPtr& component) noexcept override;
+		void onDetachComponent(const GameComponentPtr& component) noexcept override;
 
 	protected:
 		void setupConfigurableJoint();

@@ -15,7 +15,7 @@ namespace octoon
 		static bool doCanRead(io::istream& stream) noexcept;
 		static bool doCanRead(const char* type) noexcept;
 
-		static std::shared_ptr<AudioReader> AudioLoader::load(std::string_view filepath) noexcept(false);
+		static std::shared_ptr<AudioReader> load(std::string_view filepath) noexcept(false);
 		static std::shared_ptr<AudioReader> load(std::shared_ptr<io::istream> stream) noexcept(false);
 
 		static void save(io::ostream& stream, const std::shared_ptr<AudioReader>& animation) noexcept(false);

@@ -96,7 +96,7 @@ namespace octoon
 
 				Quaternion<T>& makeRotation(const Vector3<T>& axis, T theta) noexcept
 				{
-					assert(std::abs(1.0f - axis.x * axis.x + axis.y * axis.y + axis.z * axis.z) < 1e-3f);
+					assert(std::abs(1.0f - (axis.x * axis.x + axis.y * axis.y + axis.z * axis.z)) < 1e-3f);
 
 					T thetaOver2 = theta * 0.5f;
 

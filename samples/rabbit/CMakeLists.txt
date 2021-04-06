@@ -138,6 +138,13 @@ SET(UTILS_LIST
 )
 SOURCE_GROUP("rabbit\\utils" FILES ${UTILS_LIST})
 
+SET(BINDINGS_LIST
+	${SOURCE_PATH}/bindings/application.h
+	${SOURCE_PATH}/bindings/application.cpp
+	${SOURCE_PATH}/bindings/timer.h
+)
+SOURCE_GROUP("rabbit\\bindings" FILES ${BINDINGS_LIST})
+
 SET(MINIH264E_LIST 
 	libs/minih264e/minih264e.h
 )
@@ -192,6 +199,7 @@ ADD_EXECUTABLE(${LIB_OUTNAME}
 	${BASE64_LIST}
 	${NATIVE_FILED_DIALOG_LIST}
 	${OIDN_LIST}
+	${BINDINGS_LIST}
 	${QRCODEGEN_LIST}
 	${RESOURCES}
 )

@@ -1,6 +1,10 @@
 #include <qapplication.h>
 #include <qdesktopwidget.h>
-#include <QQmlApplicationEngine>
+#include <qqmlcontext.h>
+#include <qquickview.h>
+#include <qqmlapplicationengine.h>
+
+#include "bindings/application.h"
 
 #include "views/main_window.h"
 #include "views/splash_screen.h"
@@ -11,6 +15,16 @@ int main(int argc, char *argv[])
 	::SetConsoleOutputCP(CP_UTF8);
 #endif
 
+#if 0
+
+	QGuiApplication app(argc, argv);
+
+	auto applicationData = std::make_unique<rabbit::Application>();
+
+	app.exec();
+
+	return 0;
+#else
 	QFile styleSheet(":res/qss/default.qss");
 
 	if (styleSheet.open(QIODevice::ReadOnly))
@@ -34,4 +48,5 @@ int main(int argc, char *argv[])
 		qWarning("Can't open the style sheet file.");
 		return 0;
 	}
+#endif
 }

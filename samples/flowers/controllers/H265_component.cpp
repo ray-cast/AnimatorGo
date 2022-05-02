@@ -47,6 +47,84 @@ namespace flower
 	void
 	H265Component::onDisable() noexcept
 	{
+		this->close();
+	}
+
+	bool
+	H265Component::create(std::string_view filepath) noexcept(false)
+	{
+		auto camera = this->getContext()->profile->entitiesModule->camera;
+		if (!camera)
+			return false;
+		
+		auto& context = this->getContext();
+		this->width_ = context->profile->canvasModule->width;
+		this->height_ = context->profile->canvasModule->height;
+		this->buf_ = std::make_unique<std::uint8_t[]>(this->width_ * this->height_ * 3);
+		this->filepath_ = filepath;
+		this->ostream_ = std::make_shared<std::ofstream>(this->filepath_ + ".h265", std::ios_base::binary);
+		if (!this->ostream_->good())
+			throw std::runtime_error("ofstream() failed");
+
+		param_ = x265_param_alloc();
+		if (!param_)
+			throw std::runtime_error("x265_param_alloc() failed");
+
+		x265_param_default(param_);
+		x265_param_parse(param_, "--crf", std::to_string(this->getModel()->crf).c_str());
+		x265_param_parse(param_, "--preset", "8");
+		x265_param_parse(param_, "--qcomp", "0.5");
+
+		param_->bRepeatHeaders = 1;
+		param_->internalCsp = X265_CSP_I420;
+		param_->sourceWidth = this->width_;
+		param_->sourceHeight = this->height_;
+		param_->fpsNum = context->profile->playerModule->recordFps;
+		param_->fpsDenom = 1;
+
+		encoder_ = x265_encoder_open(param_);
+		if (!encoder_)
+			throw std::runtime_error("x265_encoder_open() failed");
+
+		picture_ = x265_picture_alloc();
+		if (!picture_)
+			throw std::runtime_error("x265_picture_alloc() failed");
+
+		x265_picture_init(param_, picture_);
+		picture_->planes[0] = this->buf_.get();
+		picture_->planes[1] = this->buf_.get() + param_->sourceWidth * param_->sourceHeight;
+		picture_->planes[2] = this->buf_.get() + param_->sourceWidth * param_->sourceHeight * 5 / 4;
+		picture_->stride[0] = param_->sourceWidth;
+		picture_->stride[1] = param_->sourceWidth / 2;
+		picture_->stride[2] = param_->sourceWidth / 2;
+		picture_->height = param_->sourceHeight;
+
+		return this->ostream_->good();
+	}
+
+	void
+	H265Component::write(const octoon::math::Vector3* data) noexcept(false)
+	{
+		if (ostream_)
+		{
+			auto& context = this->getContext();
+
+			this->convert((float*)data, this->width_, this->height_, this->buf_.get());
+
+			x265_nal* nals = nullptr;
+			std::uint32_t inal = 0;
+			auto result = x265_encoder_encode(encoder_, &nals, &inal, picture_, nullptr);
+			if (result < 0)
+				throw std::runtime_error("x265_encoder_encode() failed");
+
+			for (std::uint32_t j = 0;j < inal; j++)
+				ostream_->write((char*)nals[j].payload, nals[j].sizeBytes);
+		}
+	}
+
+	void
+	H265Component::close() noexcept
+	{
 		if (this->ostream_)
 		{
 			x265_nal* nals = nullptr;
@@ -54,7 +132,7 @@ namespace flower
 
 			while (x265_encoder_encode(encoder_, &nals, &inal, nullptr, nullptr) > 0)
 			{
-				for (std::uint32_t j = 0;j < inal;j++)
+				for (std::uint32_t j = 0; j < inal; j++)
 					ostream_->write((char*)nals[j].payload, nals[j].sizeBytes);
 			}
 
@@ -73,7 +151,7 @@ namespace flower
 			try
 			{
 				auto& playerModule = this->getContext()->profile->playerModule;
-			
+
 				auto inFilename = filepath_ + ".h265";
 				if (avformat_open_input(&videoFormat, inFilename.c_str(), 0, 0) < 0)
 					throw std::runtime_error("Could not open input file.");
@@ -189,80 +267,7 @@ namespace flower
 
 					avformat_free_context(outputFormat);
 				}
-			}			
-		}
-	}
-
-	bool
-	H265Component::record(std::string_view filepath) noexcept(false)
-	{
-		auto camera = this->getContext()->profile->entitiesModule->camera;
-		if (!camera)
-			return false;
-		
-		auto& context = this->getContext();
-		this->width_ = context->profile->canvasModule->width;
-		this->height_ = context->profile->canvasModule->height;
-		this->buf_ = std::make_unique<std::uint8_t[]>(this->width_ * this->height_ * 3);
-		this->filepath_ = filepath;
-		this->ostream_ = std::make_shared<std::ofstream>(this->filepath_ + ".h265", std::ios_base::binary);
-		if (!this->ostream_->good())
-			throw std::runtime_error("ofstream() failed");
-
-		param_ = x265_param_alloc();
-		if (!param_)
-			throw std::runtime_error("x265_param_alloc() failed");
-
-		x265_param_default(param_);
-		x265_param_parse(param_, "--crf", std::to_string(this->getModel()->crf).c_str());
-		x265_param_parse(param_, "--preset", "8");
-		x265_param_parse(param_, "--qcomp", "0.5");
-
-		param_->bRepeatHeaders = 1;
-		param_->internalCsp = X265_CSP_I420;
-		param_->sourceWidth = this->width_;
-		param_->sourceHeight = this->height_;
-		param_->fpsNum = context->profile->playerModule->recordFps;
-		param_->fpsDenom = 1;
-
-		encoder_ = x265_encoder_open(param_);
-		if (!encoder_)
-			throw std::runtime_error("x265_encoder_open() failed");
-
-		picture_ = x265_picture_alloc();
-		if (!picture_)
-			throw std::runtime_error("x265_picture_alloc() failed");
-
-		x265_picture_init(param_, picture_);
-		picture_->planes[0] = this->buf_.get();
-		picture_->planes[1] = this->buf_.get() + param_->sourceWidth * param_->sourceHeight;
-		picture_->planes[2] = this->buf_.get() + param_->sourceWidth * param_->sourceHeight * 5 / 4;
-		picture_->stride[0] = param_->sourceWidth;
-		picture_->stride[1] = param_->sourceWidth / 2;
-		picture_->stride[2] = param_->sourceWidth / 2;
-		picture_->height = param_->sourceHeight;
-
-		return this->ostream_->good();
-	}
-
-	void
-	H265Component::onPostProcess() noexcept(false)
-	{
-		if (ostream_)
-		{
-			auto& context = this->getContext();
-
-			auto output = context->profile->canvasModule->outputBuffer.data();
-			this->convert((float*)output, context->profile->canvasModule->width, context->profile->canvasModule->height, this->buf_.get());
-
-			x265_nal* nals = nullptr;
-			std::uint32_t inal = 0;
-			auto result = x265_encoder_encode(encoder_, &nals, &inal, picture_, nullptr);
-			if (result < 0)
-				throw std::runtime_error("x265_encoder_encode() failed");
-
-			for (std::uint32_t j = 0;j < inal; j++)
-				ostream_->write((char*)nals[j].payload, nals[j].sizeBytes);
+			}
 		}
 	}
 

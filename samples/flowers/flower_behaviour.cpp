@@ -83,11 +83,10 @@ namespace flower
 		context_->behaviour = this;
 		context_->profile = profile_.get();
 
-		canvasComponent_ = std::make_unique<CanvasComponent>();
+		recordComponent_ = std::make_unique<RecordComponent>();
 		entitiesComponent_ = std::make_unique<EntitiesComponent>();
 		offlineComponent_ = std::make_unique<OfflineComponent>();
 		playerComponent_ = std::make_unique<PlayerComponent>();
-		denoiseComponent_ = std::make_unique<DenoiseComponent>();
 		h265Component_ = std::make_unique<H265Component>();
 		uiComponent_ = std::make_unique<UIComponent>();
 		markComponent_ = std::make_unique<MarkComponent>();
@@ -97,11 +96,10 @@ namespace flower
 		gridComponent_ = std::make_unique<GridComponent>();
 		lightComponent_ = std::make_unique<LightComponent>();
 
-		canvasComponent_->init(context_, profile_->canvasModule);
+		recordComponent_->init(context_, profile_->canvasModule);
 		entitiesComponent_->init(context_, profile_->entitiesModule);
 		offlineComponent_->init(context_, profile_->offlineModule);
 		playerComponent_->init(context_, profile_->playerModule);
-		denoiseComponent_->init(context_, profile_->denoiseModule);
 		h265Component_->init(context_, profile_->h265Module);
 		uiComponent_->init(context_, profile_->canvasModule);
 		markComponent_->init(context_, profile_->markModule);
@@ -111,19 +109,20 @@ namespace flower
 		gridComponent_->init(context_, profile_->gridModule);
 		lightComponent_->init(context_, profile_->entitiesModule);
 
-		this->addComponent(canvasComponent_.get());
+		this->h265Component_->setActive(true);
+
 		this->addComponent(entitiesComponent_.get());
 		this->addComponent(offlineComponent_.get());
 		this->addComponent(playerComponent_.get());
-		this->addComponent(denoiseComponent_.get());
 		this->addComponent(markComponent_.get());
-		this->addComponent(h265Component_.get());
 		this->addComponent(uiComponent_.get());
 		this->addComponent(materialComponent_.get());
 		this->addComponent(gizmoComponent_.get());
 		this->addComponent(dragComponent_.get());
 		this->addComponent(gridComponent_.get());
 		this->addComponent(lightComponent_.get());
+		this->addComponent(recordComponent_.get());
+		this->addComponent(h265Component_.get());
 
 		this->enableComponents();
 
@@ -151,11 +150,10 @@ namespace flower
 	{
 		this->disableComponents();
 
-		canvasComponent_.reset();
+		recordComponent_.reset();
 		entitiesComponent_.reset();
 		offlineComponent_.reset();
 		playerComponent_.reset();
-		denoiseComponent_.reset();
 		h265Component_.reset();
 		context_.reset();
 		profile_.reset();
@@ -386,22 +384,13 @@ namespace flower
 	{
 		try
 		{
-			canvasComponent_->setActive(true);
-			denoiseComponent_->setActive(true);
-			h265Component_->setActive(true);
-			dragComponent_->setActive(false);
-			playerComponent_->render();
+			this->dragComponent_->setActive(false);
+			this->offlineComponent_->setActive(profile_->h265Module->quality == VideoQuality::High);
+			this->playerComponent_->render();
 
-			if (profile_->h265Module->quality == VideoQuality::High)
-				offlineComponent_->setActive(true);
-			else
-				offlineComponent_->setActive(false);
+			this->recordComponent_->startRecord(filepath);
 
-			if (h265Component_->record(filepath))
-				return true;
-
-			this->stopRecord();
-			return false;
+			return true;
 		}
 		catch (...)
 		{
@@ -413,11 +402,9 @@ namespace flower
 	void
 	FlowerBehaviour::stopRecord() noexcept
 	{
-		canvasComponent_->setActive(false);
-		denoiseComponent_->setActive(false);
-		h265Component_->setActive(false);
-		dragComponent_->setActive(true);
-		playerComponent_->pause();
+		this->dragComponent_->setActive(true);
+		this->playerComponent_->pause();
+		this->recordComponent_->stopRecord();
 	}
 
 	void
@@ -435,16 +422,8 @@ namespace flower
 	void
 	FlowerBehaviour::renderPicture(std::string_view filepath) noexcept(false)
 	{
-		canvasComponent_->setActive(true);
-		denoiseComponent_->setActive(true);
-
-		for (auto& it : components_)
-		{
-			if (it->getActive())
-				it->onPostProcess();
-		}
-
-		canvasComponent_->save(filepath);
+		recordComponent_->setActive(true);
+		recordComponent_->captureImage(filepath);
 	}
 
 	std::optional<octoon::RaycastHit>

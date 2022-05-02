@@ -1,4 +1,4 @@
-#include "time_module.h"
+#include "player_module.h"
 
 namespace flower
 {
@@ -16,6 +16,7 @@ namespace flower
 	{
 		this->playing_ = false;
 		this->spp = 100;
+		this->sppCount_ = 0;
 		this->recordFps = 30.0f;
 		this->playFps = 30.0f;
 		this->playTimeStep = 1.0f / 100.f;

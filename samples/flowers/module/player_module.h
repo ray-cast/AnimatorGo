@@ -25,7 +25,10 @@ namespace flower
 
 	public:
 		bool playing_;
+
 		std::uint32_t spp;
+		std::uint32_t sppCount_;
+
 		std::uint32_t endFrame;
 		std::uint32_t startFrame;
 		std::uint32_t timeLength;

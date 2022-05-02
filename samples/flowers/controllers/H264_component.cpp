@@ -253,13 +253,13 @@ namespace flower
 	}
 
 	void
-	H264Component::onPostProcess() noexcept(false)
+	H264Component::write(const octoon::math::Vector3* data) noexcept(false)
 	{
 		if (ostream_)
 		{
 			auto& context = this->getContext();
 
-			auto output = context->profile->canvasModule->outputBuffer.data();
+			auto output = context->profile->canvasModule->denoiseBuffer.data();
 			this->convert((float*)output, this->width_, this->height_, this->buf_.get());
 
 			std::uint8_t* yuv[3];

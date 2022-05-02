@@ -9,9 +9,7 @@ namespace flower
 {
 	PlayerComponent::PlayerComponent() noexcept
 		: time_(0)
-		, timeCount_(0)
-		, needUpdate_(false)
-		, animationLerp_(0)
+		, needAnimationEvaluate_(false)
 	{
 	}
 
@@ -352,35 +350,22 @@ namespace flower
 
 		if (profile->offlineModule->offlineEnable)
 		{
-			if (animationLerp_ == 0)
-			{
-				timeCount_++;
+			model->sppCount_++;
 
-				if (timeCount_ >= model->spp)
-				{
-					needUpdate_ = true;
-					timeCount_ = 0;
-				}
+			if (model->sppCount_ >= model->spp)
+			{
+				needAnimationEvaluate_ = true;
+
+				this->sendMessage("flower:player:record");
+
+				model->sppCount_ = 0;
 			}
 		}
 		else
 		{
-			needUpdate_ = true;
-		}
+			needAnimationEvaluate_ = true;
 
-		if (profile->h265Module->enable)
-		{
-			if (needUpdate_)
-			{
-				for (auto& it : this->getContext()->behaviour->getComponents())
-				{
-					if (it->getActive())
-						it->onPostProcess();
-				}
-
-				needUpdate_ = false;
-				animationLerp_ = 5;
-			}
+			this->sendMessage("flower:player:record");
 		}
 	}
 
@@ -402,13 +387,13 @@ namespace flower
 		{
 			if (profile->h265Module->enable)
 			{
-				if (animationLerp_ > 0)
+				if (needAnimationEvaluate_)
 				{
 					auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
 					if (timeFeature)
-						this->evaluate(timeFeature->delta());
+						this->evaluate(1.0f / this->getModel()->recordFps);
 
-					animationLerp_--;
+					needAnimationEvaluate_ = false;
 				}
 			}
 			else

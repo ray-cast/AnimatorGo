@@ -37,8 +37,6 @@ namespace flower
 		void onEnable() noexcept override;
 		void onDisable() noexcept override;
 
-		void onPostProcess() noexcept override;
-
 	private:
 		ClientComponent(const ClientComponent&) = delete;
 		ClientComponent& operator=(const ClientComponent&) = delete;

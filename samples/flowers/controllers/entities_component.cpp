@@ -104,11 +104,11 @@ namespace flower
 	bool
 	EntitiesComponent::importAudio(std::string_view path) noexcept
 	{
-		auto model = octoon::GameObject::create();
-		model->setName(path);
-		model->addComponent<octoon::AudioSourceComponent>()->setAudioReader(AudioLoader::load(path));
+		auto audio = octoon::GameObject::create();
+		audio->setName(path);
+		audio->addComponent<octoon::AudioSourceComponent>()->setAudioReader(AudioLoader::load(path));
 
-		this->getContext()->profile->entitiesModule->sound = model;
+		this->getContext()->profile->entitiesModule->sound = audio;
 		return true;
 	}
 

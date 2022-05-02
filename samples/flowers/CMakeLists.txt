@@ -37,12 +37,10 @@ SET(MODULES_LIST
 	${SOURCE_PATH}/module/offline_module.cpp
 	${SOURCE_PATH}/module/h265_module.h
 	${SOURCE_PATH}/module/h265_module.cpp
-	${SOURCE_PATH}/module/denoise_module.h
-	${SOURCE_PATH}/module/denoise_module.cpp
 	${SOURCE_PATH}/module/physics_module.h
 	${SOURCE_PATH}/module/physics_module.cpp
-	${SOURCE_PATH}/module/time_module.h
-	${SOURCE_PATH}/module/time_module.cpp
+	${SOURCE_PATH}/module/player_module.h
+	${SOURCE_PATH}/module/player_module.cpp
 	${SOURCE_PATH}/module/mark_module.h
 	${SOURCE_PATH}/module/mark_module.cpp
 	${SOURCE_PATH}/module/client_module.h
@@ -107,14 +105,12 @@ SET(CONTROLLERS_LIST
 	${SOURCE_PATH}/controllers/entities_component.cpp
 	${SOURCE_PATH}/controllers/offline_component.h
 	${SOURCE_PATH}/controllers/offline_component.cpp
-	${SOURCE_PATH}/controllers/canvas_component.h
-	${SOURCE_PATH}/controllers/canvas_component.cpp
+	${SOURCE_PATH}/controllers/record_component.h
+	${SOURCE_PATH}/controllers/record_component.cpp
 	${SOURCE_PATH}/controllers/h264_component.h
 	${SOURCE_PATH}/controllers/h264_component.cpp
 	${SOURCE_PATH}/controllers/h265_component.h
 	${SOURCE_PATH}/controllers/h265_component.cpp
-	${SOURCE_PATH}/controllers/denoise_component.h
-	${SOURCE_PATH}/controllers/denoise_component.cpp
 	${SOURCE_PATH}/controllers/mark_component.h
 	${SOURCE_PATH}/controllers/mark_component.cpp
 	${SOURCE_PATH}/controllers/client_component.h

@@ -32,8 +32,6 @@ namespace flower
 		virtual void onMouseUp(const octoon::input::InputEvent& event) noexcept = 0;
 
 		virtual void onResize(const octoon::input::InputEvent& event) noexcept = 0;
-
-		virtual void onPostProcess() noexcept(false);
 	};
 
 	template<typename T>
@@ -111,7 +109,7 @@ namespace flower
 		}
 
 		template<typename T>
-		IFlowerComponent* getComponent() const noexcept
+		T* getComponent() const noexcept
 		{
 			return context_->behaviour->getComponent<T>();
 		}

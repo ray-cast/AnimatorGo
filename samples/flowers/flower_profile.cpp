@@ -6,14 +6,13 @@
 namespace flower
 {
 	FlowerProfile::FlowerProfile() noexcept
-		: denoiseModule(std::make_shared<DenoiseModule>())
-		, physicsModule(std::make_shared<PhysicsModule>())
+		: physicsModule(std::make_shared<PhysicsModule>())
 		, h265Module(std::make_shared<H265Module>())
 		, playerModule(std::make_shared<PlayerModule>())
 		, fileModule(std::make_shared<FileModule>())
 		, entitiesModule(std::make_shared<EntitiesModule>())
 		, offlineModule(std::make_shared<OfflineModule>())
-		, canvasModule(std::make_shared<CanvasModule>())
+		, canvasModule(std::make_shared<RecordModule>())
 		, markModule(std::make_shared<MarkModule>())
 		, sunModule(std::make_shared<SunModule>())
 		, environmentModule(std::make_shared<EnvironmentModule>())
@@ -31,7 +30,6 @@ namespace flower
 		if (stream)
 		{
 			auto json = octoon::runtime::json::parse(stream);
-			this->denoiseModule->load(json["denoise"]);
 			this->physicsModule->load(json["physics"]);
 			this->h265Module->load(json["h265"]);
 			this->playerModule->load(json["time"]);
@@ -66,7 +64,6 @@ namespace flower
 		if (stream)
 		{
 			octoon::runtime::json json;
-			profile.denoiseModule->save(json["denoise"]);
 			profile.physicsModule->save(json["physics"]);
 			profile.h265Module->save(json["h265"]);
 			profile.playerModule->save(json["time"]);

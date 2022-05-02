@@ -7,11 +7,11 @@
 
 namespace flower
 {
-	class CanvasModule final : public FlowerModule
+	class RecordModule final : public FlowerModule
 	{
 	public:
-		CanvasModule() noexcept;
-		virtual ~CanvasModule() noexcept;
+		RecordModule() noexcept;
+		virtual ~RecordModule() noexcept;
 
 		virtual void reset() noexcept override;
 		virtual void resize(std::uint32_t width, std::uint32_t height) noexcept;
@@ -20,17 +20,20 @@ namespace flower
 		virtual void save(octoon::runtime::json& reader) noexcept override;
 
 	private:
-		CanvasModule(const CanvasModule&) = delete;
-		CanvasModule& operator=(const CanvasModule&) = delete;
+		RecordModule(const RecordModule&) = delete;
+		RecordModule& operator=(const RecordModule&) = delete;
 
 	public:
+		bool hdr;
+		bool srgb;
+
 		std::uint32_t width;
 		std::uint32_t height;
 
 		std::vector<octoon::math::float3> colorBuffer;
 		std::vector<octoon::math::float3> normalBuffer;
 		std::vector<octoon::math::float3> albedoBuffer;
-		std::vector<octoon::math::float3> outputBuffer;
+		std::vector<octoon::math::float3> denoiseBuffer;
 	};
 }
 

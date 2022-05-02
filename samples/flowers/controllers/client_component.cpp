@@ -357,9 +357,4 @@ namespace flower
 	ClientComponent::onDisable() noexcept
 	{
 	}
-
-	void
-	ClientComponent::onPostProcess() noexcept
-	{
-	}
 }

@@ -4,10 +4,9 @@
 #include <memory>
 #include <string>
 
-#include "module/denoise_module.h"
 #include "module/h265_module.h"
 #include "module/physics_module.h"
-#include "module/time_module.h"
+#include "module/player_module.h"
 #include "module/file_module.h"
 #include "module/entities_module.h"
 #include "module/offline_module.h"
@@ -37,10 +36,9 @@ namespace flower
 		FlowerProfile& operator=(const FlowerProfile&) = delete;
 
 	public:
-		std::shared_ptr<CanvasModule> canvasModule;
+		std::shared_ptr<RecordModule> canvasModule;
 		std::shared_ptr<FileModule> fileModule;
 		std::shared_ptr<EntitiesModule> entitiesModule;
-		std::shared_ptr<DenoiseModule> denoiseModule;
 		std::shared_ptr<H265Module> h265Module;
 		std::shared_ptr<PhysicsModule> physicsModule;
 		std::shared_ptr<PlayerModule> playerModule;

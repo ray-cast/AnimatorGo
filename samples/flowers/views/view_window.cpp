@@ -12,7 +12,7 @@ namespace flower
 		this->setMouseTracking(true);
 		this->setUpdatesEnabled(false);
 		this->setAcceptDrops(true);
-		this->setFixedSize(profile->canvasModule->width, profile->canvasModule->height);
+		this->setFixedSize(profile->recordModule->width, profile->recordModule->height);
 		this->setFocusPolicy(Qt::StrongFocus);
 
 		this->connect(&timer, SIGNAL(timeout()), this, SLOT(updateEvent()));

@@ -198,21 +198,21 @@ namespace flower
 		layout_->setContentsMargins(0, 0, 0, 0);
 
 		auto& profile = behaviour->getProfile();
-		if (profile->canvasModule->width == 720 && profile->canvasModule->height == 480)
+		if (profile->recordModule->width == 720 && profile->recordModule->height == 480)
 			mainPlane2_->resolutionCombo->setCurrentIndex(0);
-		else if (profile->canvasModule->width == 800 && profile->canvasModule->height == 480)
+		else if (profile->recordModule->width == 800 && profile->recordModule->height == 480)
 			mainPlane2_->resolutionCombo->setCurrentIndex(1);
-		else if (profile->canvasModule->width == 1024 && profile->canvasModule->height == 576)
+		else if (profile->recordModule->width == 1024 && profile->recordModule->height == 576)
 			mainPlane2_->resolutionCombo->setCurrentIndex(2);
-		else if (profile->canvasModule->width == 1280 && profile->canvasModule->height == 720)
+		else if (profile->recordModule->width == 1280 && profile->recordModule->height == 720)
 			mainPlane2_->resolutionCombo->setCurrentIndex(3);
-		else if (profile->canvasModule->width == 1920 && profile->canvasModule->height == 1080)
+		else if (profile->recordModule->width == 1920 && profile->recordModule->height == 1080)
 			mainPlane2_->resolutionCombo->setCurrentIndex(4);
-		else if (profile->canvasModule->width == 540 && profile->canvasModule->height == 960)
+		else if (profile->recordModule->width == 540 && profile->recordModule->height == 960)
 			mainPlane2_->resolutionCombo->setCurrentIndex(5);
-		else if (profile->canvasModule->width == 720 && profile->canvasModule->height == 1280)
+		else if (profile->recordModule->width == 720 && profile->recordModule->height == 1280)
 			mainPlane2_->resolutionCombo->setCurrentIndex(6);
-		else if (profile->canvasModule->width == 1080 && profile->canvasModule->height == 1920)
+		else if (profile->recordModule->width == 1080 && profile->recordModule->height == 1920)
 			mainPlane2_->resolutionCombo->setCurrentIndex(7);
 
 		connect(scrollArea_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(valueChanged(int)));
@@ -291,50 +291,50 @@ namespace flower
 		{
 		case 0:
 		{
-			profile->canvasModule->width = 720;
-			profile->canvasModule->height = 480;
+			profile->recordModule->width = 720;
+			profile->recordModule->height = 480;
 		}
 		break;
 		case 1:
 		{
-			profile->canvasModule->width = 800;
-			profile->canvasModule->height = 480;
+			profile->recordModule->width = 800;
+			profile->recordModule->height = 480;
 		}
 		break;
 		case 2:
 		{
-			profile->canvasModule->width = 1024;
-			profile->canvasModule->height = 576;
+			profile->recordModule->width = 1024;
+			profile->recordModule->height = 576;
 		}
 		break;
 		case 3:
 		{
-			profile->canvasModule->width = 1280;
-			profile->canvasModule->height = 720;
+			profile->recordModule->width = 1280;
+			profile->recordModule->height = 720;
 		}
 		break;
 		case 4:
 		{
-			profile->canvasModule->width = 1920;
-			profile->canvasModule->height = 1080;
+			profile->recordModule->width = 1920;
+			profile->recordModule->height = 1080;
 		}
 		break;
 		case 5:
 		{
-			profile->canvasModule->width = 540;
-			profile->canvasModule->height = 960;
+			profile->recordModule->width = 540;
+			profile->recordModule->height = 960;
 		}
 		break;
 		case 6:
 		{
-			profile->canvasModule->width = 720;
-			profile->canvasModule->height = 1280;
+			profile->recordModule->width = 720;
+			profile->recordModule->height = 1280;
 		}
 		break;
 		case 7:
 		{
-			profile->canvasModule->width = 1080;
-			profile->canvasModule->height = 1920;
+			profile->recordModule->width = 1080;
+			profile->recordModule->height = 1920;
 		}
 		break;
 		}

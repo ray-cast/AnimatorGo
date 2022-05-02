@@ -9,8 +9,7 @@
 namespace flower
 {
 	RecordComponent::RecordComponent() noexcept
-		: active_(false)
-		, device_(nullptr)
+		: device_(nullptr)
 		, filter_(nullptr)
 		, oidnColorBuffer_(nullptr)
 		, oidnNormalBuffer_(nullptr)
@@ -21,18 +20,6 @@ namespace flower
 
 	RecordComponent::~RecordComponent() noexcept
 	{
-	}
-
-	void
-	RecordComponent::setActive(bool active) noexcept
-	{
-		active_ = active;
-	}
-
-	bool
-	RecordComponent::getActive() const noexcept
-	{
-		return active_;
 	}
 
 	void
@@ -62,9 +49,9 @@ namespace flower
 		if (this->getContext()->profile->offlineModule->offlineEnable)
 		{
 			auto videoFeature = this->getFeature<octoon::VideoFeature>();
-			videoFeature->readColorBuffer(this->getModel()->colorBuffer.data());
-			videoFeature->readNormalBuffer(this->getModel()->normalBuffer.data());
-			videoFeature->readAlbedoBuffer(this->getModel()->albedoBuffer.data());
+			videoFeature->readColorBuffer(colorBuffer_.data());
+			videoFeature->readNormalBuffer(normalBuffer_.data());
+			videoFeature->readAlbedoBuffer(albedoBuffer_.data());
 		}
 		else
 		{
@@ -79,19 +66,16 @@ namespace flower
 				{
 					if (desc.getTexFormat() == octoon::hal::GraphicsFormat::R32G32B32A32SFloat)
 					{
-						auto& colorBuffer = this->getModel()->colorBuffer;
-						auto& denoiseBuffer = this->getModel()->denoiseBuffer;
+						for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); ++i)
+							colorBuffer_[i] = (((octoon::math::float4*)data) + i)->xyz();
 
 						for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); ++i)
-							colorBuffer[i] = (((octoon::math::float4*)data) + i)->xyz();
-
-						for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); ++i)
-							denoiseBuffer[i] = (((octoon::math::float4*)data) + i)->xyz();
+							denoiseBuffer_[i] = (((octoon::math::float4*)data) + i)->xyz();
 					}
 					else
 					{
-						std::memcpy(this->getModel()->colorBuffer.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
-						std::memcpy(this->getModel()->denoiseBuffer.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+						std::memcpy(colorBuffer_.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+						std::memcpy(denoiseBuffer_.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
 					}
 
 					colorTexture->unmap();
@@ -105,9 +89,9 @@ namespace flower
 			auto normal = oidnMapBuffer(oidnNormalBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
 			auto albedo = oidnMapBuffer(oidnAlbedoBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
 
-			std::memcpy(color, model->colorBuffer.data(), model->width * model->height * sizeof(octoon::math::float3));
-			std::memcpy(normal, model->normalBuffer.data(), model->width * model->height * sizeof(octoon::math::float3));
-			std::memcpy(albedo, model->albedoBuffer.data(), model->width * model->height * sizeof(octoon::math::float3));
+			std::memcpy(color, colorBuffer_.data(), model->width * model->height * sizeof(octoon::math::float3));
+			std::memcpy(normal, normalBuffer_.data(), model->width * model->height * sizeof(octoon::math::float3));
+			std::memcpy(albedo, albedoBuffer_.data(), model->width * model->height * sizeof(octoon::math::float3));
 
 			oidnUnmapBuffer(oidnColorBuffer_, color);
 			oidnUnmapBuffer(oidnNormalBuffer_, normal);
@@ -122,7 +106,7 @@ namespace flower
 			auto output = oidnMapBuffer(oidnOutputBuffer_, OIDN_ACCESS_READ, 0, 0);
 			if (output)
 			{
-				std::memcpy(model->denoiseBuffer.data(), output, model->width * model->height * sizeof(octoon::math::float3));
+				std::memcpy(denoiseBuffer_.data(), output, model->width * model->height * sizeof(octoon::math::float3));
 				oidnUnmapBuffer(oidnOutputBuffer_, output);
 			}
 		}
@@ -134,14 +118,13 @@ namespace flower
 
 			auto width = std::min(markModel->width, model->width);
 			auto height = std::min(markModel->height, model->height);
-			auto data = this->getContext()->profile->offlineModule->offlineEnable ? model->denoiseBuffer.data() : model->colorBuffer.data();
 
 			for (std::uint32_t y = 0; y < height; y++)
 			{
 				for (std::uint32_t x = 0; x < width; x++)
 				{
 					auto src = ((markModel->height - y - 1) * markModel->width + x) * markModel->channel;
-					auto& dst = data[(y + markModel->y) * model->width + x + markModel->x];
+					auto& dst = denoiseBuffer_[(y + markModel->y) * model->width + x + markModel->x];
 
 					auto b = markModel->pixels[src] / 255.0f;
 					auto g = markModel->pixels[src + 1] / 255.0f;
@@ -160,12 +143,19 @@ namespace flower
 	void
 	RecordComponent::captureImage(std::string_view filepath) noexcept
 	{
+		auto& model = this->getModel();
+
+		this->albedoBuffer_.resize(model->width * model->height);
+		this->normalBuffer_.resize(model->width * model->height);
+		this->colorBuffer_.resize(model->width * model->height);
+		this->denoiseBuffer_.resize(model->width * model->height);
+
 		this->captureImage();
 
-		auto canvas = this->getContext()->profile->canvasModule;
+		auto canvas = this->getContext()->profile->recordModule;
 		auto width = canvas->width;
 		auto height = canvas->height;
-		auto output = this->getContext()->profile->offlineModule->offlineEnable ? canvas->denoiseBuffer.data() : canvas->colorBuffer.data();
+		auto output = this->getContext()->profile->offlineModule->offlineEnable ? denoiseBuffer_.data() : colorBuffer_.data();
 
 		octoon::Image image;
 
@@ -194,8 +184,13 @@ namespace flower
 	bool
 	RecordComponent::startRecord(std::string_view filepath) noexcept
 	{
-		auto& model = this->getContext()->profile->canvasModule;
+		auto& model = this->getContext()->profile->recordModule;
 		auto& profile = this->getContext()->profile;
+
+		this->albedoBuffer_.resize(model->width * model->height);
+		this->normalBuffer_.resize(model->width * model->height);
+		this->colorBuffer_.resize(model->width * model->height);
+		this->denoiseBuffer_.resize(model->width * model->height);
 
 		if (profile->h265Module->enable)
 		{
@@ -224,6 +219,8 @@ namespace flower
 			oidnCommitFilter(filter_);
 		}
 
+		profile->recordModule->active = true;
+
 		this->addMessageListener("flower:player:record", std::bind(&RecordComponent::onRecord, this));
 
 		return true;
@@ -232,6 +229,11 @@ namespace flower
 	void
 	RecordComponent::stopRecord() noexcept
 	{
+		auto& model = this->getContext()->profile->recordModule;
+		auto& profile = this->getContext()->profile;
+
+		profile->recordModule->active = false;
+
 		this->removeMessageListener("flower:player:record", std::bind(&RecordComponent::onRecord, this));
 
 		auto h265 = this->getComponent<H265Component>();
@@ -279,7 +281,7 @@ namespace flower
 			this->captureImage();
 
 			auto h265 = this->getComponent<H265Component>();
-			h265->write(this->getModel()->denoiseBuffer.data());
+			h265->write(this->denoiseBuffer_.data());
 		}
 	}
 }

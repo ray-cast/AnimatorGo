@@ -39,6 +39,7 @@ namespace flower
 	{
 		return this->getModel()->enable;
 	}
+
 	void
 	H265Component::onEnable() noexcept
 	{
@@ -58,8 +59,8 @@ namespace flower
 			return false;
 		
 		auto& context = this->getContext();
-		this->width_ = context->profile->canvasModule->width;
-		this->height_ = context->profile->canvasModule->height;
+		this->width_ = context->profile->recordModule->width;
+		this->height_ = context->profile->recordModule->height;
 		this->buf_ = std::make_unique<std::uint8_t[]>(this->width_ * this->height_ * 3);
 		this->filepath_ = filepath;
 		this->ostream_ = std::make_shared<std::ofstream>(this->filepath_ + ".h265", std::ios_base::binary);

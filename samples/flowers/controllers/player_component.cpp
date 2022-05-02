@@ -111,7 +111,7 @@ namespace flower
 
 		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
 		if (timeFeature)
-			timeFeature->setTimeStep(1.0f / model->recordFps / 5.0f);
+			timeFeature->setTimeStep(1.0f / model->recordFps);
 
 		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
 		if (physicsFeature)
@@ -385,22 +385,13 @@ namespace flower
 
 		if (model->curTime < model->endFrame / 30.0f)
 		{
-			if (profile->h265Module->enable)
-			{
-				if (needAnimationEvaluate_)
-				{
-					auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
-					if (timeFeature)
-						this->evaluate(1.0f / this->getModel()->recordFps);
-
-					needAnimationEvaluate_ = false;
-				}
-			}
-			else
+			if (needAnimationEvaluate_)
 			{
 				auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
 				if (timeFeature)
 					this->evaluate(timeFeature->delta());
+
+				needAnimationEvaluate_ = false;
 			}
 		}
 		else

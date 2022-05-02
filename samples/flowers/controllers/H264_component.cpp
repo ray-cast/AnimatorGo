@@ -198,8 +198,8 @@ namespace flower
 	H264Component::record(std::string_view filepath) noexcept(false)
 	{
 		auto& context = this->getContext();
-		this->width_ = context->profile->canvasModule->width;
-		this->height_ = context->profile->canvasModule->height;
+		this->width_ = context->profile->recordModule->width;
+		this->height_ = context->profile->recordModule->height;
 		this->buf_ = std::make_unique<std::uint8_t[]>(this->width_ * this->height_ * 3);
 		this->filepath_ = filepath;
 		this->ostream_ = std::make_shared<std::ofstream>(this->filepath_ + ".tmp", std::ios_base::binary);
@@ -259,8 +259,7 @@ namespace flower
 		{
 			auto& context = this->getContext();
 
-			auto output = context->profile->canvasModule->denoiseBuffer.data();
-			this->convert((float*)output, this->width_, this->height_, this->buf_.get());
+			this->convert((float*)data, this->width_, this->height_, this->buf_.get());
 
 			std::uint8_t* yuv[3];
 			yuv[0] = this->buf_.get();

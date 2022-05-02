@@ -96,12 +96,12 @@ namespace flower
 		gridComponent_ = std::make_unique<GridComponent>();
 		lightComponent_ = std::make_unique<LightComponent>();
 
-		recordComponent_->init(context_, profile_->canvasModule);
+		recordComponent_->init(context_, profile_->recordModule);
 		entitiesComponent_->init(context_, profile_->entitiesModule);
 		offlineComponent_->init(context_, profile_->offlineModule);
 		playerComponent_->init(context_, profile_->playerModule);
 		h265Component_->init(context_, profile_->h265Module);
-		uiComponent_->init(context_, profile_->canvasModule);
+		uiComponent_->init(context_, profile_->recordModule);
 		markComponent_->init(context_, profile_->markModule);
 		materialComponent_->init(context_, profile_->materialModule);
 		gizmoComponent_->init(context_, profile_->dragModule);

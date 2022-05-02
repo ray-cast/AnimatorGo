@@ -26,14 +26,10 @@ namespace flower
 	public:
 		bool hdr;
 		bool srgb;
+		bool active;
 
 		std::uint32_t width;
 		std::uint32_t height;
-
-		std::vector<octoon::math::float3> colorBuffer;
-		std::vector<octoon::math::float3> normalBuffer;
-		std::vector<octoon::math::float3> albedoBuffer;
-		std::vector<octoon::math::float3> denoiseBuffer;
 	};
 }
 

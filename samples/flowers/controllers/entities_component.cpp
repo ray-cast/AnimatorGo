@@ -298,7 +298,7 @@ namespace flower
 		camera->setCameraType(CameraType::Main);
 		camera->setClearFlags(hal::GraphicsClearFlagBits::AllBit);
 		camera->setClearColor(math::float4(0.0f, 0.0f, 0.0f, 1.0f));
-		camera->setupFramebuffers(this->getContext()->profile->canvasModule->width, this->getContext()->profile->canvasModule->height, 0, octoon::hal::GraphicsFormat::R32G32B32SFloat);
+		camera->setupFramebuffers(this->getContext()->profile->recordModule->width, this->getContext()->profile->recordModule->height, 0, octoon::hal::GraphicsFormat::R32G32B32SFloat);
 
 		auto transform = mainCamera->getComponent<TransformComponent>();
 		transform->setQuaternion(quat);

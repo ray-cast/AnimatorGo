@@ -19,11 +19,7 @@ namespace flower
 
 		this->hdr = false;
 		this->srgb = true;
-
-		this->albedoBuffer.resize(this->width * this->height);
-		this->normalBuffer.resize(this->width * this->height);
-		this->colorBuffer.resize(this->width * this->height);
-		this->denoiseBuffer.resize(this->width * this->height);
+		this->active = false;
 	}
 
 	void
@@ -34,11 +30,7 @@ namespace flower
 
 		this->hdr = false;
 		this->srgb = true;
-
-		this->albedoBuffer.resize(this->width * this->height);
-		this->normalBuffer.resize(this->width * this->height);
-		this->colorBuffer.resize(this->width * this->height);
-		this->denoiseBuffer.resize(this->width * this->height);
+		this->active = false;
 	}
 
 	void 
@@ -46,14 +38,6 @@ namespace flower
 	{
 		this->width = reader["width"];
 		this->height = reader["height"];
-
-		this->hdr = reader["hdr"];
-		this->srgb = reader["srgb"];
-
-		this->albedoBuffer.resize(this->width * this->height);
-		this->normalBuffer.resize(this->width * this->height);
-		this->colorBuffer.resize(this->width * this->height);
-		this->denoiseBuffer.resize(this->width * this->height);
 	}
 
 	void 
@@ -61,8 +45,5 @@ namespace flower
 	{
 		reader["width"] = this->width;
 		reader["height"] = this->height;
-
-		reader["hdr"] = this->hdr;
-		reader["srgb"] = this->srgb;
 	}
 }

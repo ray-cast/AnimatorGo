@@ -36,7 +36,7 @@ namespace flower
 		FlowerProfile& operator=(const FlowerProfile&) = delete;
 
 	public:
-		std::shared_ptr<RecordModule> canvasModule;
+		std::shared_ptr<RecordModule> recordModule;
 		std::shared_ptr<FileModule> fileModule;
 		std::shared_ptr<EntitiesModule> entitiesModule;
 		std::shared_ptr<H265Module> h265Module;

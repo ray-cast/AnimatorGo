@@ -16,9 +16,6 @@ namespace flower
 		RecordComponent() noexcept;
 		~RecordComponent() noexcept;
 
-		void setActive(bool active) noexcept override;
-		bool getActive() const noexcept override;
-
 		void captureImage(std::string_view filepath) noexcept;
 
 		bool startRecord(std::string_view filepath) noexcept;
@@ -41,8 +38,6 @@ namespace flower
 		void captureImage() noexcept;
 
 	private:
-		bool active_;
-
 		float time_;
 		float timeCount_;
 
@@ -53,6 +48,11 @@ namespace flower
 		OIDNBuffer oidnNormalBuffer_;
 		OIDNBuffer oidnAlbedoBuffer_;
 		OIDNBuffer oidnOutputBuffer_;
+
+		std::vector<octoon::math::float3> colorBuffer_;
+		std::vector<octoon::math::float3> normalBuffer_;
+		std::vector<octoon::math::float3> albedoBuffer_;
+		std::vector<octoon::math::float3> denoiseBuffer_;
 	};
 }
 

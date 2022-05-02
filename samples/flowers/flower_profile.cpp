@@ -12,7 +12,7 @@ namespace flower
 		, fileModule(std::make_shared<FileModule>())
 		, entitiesModule(std::make_shared<EntitiesModule>())
 		, offlineModule(std::make_shared<OfflineModule>())
-		, canvasModule(std::make_shared<RecordModule>())
+		, recordModule(std::make_shared<RecordModule>())
 		, markModule(std::make_shared<MarkModule>())
 		, sunModule(std::make_shared<SunModule>())
 		, environmentModule(std::make_shared<EnvironmentModule>())
@@ -36,7 +36,7 @@ namespace flower
 			this->fileModule->load(json["file"]);
 			this->entitiesModule->load(json["entities"]);
 			this->offlineModule->load(json["offline"]);
-			this->canvasModule->load(json["canvas"]);
+			this->recordModule->load(json["canvas"]);
 			this->markModule->load(json["mark"]);
 			this->sunModule->load(json["sun"]);
 			this->environmentModule->load(json["environment"]);
@@ -70,7 +70,7 @@ namespace flower
 			profile.fileModule->save(json["file"]);
 			profile.entitiesModule->save(json["entities"]);
 			profile.offlineModule->save(json["offline"]);
-			profile.canvasModule->save(json["canvas"]);
+			profile.recordModule->save(json["canvas"]);
 			profile.markModule->save(json["mark"]);
 			profile.sunModule->save(json["sun"]);
 			profile.environmentModule->save(json["environment"]);

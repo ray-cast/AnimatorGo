@@ -42,8 +42,6 @@ namespace flower
 
 	private:
 		bool needAnimationEvaluate_;
-
-		float time_;
 	};
 }
 

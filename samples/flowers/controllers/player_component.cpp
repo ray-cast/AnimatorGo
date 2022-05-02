@@ -8,8 +8,7 @@
 namespace flower
 {
 	PlayerComponent::PlayerComponent() noexcept
-		: time_(0)
-		, needAnimationEvaluate_(false)
+		: needAnimationEvaluate_(false)
 	{
 	}
 
@@ -343,10 +342,7 @@ namespace flower
 		auto& profile = this->getContext()->profile;
 
 		if (!model->playing_)
-		{
-			time_ = 0;
 			return;
-		}
 
 		if (profile->offlineModule->offlineEnable)
 		{
@@ -378,10 +374,7 @@ namespace flower
 		this->updateDofTarget();
 
 		if (!model->playing_)
-		{
-			time_ = 0;
 			return;
-		}
 
 		if (model->curTime < model->endFrame / 30.0f)
 		{

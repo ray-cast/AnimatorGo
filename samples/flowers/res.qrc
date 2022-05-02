@@ -4,6 +4,13 @@
     	<file>res/qml/MainView.qml</file>
     	<file>res/qml/Splash.qml</file>
     	<file>res/qml/images/splash.png</file>
+    	<file>res/qml/images/logo.png</file>
+    	<file>res/qml/images/rabbit.png</file>
+	    <file>res/qml/images/maximize.png</file>
+		<file>res/qml/images/minimize.png</file>
+		<file>res/qml/images/setting.png</file>
+		<file>res/qml/images/close.png</file>
+
 	    <file>res/icons/maximize.png</file>
 		<file>res/icons/minimize.png</file>
 		<file>res/icons/close.png</file>

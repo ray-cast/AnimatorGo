@@ -751,6 +751,12 @@ namespace octoon
 		}
 
 		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
+		inline detail::Vector4<T> pow(T scale, const detail::Vector4<T>& v1) noexcept
+		{
+			return detail::Vector4<T>(std::pow(scale, v1.x), std::pow(scale, v1.y), std::pow(scale, v1.z), std::pow(scale, v1.w));
+		}
+
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		inline detail::Vector4<T> pow(const detail::Vector4<T>& v1, T scale) noexcept
 		{
 			return detail::Vector4<T>(std::pow(v1.x, scale), std::pow(v1.y, scale), std::pow(v1.z, scale), std::pow(v1.w, scale));

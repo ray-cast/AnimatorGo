@@ -14,8 +14,6 @@ Window {
     x: (Screen.width - splash.width) / 2
     y: (Screen.height - splash.height) / 2
 
-    property alias timer: timer
-
     ColumnLayout {
         width: splash.width
         height: splash.height
@@ -57,11 +55,10 @@ Window {
                     font.pixelSize : 18
                     font.family: "Microsoft YaHei"
                     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-
                 }
 
                 Text {
-                    text: "© 2019-2020 Rabbit-Softwares. All Rights Reserved."
+                    text: "© 2019-2021 Rabbit-Softwares. All Rights Reserved."
                     color:"#a5a5a5"
                     font.pixelSize : 12
                     font.family: "Microsoft YaHei"
@@ -71,6 +68,7 @@ Window {
         }
 
         Text {
+            objectName : "loadingMessage"
             text: "Loading..."
             width : 500
             color:"#a5a5a5"
@@ -81,16 +79,7 @@ Window {
         }
     }
 
-    Timer {
-        id: timer
-        interval: 1000; running: false; repeat: false
-        onTriggered: {
-            splash.visible = false;
-        }
-    }
-
     function delay(){
-        //timer.start();
         splash.visible = false;
     }
 

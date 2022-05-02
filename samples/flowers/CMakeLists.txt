@@ -1,4 +1,4 @@
-SET(LIB_NAME rabbit)
+SET(LIB_NAME flowers)
 SET(LIB_OUTNAME octoon-${LIB_NAME})
 
 SET(HEADER_PATH ${OCTOON_PATH_HEADER})
@@ -20,7 +20,7 @@ SET(MAIN_LIST
 	${SOURCE_PATH}/rabbit_model.cpp
 	${SOURCE_PATH}/resource.rc
 )
-SOURCE_GROUP("rabbit" FILES ${MAIN_LIST})
+SOURCE_GROUP("flowers" FILES ${MAIN_LIST})
 
 SET(MODULES_LIST
 	${SOURCE_PATH}/module/file_module.h
@@ -54,7 +54,7 @@ SET(MODULES_LIST
 	${SOURCE_PATH}/module/grid_module.h
 	${SOURCE_PATH}/module/grid_module.cpp
 )
-SOURCE_GROUP("rabbit\\module" FILES ${MODULES_LIST})
+SOURCE_GROUP("flowers\\module" FILES ${MODULES_LIST})
 
 SET(VIEWS_LIST
 	${SOURCE_PATH}/views/view_window.h
@@ -92,7 +92,7 @@ SET(VIEWS_LIST
 	${SOURCE_PATH}/views/spoiler.h
 	${SOURCE_PATH}/views/spoiler.cpp
 )
-SOURCE_GROUP("rabbit\\views" FILES ${VIEWS_LIST})
+SOURCE_GROUP("flowers\\views" FILES ${VIEWS_LIST})
 
 SET(CONTROLLERS_LIST
 	${SOURCE_PATH}/controllers/camera_window.h
@@ -130,51 +130,51 @@ SET(CONTROLLERS_LIST
 	${SOURCE_PATH}/controllers/light_component.h
 	${SOURCE_PATH}/controllers/light_component.cpp
 )
-SOURCE_GROUP("rabbit\\controllers" FILES ${CONTROLLERS_LIST})
+SOURCE_GROUP("flowers\\controllers" FILES ${CONTROLLERS_LIST})
 
 SET(UTILS_LIST
 	${SOURCE_PATH}/utils/pmm.h
 	${SOURCE_PATH}/utils/pmm.cpp
 )
-SOURCE_GROUP("rabbit\\utils" FILES ${UTILS_LIST})
+SOURCE_GROUP("flowers\\utils" FILES ${UTILS_LIST})
 
 SET(BINDINGS_LIST
 	${SOURCE_PATH}/bindings/application.h
 	${SOURCE_PATH}/bindings/application.cpp
 	${SOURCE_PATH}/bindings/timer.h
 )
-SOURCE_GROUP("rabbit\\bindings" FILES ${BINDINGS_LIST})
+SOURCE_GROUP("flowers\\bindings" FILES ${BINDINGS_LIST})
 
 SET(MINIH264E_LIST 
 	libs/minih264e/minih264e.h
 )
-SOURCE_GROUP("rabbit\\libs\\minih264e" FILES ${MINIH264E_LIST})
+SOURCE_GROUP("flowers\\libs\\minih264e" FILES ${MINIH264E_LIST})
 
 SET(BASE64_LIST 
 	libs/base64/base64.h
 	libs/base64/base64.cpp
 )
-SOURCE_GROUP("rabbit\\libs\\base64" FILES ${BASE64_LIST})
+SOURCE_GROUP("flowers\\libs\\base64" FILES ${BASE64_LIST})
 
 SET(QRCODEGEN_LIST 
 	libs/qrcodegen/qrcodegen.h
 	libs/qrcodegen/qrcodegen.c
 )
-SOURCE_GROUP("rabbit\\libs\\qrcodegen" FILES ${QRCODEGEN_LIST})
+SOURCE_GROUP("flowers\\libs\\qrcodegen" FILES ${QRCODEGEN_LIST})
 
 SET(NATIVE_FILED_DIALOG_LIST 
 	libs/nativefiledialog/nfd.h
 	libs/nativefiledialog/nfd_common.c
 	libs/nativefiledialog/nfd_win.cpp
 )
-SOURCE_GROUP("rabbit\\libs\\NativeFiledDialog" FILES ${NATIVE_FILED_DIALOG_LIST})
+SOURCE_GROUP("flowers\\libs\\NativeFiledDialog" FILES ${NATIVE_FILED_DIALOG_LIST})
 
 SET(OIDN_LIST 
 	libs/oidn-1.2.3/include/OpenImageDenoise/oidn.h
 	libs/oidn-1.2.3/include/OpenImageDenoise/oidn.hpp
 	libs/oidn-1.2.3/include/OpenImageDenoise/version.h
 )
-SOURCE_GROUP("rabbit\\libs\\oidn" FILES ${OIDN_LIST})
+SOURCE_GROUP("flowers\\libs\\oidn" FILES ${OIDN_LIST})
 
 ADD_DEFINITIONS(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
 SET(Qt5_DIR "" CACHE PATH "Directory that contains Qt for the selected compiler, e.g., ../Qt/5.10.1/msvc2017_64")
@@ -262,4 +262,4 @@ IF(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 ENDIF()
 
 SET_TARGET_ATTRIBUTE(${LIB_OUTNAME} "samples")
-SET_TARGET_PROPERTIES(${LIB_OUTNAME} PROPERTIES OUTPUT_NAME "Rabbit Toolbox")
+SET_TARGET_PROPERTIES(${LIB_OUTNAME} PROPERTIES OUTPUT_NAME "Flowers")

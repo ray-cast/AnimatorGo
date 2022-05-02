@@ -1,1 +1,1 @@
-ADD_SUBDIRECTORY(rabbit)
+ADD_SUBDIRECTORY(flowers)

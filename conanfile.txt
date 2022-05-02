@@ -1,0 +1,7 @@
+[requires]
+physx/4.1.1
+libjpeg-turbo/2.1.2
+libpng/1.6.37
+
+[generators]
+cmake

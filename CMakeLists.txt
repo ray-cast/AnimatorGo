@@ -10,6 +10,10 @@ ENDIF()
 
 PROJECT(octoon)
 
+# CONAN依赖
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 # 项目文件路径
 SET(OCTOON_PATH ${PROJECT_SOURCE_DIR} CACHE STRING "Adds a path to octoon" FORCE)
 SET(OCTOON_PATH_BIN ${OCTOON_PATH}/lib/ CACHE STRING "Adds a path to output dir" FORCE)

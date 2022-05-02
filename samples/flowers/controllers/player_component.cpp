@@ -171,6 +171,24 @@ namespace flower
 				}
 			}
 		}
+
+		for (auto& it : this->getContext()->profile->entitiesModule->objects)
+		{
+			for (auto& component : it->getComponents())
+			{
+				if (component->isA<octoon::SkinnedMeshRendererComponent>())
+				{
+					auto smr = component->downcast<octoon::SkinnedMeshRendererComponent>();
+
+					for (auto& transform : smr->getTransforms())
+					{
+						auto solver = transform->getComponent<octoon::CCDSolverComponent>();
+						if (solver)
+							solver->solve();
+					}
+				}
+			}
+		}
 	}
 
 	void
@@ -196,6 +214,24 @@ namespace flower
 					auto animation = component->downcast<octoon::AnimationComponent>();
 					animation->setTime(model->curTime);
 					animation->sample();
+				}
+			}
+		}
+
+		for (auto& it : this->getContext()->profile->entitiesModule->objects)
+		{
+			for (auto& component : it->getComponents())
+			{
+				if (component->isA<octoon::SkinnedMeshRendererComponent>())
+				{
+					auto smr = component->downcast<octoon::SkinnedMeshRendererComponent>();
+
+					for (auto& transform : smr->getTransforms())
+					{
+						auto solver = transform->getComponent<octoon::CCDSolverComponent>();
+						if (solver)
+							solver->solve();
+					}
 				}
 			}
 		}
@@ -239,6 +275,24 @@ namespace flower
 					auto animation = component->downcast<octoon::AnimationComponent>();
 					animation->setTime(model->curTime);
 					animation->evaluate();
+				}
+			}
+		}
+
+		for (auto& it : this->getContext()->profile->entitiesModule->objects)
+		{
+			for (auto& component : it->getComponents())
+			{
+				if (component->isA<octoon::SkinnedMeshRendererComponent>())
+				{
+					auto smr = component->downcast<octoon::SkinnedMeshRendererComponent>();
+					
+					for (auto& transform : smr->getTransforms())
+					{
+						auto solver = transform->getComponent<octoon::CCDSolverComponent>();
+						if (solver)
+							solver->solve();
+					}
 				}
 			}
 		}

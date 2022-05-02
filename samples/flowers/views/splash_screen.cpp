@@ -1,6 +1,5 @@
 ﻿#include "splash_screen.h"
 #include <qapplication.h>
-#include <qdesktopwidget.h>
 #include <qscreen.h>
 
 namespace flower
@@ -64,8 +63,9 @@ namespace flower
 	void
 	SplashScreen::showEvent(QShowEvent* event) noexcept
 	{
-		int currentScreen = QApplication::desktop()->screenNumber(this);
-		QRect rect = QGuiApplication::screens().at(currentScreen)->geometry();
+		// int currentScreen = QApplication::desktop()->screenNumber(this);
+		// FIXME
+		QRect rect = QGuiApplication::screens().at(0)->geometry();
 		this->move((rect.width() - this->width()) / 2, (rect.height() - this->height()) / 2);
 	}
 }

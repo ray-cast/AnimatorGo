@@ -1,5 +1,4 @@
 #include <qapplication.h>
-#include <qdesktopwidget.h>
 #include <qqmlcontext.h>
 #include <qquickview.h>
 #include <qqmlapplicationengine.h>

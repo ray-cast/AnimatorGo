@@ -107,18 +107,18 @@ namespace flower
 				int videoindex_v = 0, videoindex_out = 0;
 				for (unsigned int i = 0; i < iformat->nb_streams; i++)
 				{
-					if (iformat->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
+					if (iformat->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
 					{
 						auto istream = iformat->streams[i];
-						istream->codec->pix_fmt = AV_PIX_FMT_YUVJ420P;
-						istream->codec->codec_type = AVMEDIA_TYPE_VIDEO;
-						istream->codec->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+						istream->codecpar->format = AV_PIX_FMT_YUVJ420P;
+						istream->codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
+						// istream->codecpar->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 
-						auto ostream = avformat_new_stream(oformat, istream->codec->codec);
+						auto ostream = avformat_new_stream(oformat, avcodec_find_encoder(istream->codecpar->codec_id));
 						if (!ostream)
 							throw std::runtime_error("Failed allocating output stream\n");
 
-						if (avcodec_copy_context(ostream->codec, istream->codec) < 0)
+						if (avcodec_parameters_copy(ostream->codecpar, istream->codecpar) < 0)
 							throw std::runtime_error("Failed to copy context from input to output stream codec context\n");
 
 						videoindex_v = i;
@@ -163,7 +163,7 @@ namespace flower
 							throw std::runtime_error("Error muxing packet");
 					}
 
-					av_free_packet(&packet);
+					av_packet_unref(&packet);
 				}
 
 				if (av_write_trailer(oformat) < 0)

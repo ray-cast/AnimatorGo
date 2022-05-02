@@ -101,8 +101,8 @@ namespace flower
 						videoFormat->streams[i]->codecpar->color_range = AVColorRange::AVCOL_RANGE_JPEG;
 
 						auto istream = video_in_stream = videoFormat->streams[i];
-						auto ostream = video_out_stream = avformat_new_stream(outputFormat, istream->codec->codec);
-						if (!ostream)
+						auto ostream = video_out_stream = avformat_new_stream(outputFormat, avcodec_find_encoder(istream->codecpar->codec_id));
+						if (ostream == nullptr)
 							throw std::runtime_error("Failed allocating output stream\n");
 
 						if (avcodec_parameters_copy(ostream->codecpar, istream->codecpar) < 0)

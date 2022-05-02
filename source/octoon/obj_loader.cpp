@@ -52,7 +52,7 @@ namespace octoon
 		std::string warn;
 		std::string err;
 
-		bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, std::string(filepath).c_str());
+		bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, err.c_str(), std::string(filepath).c_str());
 		if (ret)
 		{
 			auto defaultMaterial = std::make_shared<MeshStandardMaterial>();

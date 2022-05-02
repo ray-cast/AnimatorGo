@@ -369,7 +369,7 @@ namespace flower
 		contextLayout_ = std::make_unique<QVBoxLayout>(this);
 		contextLayout_->addWidget(settingTitleWindow_.get());
 		contextLayout_->addWidget(settingContextPlane_.get());
-		contextLayout_->setMargin(0);
+		contextLayout_->setContentsMargins(0, 0, 0, 0);
 		contextLayout_->setSpacing(0);
 
 		closeAnimation_ = std::make_unique<QPropertyAnimation>(this, "windowOpacity");

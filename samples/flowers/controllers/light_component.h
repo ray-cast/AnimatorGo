@@ -1,10 +1,10 @@
-#ifndef RABBIT_LIGHT_COMPONENT_H_
-#define RABBIT_LIGHT_COMPONENT_H_
+#ifndef FLOWER_LIGHT_COMPONENT_H_
+#define FLOWER_LIGHT_COMPONENT_H_
 
-#include "../rabbit_component.h"
+#include "../flower_component.h"
 #include "../module/entities_module.h"
 
-namespace rabbit
+namespace flower
 {
 	enum LightType
 	{

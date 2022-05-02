@@ -1,14 +1,14 @@
-#ifndef RABBIT_COMPONENT_H_
-#define RABBIT_COMPONENT_H_
+#ifndef FLOWER_COMPONENT_H_
+#define FLOWER_COMPONENT_H_
 
-#include <rabbit_model.h>
-#include <rabbit_context.h>
+#include <flower_model.h>
+#include <flower_context.h>
 #include <any>
 #include <octoon/input/input_event.h>
 
-namespace rabbit
+namespace flower
 {
-	class IRabbitComponent
+	class IFlowerComponent
 	{
 	public:
 		virtual const std::type_info& type_info() const noexcept = 0;
@@ -18,7 +18,7 @@ namespace rabbit
 
 		virtual bool isCapture() const = 0;
 
-		virtual std::shared_ptr<RabbitModule> model() const noexcept = 0;
+		virtual std::shared_ptr<FlowerModule> model() const noexcept = 0;
 
 		virtual void onEnable() noexcept(false);
 		virtual void onDisable() noexcept(false);
@@ -37,7 +37,7 @@ namespace rabbit
 	};
 
 	template<typename T>
-	class RabbitComponent : public IRabbitComponent
+	class RabbitComponent : public IFlowerComponent
 	{
 	public:
 		RabbitComponent() noexcept
@@ -99,7 +99,7 @@ namespace rabbit
 			return model_;
 		}
 
-		virtual std::shared_ptr<RabbitModule> model() const noexcept
+		virtual std::shared_ptr<FlowerModule> model() const noexcept
 		{
 			return model_;
 		}
@@ -111,12 +111,12 @@ namespace rabbit
 		}
 
 		template<typename T>
-		IRabbitComponent* getComponent() const noexcept
+		IFlowerComponent* getComponent() const noexcept
 		{
 			return context_->behaviour->getComponent<T>();
 		}
 
-		IRabbitComponent* getComponent(const std::type_info& type) const noexcept
+		IFlowerComponent* getComponent(const std::type_info& type) const noexcept
 		{
 			return context_->behaviour->getComponent(type);
 		}

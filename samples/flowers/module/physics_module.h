@@ -1,13 +1,13 @@
-#ifndef RABBIT_PHYSICS_MODULE_H_
-#define RABBIT_PHYSICS_MODULE_H_
+#ifndef FLOWER_PHYSICS_MODULE_H_
+#define FLOWER_PHYSICS_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 #include <cstdint>
 #include <octoon/math/vector3.h>
 
-namespace rabbit
+namespace flower
 {
-	class PhysicsModule final : public RabbitModule
+	class PhysicsModule final : public FlowerModule
 	{
 	public:
 		PhysicsModule() noexcept;

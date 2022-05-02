@@ -1,11 +1,11 @@
-#ifndef RABBIT_MARK_MODULE_H_
-#define RABBIT_MARK_MODULE_H_
+#ifndef FLOWER_MARK_MODULE_H_
+#define FLOWER_MARK_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 
-namespace rabbit
+namespace flower
 {
-	class MarkModule final : public RabbitModule
+	class MarkModule final : public FlowerModule
 	{
 	public:
 		MarkModule() noexcept;

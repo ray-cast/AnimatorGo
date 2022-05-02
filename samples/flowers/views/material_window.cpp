@@ -11,7 +11,7 @@
 #include <qcolordialog.h>
 #include <qtreewidget.h>
 
-namespace rabbit
+namespace flower
 {
 	constexpr auto imageFormat = "All Files(*.jpeg *.jpg *.png *.tga );; JPEG Files (*.jpeg *.jpg);; PNG Files (*.png);; TGA Files (*.tga)";
 
@@ -1124,7 +1124,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::repaint()
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour && this->material_)
 		{
 			auto materialComponent = behaviour->getComponent<MaterialComponent>();
@@ -1665,7 +1665,7 @@ namespace rabbit
 	{
 		if (behaviour_)
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour->isOpen())
 			{
 				auto selectedItem = behaviour->getProfile()->dragModule->selectedItem_;
@@ -1688,7 +1688,7 @@ namespace rabbit
 	{
 		if (behaviour_)
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour->isOpen())
 			{
 				auto materialComponent = behaviour->getComponent<MaterialComponent>();
@@ -1706,7 +1706,7 @@ namespace rabbit
 	void
 	MaterialWindow::updateList()
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 		{
 			auto materialComponent = behaviour->getComponent<MaterialComponent>();

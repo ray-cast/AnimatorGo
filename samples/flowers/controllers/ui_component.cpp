@@ -1,9 +1,9 @@
 #include "ui_component.h"
 #include "controllers/camera_window.h"
 #include "controllers/theme_manager.h"
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 
-namespace rabbit
+namespace flower
 {
 	UIComponent::UIComponent() noexcept
 	{

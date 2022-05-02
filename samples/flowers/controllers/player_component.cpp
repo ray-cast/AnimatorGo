@@ -1,11 +1,11 @@
 #include "player_component.h"
 #include "client_component.h"
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 #include <octoon/timer_feature.h>
 #include <octoon/physics_feature.h>
 #include <iostream>
 
-namespace rabbit
+namespace flower
 {
 	PlayerComponent::PlayerComponent() noexcept
 		: time_(0)
@@ -42,7 +42,7 @@ namespace rabbit
 		if (timeFeature)
 			timeFeature->setTimeStep(this->getModel()->normalTimeStep);
 
-		this->addMessageListener("rabbit:project:open", [this](const std::any& data)
+		this->addMessageListener("flower:project:open", [this](const std::any& data)
 		{
 			auto& model = this->getModel();
 			model->timeLength = this->getContext()->behaviour->getComponent<PlayerComponent>()->timeLength();
@@ -421,7 +421,7 @@ namespace rabbit
 		else
 		{
 			this->reset();
-			this->sendMessage("rabbit:player:finish");
+			this->sendMessage("flower:player:finish");
 		}
 	}
 }

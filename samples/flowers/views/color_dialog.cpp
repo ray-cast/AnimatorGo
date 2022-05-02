@@ -2,7 +2,7 @@
 #include <qpainter.h>
 #include <qevent.h>
 
-namespace rabbit
+namespace flower
 {
 	class SpinBox final : public QSpinBox
 	{

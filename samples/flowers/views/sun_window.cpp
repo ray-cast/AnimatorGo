@@ -3,7 +3,7 @@
 #include <octoon/transform_component.h>
 #include <octoon/directional_light_component.h>
 
-namespace rabbit
+namespace flower
 {
 	class DoubleSpinBox final : public QDoubleSpinBox
 	{
@@ -21,7 +21,7 @@ namespace rabbit
 		}
 	};
 
-	SunWindow::SunWindow(const std::shared_ptr<rabbit::RabbitProfile>& profile)
+	SunWindow::SunWindow(const std::shared_ptr<flower::FlowerProfile>& profile)
 		: profile_(profile)
 	{
 		this->setObjectName("sunWindow");

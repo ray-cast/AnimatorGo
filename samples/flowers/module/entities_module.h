@@ -1,12 +1,12 @@
-#ifndef RABBIT_ENTITIES_MODULE_H_
-#define RABBIT_ENTITIES_MODULE_H_
+#ifndef FLOWER_ENTITIES_MODULE_H_
+#define FLOWER_ENTITIES_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 #include <octoon/game_object.h>
 
-namespace rabbit
+namespace flower
 {
-	class EntitiesModule final : public RabbitModule
+	class EntitiesModule final : public FlowerModule
 	{
 	public:
 		EntitiesModule() noexcept;

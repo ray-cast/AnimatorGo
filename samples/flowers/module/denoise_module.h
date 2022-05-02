@@ -1,11 +1,11 @@
-#ifndef RABBIT_DENOISE_MODULE_H_
-#define RABBIT_DENOISE_MODULE_H_
+#ifndef FLOWER_DENOISE_MODULE_H_
+#define FLOWER_DENOISE_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 
-namespace rabbit
+namespace flower
 {
-	class DenoiseModule final : public RabbitModule
+	class DenoiseModule final : public FlowerModule
 	{
 	public:
 		DenoiseModule() noexcept;

@@ -1,6 +1,6 @@
 #include "entities_component.h"
-#include "../rabbit_profile.h"
-#include "../rabbit_behaviour.h"
+#include "../flower_profile.h"
+#include "../flower_behaviour.h"
 #include <octoon/ass_loader.h>
 #pragma warning(push)
 #pragma warning(disable:4245)
@@ -14,7 +14,7 @@
 using namespace octoon;
 using namespace octoon::math;
 
-namespace rabbit
+namespace flower
 {
 	EntitiesComponent::EntitiesComponent() noexcept
 	{
@@ -120,7 +120,7 @@ namespace rabbit
 
 		this->getContext()->profile->entitiesModule->objects.push_back(model);
 
-		this->sendMessage("rabbit:project:open");
+		this->sendMessage("flower:project:open");
 		return true;
 	}
 
@@ -148,7 +148,7 @@ namespace rabbit
 			}
 		}
 
-		this->sendMessage("rabbit:project:open");
+		this->sendMessage("flower:project:open");
 	}
 
 	void
@@ -208,7 +208,7 @@ namespace rabbit
 		context->profile->entitiesModule->camera = this->createCamera(pmm);
 		context->profile->entitiesModule->objects = objects;
 
-		this->sendMessage("rabbit:project:open");
+		this->sendMessage("flower:project:open");
 	}
 
 	bool

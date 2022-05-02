@@ -1,5 +1,5 @@
-#ifndef RABBIT_RECORD_WINDOW_H_
-#define RABBIT_RECORD_WINDOW_H_
+#ifndef FLOWER_RECORD_WINDOW_H_
+#define FLOWER_RECORD_WINDOW_H_
 
 #include <qwidget>
 #include <qdialog.h>
@@ -13,11 +13,11 @@
 #include <qlineedit.h>
 #include <qspinbox.h>
 #include <qtimer.h>
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 #include "spoiler.h"
 #include <octoon/game_object.h>
 
-namespace rabbit
+namespace flower
 {
 	class FocalTargetWindow final : public QToolButton
 	{

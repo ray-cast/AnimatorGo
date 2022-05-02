@@ -1,11 +1,11 @@
-#ifndef RABBIT_MATERIAL_MODULE_H_
-#define RABBIT_MATERIAL_MODULE_H_
+#ifndef FLOWER_MATERIAL_MODULE_H_
+#define FLOWER_MATERIAL_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 
-namespace rabbit
+namespace flower
 {
-	class MaterialModule final : public RabbitModule
+	class MaterialModule final : public FlowerModule
 	{
 	public:
 		MaterialModule() noexcept;

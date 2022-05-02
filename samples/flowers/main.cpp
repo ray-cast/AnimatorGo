@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
 	QGuiApplication app(argc, argv);
 
-	auto applicationData = std::make_unique<rabbit::Application>();
+	auto applicationData = std::make_unique<flower::Application>();
 
 	app.exec();
 
@@ -32,11 +32,11 @@ int main(int argc, char *argv[])
 		QApplication app(argc, argv);
 		app.setStyleSheet(styleSheet.readAll());
 
-		auto splash = std::make_unique<rabbit::SplashScreen>();
+		auto splash = std::make_unique<flower::SplashScreen>();
 		splash->show();
 		app.processEvents();
 
-		rabbit::MainWindow w(splash.get());
+		flower::MainWindow w(splash.get());
 		w.show();
 
 		splash.reset();

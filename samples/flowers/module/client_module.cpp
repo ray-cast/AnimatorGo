@@ -1,7 +1,7 @@
 #include "client_module.h"
 #include <filesystem>
 
-namespace rabbit
+namespace flower
 {
 	ClientModule::ClientModule() noexcept
 	{

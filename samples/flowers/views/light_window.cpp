@@ -6,7 +6,7 @@
 #include <octoon/transform_component.h>
 #include <octoon/directional_light_component.h>
 
-namespace rabbit
+namespace flower
 {
 	LightListWindow::LightListWindow() noexcept(false)
 	{
@@ -64,7 +64,7 @@ namespace rabbit
 		QListWidget::mousePressEvent(event);
 	}
 
-	LightWindow::LightWindow(const std::shared_ptr<rabbit::RabbitProfile>& profile)
+	LightWindow::LightWindow(const std::shared_ptr<flower::FlowerProfile>& profile)
 	{
 		this->setObjectName("LightWindow");
 		this->setMinimumWidth(340);

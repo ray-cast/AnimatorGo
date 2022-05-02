@@ -1,10 +1,10 @@
-#ifndef RABBIT_MARK_COMPONENT_H_
-#define RABBIT_MARK_COMPONENT_H_
+#ifndef FLOWER_MARK_COMPONENT_H_
+#define FLOWER_MARK_COMPONENT_H_
 
-#include "../rabbit_component.h"
+#include "../flower_component.h"
 #include "../module/mark_module.h"
 
-namespace rabbit
+namespace flower
 {
 	class MarkComponent final : public RabbitComponent<MarkModule>
 	{

@@ -1,12 +1,12 @@
-#ifndef RABBIT_FILE_MODULE_H_
-#define RABBIT_FILE_MODULE_H_
+#ifndef FLOWER_FILE_MODULE_H_
+#define FLOWER_FILE_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 #include <vector>
 
-namespace rabbit
+namespace flower
 {
-	class FileModule final : public RabbitModule
+	class FileModule final : public FlowerModule
 	{
 	public:
 		FileModule() noexcept;

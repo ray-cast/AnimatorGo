@@ -1,11 +1,11 @@
 #include "canvas_component.h"
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 #include <octoon/camera_component.h>
 #include <octoon/image/image.h>
 #include <octoon/hal/graphics.h>
 #include <octoon/video_feature.h>
 
-namespace rabbit
+namespace flower
 {
 	CanvasComponent::CanvasComponent() noexcept
 		: active_(false)

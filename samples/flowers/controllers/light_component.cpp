@@ -1,12 +1,12 @@
 #include "light_component.h"
 #include "../libs/nativefiledialog/nfd.h"
-#include "../rabbit_profile.h"
+#include "../flower_profile.h"
 
 #include <octoon/point_light_component.h>
 #include <octoon/spot_light_component.h>
 #include <octoon/directional_light_component.h>
 
-namespace rabbit
+namespace flower
 {
 	LightComponent::LightComponent() noexcept
 	{

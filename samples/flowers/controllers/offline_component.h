@@ -1,10 +1,10 @@
-#ifndef RABBIT_OFFLINE_COMPONENT_H_
-#define RABBIT_OFFLINE_COMPONENT_H_
+#ifndef FLOWER_OFFLINE_COMPONENT_H_
+#define FLOWER_OFFLINE_COMPONENT_H_
 
-#include "../rabbit_component.h"
+#include "../flower_component.h"
 #include "../module/offline_module.h"
 
-namespace rabbit
+namespace flower
 {
 	class OfflineComponent final : public RabbitComponent<OfflineModule>
 	{

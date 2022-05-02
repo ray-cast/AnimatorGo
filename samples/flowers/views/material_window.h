@@ -1,5 +1,5 @@
-#ifndef RABBIT_MATERIAL_WINDOW_H_
-#define RABBIT_MATERIAL_WINDOW_H_
+#ifndef FLOWER_MATERIAL_WINDOW_H_
+#define FLOWER_MATERIAL_WINDOW_H_
 
 #include <qwidget>
 #include <qdialog.h>
@@ -16,12 +16,12 @@
 #include <qcolordialog.h>
 #include <optional>
 
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 #include "color_dialog.h"
 #include "spoiler.h"
 #include <octoon/game_object.h>
 
-namespace rabbit
+namespace flower
 {
 	class MaterialEditWindow final : public QWidget
 	{

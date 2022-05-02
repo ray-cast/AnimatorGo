@@ -1,44 +1,44 @@
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 
-namespace rabbit
+namespace flower
 {
-	OctoonImplementSubClass(RabbitBehaviour, octoon::GameComponent, "RabbitBehaviour")
+	OctoonImplementSubClass(FlowerBehaviour, octoon::GameComponent, "FlowerBehaviour")
 
-	RabbitBehaviour::RabbitBehaviour() noexcept
+	FlowerBehaviour::FlowerBehaviour() noexcept
 	{
 	}
 
-	RabbitBehaviour::RabbitBehaviour(const std::shared_ptr<RabbitProfile>& profile) noexcept
+	FlowerBehaviour::FlowerBehaviour(const std::shared_ptr<FlowerProfile>& profile) noexcept
 		: profile_(profile)
 	{
 	}
 
-	RabbitBehaviour::~RabbitBehaviour() noexcept
+	FlowerBehaviour::~FlowerBehaviour() noexcept
 	{
 	}
 
 	void
-	RabbitBehaviour::addComponent(IRabbitComponent* component) noexcept
+	FlowerBehaviour::addComponent(IFlowerComponent* component) noexcept
 	{
 		components_.push_back(component);
 	}
 
 	void
-	RabbitBehaviour::removeComponent(const IRabbitComponent* component) noexcept
+	FlowerBehaviour::removeComponent(const IFlowerComponent* component) noexcept
 	{
 		auto it = std::find(components_.begin(), components_.end(), component);
 		if (it != components_.end())
 			components_.erase(it);
 	}
 
-	const std::vector<IRabbitComponent*>&
-	RabbitBehaviour::getComponents() const noexcept
+	const std::vector<IFlowerComponent*>&
+	FlowerBehaviour::getComponents() const noexcept
 	{
 		return components_;
 	}
 
-	IRabbitComponent*
-	RabbitBehaviour::getComponent(const std::type_info& type) const noexcept
+	IFlowerComponent*
+	FlowerBehaviour::getComponent(const std::type_info& type) const noexcept
 	{
 		for (auto& it : components_)
 		{
@@ -50,7 +50,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::enableComponents() noexcept(false)
+	FlowerBehaviour::enableComponents() noexcept(false)
 	{
 		auto feature = this->tryGetFeature<octoon::GameBaseFeature>();
 
@@ -67,17 +67,17 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::disableComponents() noexcept
+	FlowerBehaviour::disableComponents() noexcept
 	{
 		for (auto& it : components_)
 			it->onDisable();
 	}
 
 	void
-	RabbitBehaviour::onActivate() noexcept(false)
+	FlowerBehaviour::onActivate() noexcept(false)
 	{
 		if (!profile_)
-			profile_ = RabbitProfile::load("sys:config/config.conf");
+			profile_ = FlowerProfile::load("sys:config/config.conf");
 
 		context_ = std::make_shared<RabbitContext>();
 		context_->behaviour = this;
@@ -137,17 +137,17 @@ namespace rabbit
 			auto gameObjectManager = baseFeature->getGameObjectManager();
 			if (gameObjectManager)
 			{
-				gameObjectManager->addMessageListener("feature:input:mousemove", std::bind(&RabbitBehaviour::onMouseMotion, this, std::placeholders::_1));
-				gameObjectManager->addMessageListener("feature:input:mousedown", std::bind(&RabbitBehaviour::onMouseDown, this, std::placeholders::_1));
-				gameObjectManager->addMessageListener("feature:input:mouseup", std::bind(&RabbitBehaviour::onMouseUp, this, std::placeholders::_1));
-				gameObjectManager->addMessageListener("feature:input:drop", std::bind(&RabbitBehaviour::onDrop, this, std::placeholders::_1));
-				gameObjectManager->addMessageListener("feature:input:resize", std::bind(&RabbitBehaviour::onResize, this, std::placeholders::_1));
+				gameObjectManager->addMessageListener("feature:input:mousemove", std::bind(&FlowerBehaviour::onMouseMotion, this, std::placeholders::_1));
+				gameObjectManager->addMessageListener("feature:input:mousedown", std::bind(&FlowerBehaviour::onMouseDown, this, std::placeholders::_1));
+				gameObjectManager->addMessageListener("feature:input:mouseup", std::bind(&FlowerBehaviour::onMouseUp, this, std::placeholders::_1));
+				gameObjectManager->addMessageListener("feature:input:drop", std::bind(&FlowerBehaviour::onDrop, this, std::placeholders::_1));
+				gameObjectManager->addMessageListener("feature:input:resize", std::bind(&FlowerBehaviour::onResize, this, std::placeholders::_1));
 			}
 		}
 	}
 
 	void
-	RabbitBehaviour::onDeactivate() noexcept
+	FlowerBehaviour::onDeactivate() noexcept
 	{
 		this->disableComponents();
 
@@ -170,16 +170,16 @@ namespace rabbit
 			auto gameObjectManager = baseFeature->getGameObjectManager();
 			if (gameObjectManager)
 			{
-				gameObjectManager->removeMessageListener("feature:input:mousemove", std::bind(&RabbitBehaviour::onMouseMotion, this, std::placeholders::_1));
-				gameObjectManager->removeMessageListener("feature:input:mousedown", std::bind(&RabbitBehaviour::onMouseDown, this, std::placeholders::_1));
-				gameObjectManager->removeMessageListener("feature:input:mouseup", std::bind(&RabbitBehaviour::onMouseUp, this, std::placeholders::_1));
-				gameObjectManager->removeMessageListener("feature:input:drop", std::bind(&RabbitBehaviour::onDrop, this, std::placeholders::_1));
+				gameObjectManager->removeMessageListener("feature:input:mousemove", std::bind(&FlowerBehaviour::onMouseMotion, this, std::placeholders::_1));
+				gameObjectManager->removeMessageListener("feature:input:mousedown", std::bind(&FlowerBehaviour::onMouseDown, this, std::placeholders::_1));
+				gameObjectManager->removeMessageListener("feature:input:mouseup", std::bind(&FlowerBehaviour::onMouseUp, this, std::placeholders::_1));
+				gameObjectManager->removeMessageListener("feature:input:drop", std::bind(&FlowerBehaviour::onDrop, this, std::placeholders::_1));
 			}
 		}
 	}
 
 	void
-	RabbitBehaviour::onFixedUpdate() noexcept
+	FlowerBehaviour::onFixedUpdate() noexcept
 	{
 		for (auto& it : components_)
 		{
@@ -189,7 +189,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::onUpdate() noexcept
+	FlowerBehaviour::onUpdate() noexcept
 	{
 		for (auto& it : components_)
 		{
@@ -199,7 +199,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::onLateUpdate() noexcept
+	FlowerBehaviour::onLateUpdate() noexcept
 	{
 		for (auto& it : components_)
 		{
@@ -209,7 +209,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::onDrop(const std::any& data) noexcept
+	FlowerBehaviour::onDrop(const std::any& data) noexcept
 	{
 		if (data.type() == typeid(std::vector<const char*>))
 		{
@@ -220,7 +220,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::onMouseMotion(const std::any& data) noexcept
+	FlowerBehaviour::onMouseMotion(const std::any& data) noexcept
 	{
 		auto event = std::any_cast<octoon::input::InputEvent>(data);
 		for (auto& it : components_)
@@ -247,7 +247,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::onMouseDown(const std::any& data) noexcept
+	FlowerBehaviour::onMouseDown(const std::any& data) noexcept
 	{
 		auto event = std::any_cast<octoon::input::InputEvent>(data);
 		for (auto& it : components_)
@@ -274,7 +274,7 @@ namespace rabbit
 	}
 	
 	void
-	RabbitBehaviour::onMouseUp(const std::any& data) noexcept
+	FlowerBehaviour::onMouseUp(const std::any& data) noexcept
 	{
 		auto event = std::any_cast<octoon::input::InputEvent>(data);
 		for (auto& it : components_)
@@ -301,7 +301,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::onResize(const std::any& data) noexcept
+	FlowerBehaviour::onResize(const std::any& data) noexcept
 	{
 		auto event = std::any_cast<octoon::input::InputEvent>(data);
 		for (auto& it : components_)
@@ -311,14 +311,14 @@ namespace rabbit
 		}
 	}
 
-	const std::shared_ptr<RabbitProfile>&
-	RabbitBehaviour::getProfile() const noexcept
+	const std::shared_ptr<FlowerProfile>&
+	FlowerBehaviour::getProfile() const noexcept
 	{
 		return profile_;
 	}
 
 	void
-	RabbitBehaviour::open(std::string_view path) noexcept(false)
+	FlowerBehaviour::open(std::string_view path) noexcept(false)
 	{
 		auto ext = path.substr(path.find_last_of("."));
 		if (ext == ".pmm")
@@ -338,19 +338,19 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::close() noexcept
+	FlowerBehaviour::close() noexcept
 	{
 		this->profile_->entitiesModule->objects.clear();
 	}
 
 	bool
-	RabbitBehaviour::isOpen() const noexcept
+	FlowerBehaviour::isOpen() const noexcept
 	{
 		return !profile_->entitiesModule->objects.empty();
 	}
 
 	void
-	RabbitBehaviour::openModel() noexcept
+	FlowerBehaviour::openModel() noexcept
 	{
 		auto pathLimits = this->profile_->fileModule->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
@@ -359,7 +359,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::saveModel() noexcept
+	FlowerBehaviour::saveModel() noexcept
 	{
 		auto pathLimits = this->profile_->fileModule->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
@@ -368,21 +368,21 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::play() noexcept
+	FlowerBehaviour::play() noexcept
 	{
 		playerComponent_->play();
 		dragComponent_->setActive(false);
 	}
 
 	void
-	RabbitBehaviour::pause() noexcept
+	FlowerBehaviour::pause() noexcept
 	{
 		playerComponent_->pause();
 		dragComponent_->setActive(true);
 	}
 
 	bool
-	RabbitBehaviour::startRecord(std::string_view filepath) noexcept
+	FlowerBehaviour::startRecord(std::string_view filepath) noexcept
 	{
 		try
 		{
@@ -411,7 +411,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::stopRecord() noexcept
+	FlowerBehaviour::stopRecord() noexcept
 	{
 		canvasComponent_->setActive(false);
 		denoiseComponent_->setActive(false);
@@ -421,19 +421,19 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::loadAudio(std::string_view filepath) noexcept
+	FlowerBehaviour::loadAudio(std::string_view filepath) noexcept
 	{
 		entitiesComponent_->importAudio(filepath);
 	}
 
 	void
-	RabbitBehaviour::clearAudio() noexcept
+	FlowerBehaviour::clearAudio() noexcept
 	{
 		entitiesComponent_->clearAudio();
 	}
 
 	void
-	RabbitBehaviour::renderPicture(std::string_view filepath) noexcept(false)
+	FlowerBehaviour::renderPicture(std::string_view filepath) noexcept(false)
 	{
 		canvasComponent_->setActive(true);
 		denoiseComponent_->setActive(true);
@@ -448,7 +448,7 @@ namespace rabbit
 	}
 
 	std::optional<octoon::RaycastHit>
-	RabbitBehaviour::raycastHit(const octoon::math::float2& pos) noexcept
+	FlowerBehaviour::raycastHit(const octoon::math::float2& pos) noexcept
 	{
 		if (this->profile_->entitiesModule->camera)
 		{
@@ -466,8 +466,8 @@ namespace rabbit
 	}
 
 	octoon::GameComponentPtr
-	RabbitBehaviour::clone() const noexcept
+	FlowerBehaviour::clone() const noexcept
 	{
-		return std::make_shared<RabbitBehaviour>();
+		return std::make_shared<FlowerBehaviour>();
 	}
 }

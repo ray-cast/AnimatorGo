@@ -1,8 +1,8 @@
-#ifndef RABBIT_BEHAVIOUR_H_
-#define RABBIT_BEHAVIOUR_H_
+#ifndef FLOWER_BEHAVIOUR_H_
+#define FLOWER_BEHAVIOUR_H_
 
-#include "rabbit_profile.h"
-#include "rabbit_context.h"
+#include "flower_profile.h"
+#include "flower_context.h"
 
 #include "controllers/denoise_component.h"
 #include "controllers/entities_component.h"
@@ -21,17 +21,17 @@
 
 #include <octoon/octoon.h>
 
-namespace rabbit
+namespace flower
 {
-	class RabbitBehaviour final : public octoon::GameComponent
+	class FlowerBehaviour final : public octoon::GameComponent
 	{
-		OctoonDeclareSubClass(RabbitBehaviour, octoon::GameComponent)
+		OctoonDeclareSubClass(FlowerBehaviour, octoon::GameComponent)
 	public:
-		RabbitBehaviour() noexcept;
-		RabbitBehaviour(const std::shared_ptr<RabbitProfile>& profile) noexcept;
-		~RabbitBehaviour() noexcept;
+		FlowerBehaviour() noexcept;
+		FlowerBehaviour(const std::shared_ptr<FlowerProfile>& profile) noexcept;
+		~FlowerBehaviour() noexcept;
 
-		const std::shared_ptr<RabbitProfile>& getProfile() const noexcept;
+		const std::shared_ptr<FlowerProfile>& getProfile() const noexcept;
 
 		void open(std::string_view filepath) noexcept(false);
 		void close() noexcept;
@@ -53,13 +53,13 @@ namespace rabbit
 
 		std::optional<octoon::RaycastHit> raycastHit(const octoon::math::float2& pos) noexcept;
 
-		void addComponent(IRabbitComponent* component) noexcept;
-		void removeComponent(const IRabbitComponent* component) noexcept;
-		const std::vector<IRabbitComponent*>& getComponents() const noexcept;
+		void addComponent(IFlowerComponent* component) noexcept;
+		void removeComponent(const IFlowerComponent* component) noexcept;
+		const std::vector<IFlowerComponent*>& getComponents() const noexcept;
 		void enableComponents() noexcept(false);
 		void disableComponents() noexcept;
 
-		IRabbitComponent* getComponent(const std::type_info& type) const noexcept;
+		IFlowerComponent* getComponent(const std::type_info& type) const noexcept;
 		template<typename T>
 		T* getComponent() const noexcept { return dynamic_cast<T*>(this->getComponent(typeid(T))); }
 
@@ -83,7 +83,7 @@ namespace rabbit
 		void onResize(const std::any& data) noexcept;
 
 	private:
-		std::shared_ptr<RabbitProfile> profile_;
+		std::shared_ptr<FlowerProfile> profile_;
 		std::shared_ptr<RabbitContext> context_;
 
 		std::unique_ptr<CanvasComponent> canvasComponent_;
@@ -100,7 +100,7 @@ namespace rabbit
 		std::unique_ptr<GizmoComponent> gizmoComponent_;
 		std::unique_ptr<LightComponent> lightComponent_;
 
-		std::vector<IRabbitComponent*> components_;
+		std::vector<IFlowerComponent*> components_;
 	};
 }
 

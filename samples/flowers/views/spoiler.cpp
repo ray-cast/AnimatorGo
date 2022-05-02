@@ -1,7 +1,7 @@
 #include "spoiler.h"
 #include <qpropertyanimation.h>
 
-namespace rabbit
+namespace flower
 {
 	Spoiler::Spoiler(const QString& title, const int animationDuration, QWidget* parent)
 		: QWidget(parent)

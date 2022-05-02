@@ -1,22 +1,22 @@
-#ifndef RABBIT_ENVIRONMENT_WINDOW_H_
-#define RABBIT_ENVIRONMENT_WINDOW_H_
+#ifndef FLOWER_ENVIRONMENT_WINDOW_H_
+#define FLOWER_ENVIRONMENT_WINDOW_H_
 
 #include <qwidget.h>
 #include <qcheckbox.h>
 #include <qcolordialog.h>
 #include "spoiler.h"
 #include "color_dialog.h"
-#include "rabbit_profile.h"
-#include "rabbit_behaviour.h"
+#include "flower_profile.h"
+#include "flower_behaviour.h"
 #include <octoon/hal/graphics.h>
 
-namespace rabbit
+namespace flower
 {
    	class EnvironmentWindow final : public QWidget
 	{
 		Q_OBJECT
 	public:
-		EnvironmentWindow(QWidget* widget, const octoon::GameObjectPtr& behaviour, const std::shared_ptr<rabbit::RabbitProfile>& profile);
+		EnvironmentWindow(QWidget* widget, const octoon::GameObjectPtr& behaviour, const std::shared_ptr<flower::FlowerProfile>& profile);
 		~EnvironmentWindow();
 
 		void repaint();
@@ -75,7 +75,7 @@ namespace rabbit
 		octoon::hal::GraphicsTexturePtr texture;
 
 		std::shared_ptr<QImage> image_;
-		std::shared_ptr<rabbit::RabbitProfile> profile_;
+		std::shared_ptr<flower::FlowerProfile> profile_;
 	};
 }
 

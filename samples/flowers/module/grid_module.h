@@ -1,11 +1,11 @@
-#ifndef RABBIT_GRID_MODULE_H_
-#define RABBIT_GRID_MODULE_H_
+#ifndef FLOWER_GRID_MODULE_H_
+#define FLOWER_GRID_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 
-namespace rabbit
+namespace flower
 {
-	class GridModule final : public RabbitModule
+	class GridModule final : public FlowerModule
 	{
 	public:
 		GridModule() noexcept;

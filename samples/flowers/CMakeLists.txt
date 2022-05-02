@@ -8,16 +8,16 @@ SET(CMAKE_AUTOMOC ON)
 
 SET(MAIN_LIST
 	${SOURCE_PATH}/main.cpp
-	${SOURCE_PATH}/rabbit_behaviour.h
-	${SOURCE_PATH}/rabbit_behaviour.cpp
-	${SOURCE_PATH}/rabbit_component.h
-	${SOURCE_PATH}/rabbit_component.cpp
-	${SOURCE_PATH}/rabbit_profile.h
-	${SOURCE_PATH}/rabbit_profile.cpp
-	${SOURCE_PATH}/rabbit_context.h
-	${SOURCE_PATH}/rabbit_context.cpp
-	${SOURCE_PATH}/rabbit_model.h
-	${SOURCE_PATH}/rabbit_model.cpp
+	${SOURCE_PATH}/flower_behaviour.h
+	${SOURCE_PATH}/flower_behaviour.cpp
+	${SOURCE_PATH}/flower_component.h
+	${SOURCE_PATH}/flower_component.cpp
+	${SOURCE_PATH}/flower_profile.h
+	${SOURCE_PATH}/flower_profile.cpp
+	${SOURCE_PATH}/flower_context.h
+	${SOURCE_PATH}/flower_context.cpp
+	${SOURCE_PATH}/flower_model.h
+	${SOURCE_PATH}/flower_model.cpp
 	${SOURCE_PATH}/resource.rc
 )
 SOURCE_GROUP("flowers" FILES ${MAIN_LIST})

@@ -3,7 +3,7 @@
 #include <qdesktopwidget.h>
 #include <qscreen.h>
 
-namespace rabbit
+namespace flower
 {
 	SplashScreen::SplashScreen()
 	{

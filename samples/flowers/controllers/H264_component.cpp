@@ -1,5 +1,5 @@
 #include "h264_component.h"
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 
 extern "C"
 {
@@ -10,7 +10,7 @@ extern "C"
 #include <fstream>
 #include <filesystem>
 
-namespace rabbit
+namespace flower
 {
 	H264Component::H264Component() noexcept
 		: encoder_(nullptr)

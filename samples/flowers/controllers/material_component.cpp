@@ -1,7 +1,7 @@
 #include "material_component.h"
 
-#include "../rabbit_profile.h"
-#include "../rabbit_behaviour.h"
+#include "../flower_profile.h"
+#include "../flower_behaviour.h"
 
 #include <octoon/mdl_loader.h>
 #include <octoon/PMREM_loader.h>
@@ -16,7 +16,7 @@
 #include <qstring.h>
 #include <quuid.h>
 
-namespace rabbit
+namespace flower
 {
 	MaterialComponent::MaterialComponent() noexcept
 	{

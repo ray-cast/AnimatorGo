@@ -1,6 +1,6 @@
 #include "offline_module.h"
 
-namespace rabbit
+namespace flower
 {
 	OfflineModule::OfflineModule() noexcept
 	{

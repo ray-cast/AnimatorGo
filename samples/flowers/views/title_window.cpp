@@ -1,8 +1,8 @@
 #include "title_window.h"
 
-namespace rabbit
+namespace flower
 {
-	TitleWindow::TitleWindow(QWidget* parent, const std::shared_ptr<rabbit::RabbitProfile>& profile) noexcept
+	TitleWindow::TitleWindow(QWidget* parent, const std::shared_ptr<flower::FlowerProfile>& profile) noexcept
 		: QWidget(parent)
 		, maxNormal_(false)
 		, profile_(profile)

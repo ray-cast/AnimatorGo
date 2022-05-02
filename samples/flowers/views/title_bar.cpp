@@ -1,6 +1,6 @@
 #include "title_bar.h"
 
-namespace rabbit
+namespace flower
 {
 	TitleBar::TitleBar(QWidget* parent) noexcept
 		: allowMove_(true)

@@ -1,5 +1,5 @@
 #include "client_component.h"
-#include "../rabbit_profile.h"
+#include "../flower_profile.h"
 
 #pragma warning(push)
 #pragma warning(disable:4458)
@@ -11,7 +11,7 @@
 #include <octoon/io/http_buf.h>
 #include <octoon/perspective_camera_component.h>
 
-namespace rabbit
+namespace flower
 {
 	ClientComponent::ClientComponent() noexcept
 	{

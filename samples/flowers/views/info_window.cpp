@@ -3,9 +3,9 @@
 #include <qpainter.h>
 #include <qmessagebox.h>
 
-namespace rabbit
+namespace flower
 {
-	InfoWindow::InfoWindow(QWidget* widget, const std::shared_ptr<rabbit::RabbitBehaviour>& behaviour) noexcept
+	InfoWindow::InfoWindow(QWidget* widget, const std::shared_ptr<flower::FlowerBehaviour>& behaviour) noexcept
 		: parent_(widget)
 		, behaviour_(behaviour)
 		, allowMove_(false)

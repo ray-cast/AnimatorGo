@@ -1,9 +1,9 @@
 #include "offline_component.h"
 #include "../libs/nativefiledialog/nfd.h"
-#include "../rabbit_profile.h"
-#include "../rabbit_behaviour.h"
+#include "../flower_profile.h"
+#include "../flower_behaviour.h"
 
-namespace rabbit
+namespace flower
 {
 	OfflineComponent::OfflineComponent() noexcept
 	{
@@ -28,7 +28,7 @@ namespace rabbit
 			this->getFeature<octoon::VideoFeature>()->setGlobalIllumination(active);
 			this->getModel()->offlineEnable = active;
 
-			this->sendMessage("rabbit:offline", active);
+			this->sendMessage("flower:offline", active);
 		}
 	}
 

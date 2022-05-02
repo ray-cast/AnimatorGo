@@ -1,11 +1,11 @@
-#ifndef RABBIT_OFFLINE_MODULE_H_
-#define RABBIT_OFFLINE_MODULE_H_
+#ifndef FLOWER_OFFLINE_MODULE_H_
+#define FLOWER_OFFLINE_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 
-namespace rabbit
+namespace flower
 {
-	class OfflineModule final : public RabbitModule
+	class OfflineModule final : public FlowerModule
 	{
 	public:
 		OfflineModule() noexcept;

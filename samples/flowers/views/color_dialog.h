@@ -15,7 +15,7 @@
 #include <octoon/math/vector2.h>
 #include <octoon/math/vector3.h>
 
-namespace rabbit
+namespace flower
 {
 	class ColorPlane : public QLabel
 	{

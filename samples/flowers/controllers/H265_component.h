@@ -1,14 +1,14 @@
-#ifndef RABBIT_H265_COMPONENT_H_
-#define RABBIT_H265_COMPONENT_H_
+#ifndef FLOWER_H265_COMPONENT_H_
+#define FLOWER_H265_COMPONENT_H_
 
 #include "module/h265_module.h"
-#include "rabbit_component.h"
+#include "flower_component.h"
 
 struct x265_param;
 struct x265_encoder;
 struct x265_picture;
 
-namespace rabbit
+namespace flower
 {
 	class H265Component final : public RabbitComponent<H265Module>
 	{

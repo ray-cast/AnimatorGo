@@ -1,5 +1,5 @@
-#ifndef RABBIT_APPLICATION_H_
-#define RABBIT_APPLICATION_H_
+#ifndef FLOWER_APPLICATION_H_
+#define FLOWER_APPLICATION_H_
 
 #include <qobject.h>
 #include <qqmlapplicationengine.h>
@@ -9,10 +9,10 @@
 
 #include "timer.h"
 
-#include "rabbit_profile.h"
-#include "rabbit_behaviour.h"
+#include "flower_profile.h"
+#include "flower_behaviour.h"
 
-namespace rabbit
+namespace flower
 {
     class Application;
     class ApplicationListener : public octoon::GameListener
@@ -52,7 +52,7 @@ namespace rabbit
         octoon::GameObjectPtr behaviour_;
 
         std::unique_ptr<QQmlApplicationEngine> engine_;
-        std::shared_ptr<rabbit::RabbitProfile> profile_;
+        std::shared_ptr<flower::FlowerProfile> profile_;
     };
 }
 

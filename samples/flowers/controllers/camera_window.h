@@ -1,9 +1,9 @@
-#ifndef RABBIT_CAMERA_WINDOW_H_
-#define RABBIT_CAMERA_WINDOW_H_
+#ifndef FLOWER_CAMERA_WINDOW_H_
+#define FLOWER_CAMERA_WINDOW_H_
 
 #include <octoon/game_component.h>
 
-namespace rabbit
+namespace flower
 {
 	class CameraWindow final : public octoon::GameComponent
 	{

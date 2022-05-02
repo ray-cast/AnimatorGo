@@ -1,6 +1,6 @@
 #include "sun_module.h"
 
-namespace rabbit
+namespace flower
 {
 	SunModule::SunModule() noexcept
 	{

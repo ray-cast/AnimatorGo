@@ -1,10 +1,10 @@
-#ifndef RABBIT_CANVAS_COMPONENT_H_
-#define RABBIT_CANVAS_COMPONENT_H_
+#ifndef FLOWER_CANVAS_COMPONENT_H_
+#define FLOWER_CANVAS_COMPONENT_H_
 
-#include <rabbit_component.h>
+#include <flower_component.h>
 #include <module/canvas_module.h>
 
-namespace rabbit
+namespace flower
 {
 	class CanvasComponent final : public RabbitComponent<CanvasModule>
 	{

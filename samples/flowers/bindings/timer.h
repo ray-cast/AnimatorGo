@@ -1,12 +1,12 @@
-#ifndef RABBIT_TIMER_H_
-#define RABBIT_TIMER_H_
+#ifndef FLOWER_TIMER_H_
+#define FLOWER_TIMER_H_
 
 #include <qwidget.h>
 #include <qtimer.h>
 #include <qdrag.h>
 #include <qdatetime.h>
 
-namespace rabbit
+namespace flower
 {
     class Timer : public QObject
     {

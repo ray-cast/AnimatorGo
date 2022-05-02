@@ -1,14 +1,14 @@
-#ifndef RABBIT_DENOISE_COMPONENT_H_
-#define RABBIT_DENOISE_COMPONENT_H_
+#ifndef FLOWER_DENOISE_COMPONENT_H_
+#define FLOWER_DENOISE_COMPONENT_H_
 
 #include "module/denoise_module.h"
-#include "rabbit_component.h"
+#include "flower_component.h"
 
 typedef struct OIDNFilterImpl* OIDNFilter;
 typedef struct OIDNDeviceImpl* OIDNDevice;
 typedef struct OIDNBufferImpl* OIDNBuffer;
 
-namespace rabbit
+namespace flower
 {
 	class DenoiseComponent final : public RabbitComponent<DenoiseModule>
 	{

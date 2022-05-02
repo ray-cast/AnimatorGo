@@ -1,6 +1,6 @@
 #include "material_module.h"
 
-namespace rabbit
+namespace flower
 {
 	MaterialModule::MaterialModule() noexcept
 	{

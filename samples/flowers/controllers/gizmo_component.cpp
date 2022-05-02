@@ -1,7 +1,7 @@
 #include "gizmo_component.h"
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 
-namespace rabbit
+namespace flower
 {
 	class GizmoMaterial final : public octoon::MeshBasicMaterial
 	{

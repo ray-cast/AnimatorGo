@@ -1,15 +1,15 @@
-#ifndef RABBIT_MODEL_H_
-#define RABBIT_MODEL_H_
+#ifndef FLOWER_MODEL_H_
+#define FLOWER_MODEL_H_
 
 #include <octoon/runtime/json.h>
 
-namespace rabbit
+namespace flower
 {
-	class RabbitModule
+	class FlowerModule
 	{
 	public:
-		RabbitModule() noexcept;
-		virtual ~RabbitModule() noexcept;
+		FlowerModule() noexcept;
+		virtual ~FlowerModule() noexcept;
 
 		void setEnable(bool enable) noexcept;
 		bool getEnable() const noexcept;
@@ -21,8 +21,8 @@ namespace rabbit
 		virtual void save(octoon::runtime::json& reader) noexcept(false) = 0;
 
 	private:
-		RabbitModule(const RabbitModule&) = delete;
-		RabbitModule& operator=(const RabbitModule&) = delete;
+		FlowerModule(const FlowerModule&) = delete;
+		FlowerModule& operator=(const FlowerModule&) = delete;
 
 	private:
 		bool enable_;

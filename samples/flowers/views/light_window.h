@@ -1,15 +1,15 @@
-#ifndef RABBIT_LIGHT_WINDOW_H_
-#define RABBIT_LIGHT_WINDOW_H_
+#ifndef FLOWER_LIGHT_WINDOW_H_
+#define FLOWER_LIGHT_WINDOW_H_
 
 #include <qwidget.h>
 #include <qlayout.h>
 #include <qscrollarea.h>
 #include <qlistwidget.h>
 
-#include "rabbit_profile.h"
+#include "flower_profile.h"
 #include "color_dialog.h"
 
-namespace rabbit
+namespace flower
 {
 	class LightListWindow final : public QListWidget
 	{
@@ -29,7 +29,7 @@ namespace rabbit
 	{
 		Q_OBJECT
 	public:
-		LightWindow(const std::shared_ptr<rabbit::RabbitProfile>& profile);
+		LightWindow(const std::shared_ptr<flower::FlowerProfile>& profile);
 		~LightWindow();
 
 		void repaint();

@@ -1,6 +1,6 @@
 #include "canvas_module.h"
 
-namespace rabbit
+namespace flower
 {
 	CanvasModule::CanvasModule() noexcept
 	{

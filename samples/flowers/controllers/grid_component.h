@@ -1,11 +1,11 @@
-#ifndef RABBIT_GRID_COMPONENT_H_
-#define RABBIT_GRID_COMPONENT_H_
+#ifndef FLOWER_GRID_COMPONENT_H_
+#define FLOWER_GRID_COMPONENT_H_
 
-#include <rabbit_component.h>
+#include <flower_component.h>
 #include <octoon/game_object.h>
 #include <module/grid_module.h>
 
-namespace rabbit
+namespace flower
 {
 	class GridComponent final : public RabbitComponent<GridModule>
 	{

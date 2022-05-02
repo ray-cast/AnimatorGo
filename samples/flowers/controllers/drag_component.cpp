@@ -1,8 +1,8 @@
 #include "drag_component.h"
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 #include <octoon/mesh/cube_wireframe_mesh.h>
 
-namespace rabbit
+namespace flower
 {
 	DragComponent::DragComponent() noexcept
 	{

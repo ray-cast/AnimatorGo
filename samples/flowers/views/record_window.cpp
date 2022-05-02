@@ -6,7 +6,7 @@
 #include <qmimedata.h>
 #include <qapplication.h>
 
-namespace rabbit
+namespace flower
 {
 	class SpinBox final : public QSpinBox
 	{
@@ -402,7 +402,7 @@ namespace rabbit
 	void
 	RecordWindow::startRecord(QString fileName)
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 		{
 			if (behaviour->startRecord(fileName.toUtf8().data()))
@@ -428,7 +428,7 @@ namespace rabbit
 	void
 	RecordWindow::stopRecord()
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 		{
 			timer_->stop();
@@ -442,7 +442,7 @@ namespace rabbit
 	void
 	RecordWindow::updateTarget()
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 		{
 			auto hit = behaviour->getProfile()->dragModule->selectedItemHover_;
@@ -470,7 +470,7 @@ namespace rabbit
 	void
 	RecordWindow::onSppChanged(int value)
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 			behaviour->getProfile()->playerModule->spp = value;
 	}
@@ -478,15 +478,15 @@ namespace rabbit
 	void
 	RecordWindow::onBouncesChanged(int value)
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
-			behaviour->getComponent<rabbit::OfflineComponent>()->setMaxBounces(value);
+			behaviour->getComponent<flower::OfflineComponent>()->setMaxBounces(value);
 	}
 
 	void
 	RecordWindow::onCrfChanged(double value)
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 			behaviour->getProfile()->h265Module->crf = value;
 	}
@@ -494,7 +494,7 @@ namespace rabbit
 	void
 	RecordWindow::onApertureChanged(double value)
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 			behaviour->getProfile()->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->setAperture(value);
 	}
@@ -506,13 +506,13 @@ namespace rabbit
 		{
 			focalDistanceSpinbox_->setSpecialValueText(QString());
 
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
 				focalDistanceSpinbox_->setValue(behaviour->getProfile()->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->getFocalDistance());
 		}
 		else
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
 				behaviour->getProfile()->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->setFocalDistance(value);
 		}
@@ -551,7 +551,7 @@ namespace rabbit
 		if (select2_->isChecked())
 			quality = VideoQuality::Medium;
 
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 		{
 			behaviour->getProfile()->h265Module->setVideoQuality(quality);
@@ -586,7 +586,7 @@ namespace rabbit
 	{
 		if (checked)
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
 				behaviour->getProfile()->playerModule->recordFps = 24;
 
@@ -599,7 +599,7 @@ namespace rabbit
 	{
 		if (checked)
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
 				behaviour->getProfile()->playerModule->recordFps = 25;
 
@@ -612,7 +612,7 @@ namespace rabbit
 	{
 		if (checked)
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
 				behaviour->getProfile()->playerModule->recordFps = 30;
 
@@ -625,7 +625,7 @@ namespace rabbit
 	{
 		if (checked)
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
 				behaviour->getProfile()->playerModule->recordFps = 60;
 
@@ -636,7 +636,7 @@ namespace rabbit
 	void
 	RecordWindow::startEvent(int value)
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 		{
 			behaviour->getProfile()->playerModule->startFrame = value;
@@ -647,7 +647,7 @@ namespace rabbit
 	void
 	RecordWindow::endEvent(int value)
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 		{
 			behaviour->getProfile()->playerModule->endFrame = value;
@@ -658,7 +658,7 @@ namespace rabbit
 	void
 	RecordWindow::timeEvent()
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 		{
 			auto playerComponent = behaviour->getComponent<PlayerComponent>();
@@ -673,7 +673,7 @@ namespace rabbit
 	void
 	RecordWindow::update()
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 		{
 			auto playerComponent = dynamic_cast<PlayerComponent*>(behaviour->getComponent<PlayerComponent>());
@@ -703,7 +703,7 @@ namespace rabbit
 	void 
 	RecordWindow::repaint()
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 		if (behaviour)
 		{
 			auto playerComponent = behaviour->getComponent<PlayerComponent>();
@@ -724,7 +724,7 @@ namespace rabbit
 
 			sppSpinbox_->setValue(profile->playerModule->spp);
 			crfSpinbox->setValue(profile->h265Module->crf);
-			bouncesSpinbox_->setValue(behaviour->getComponent<rabbit::OfflineComponent>()->getMaxBounces());
+			bouncesSpinbox_->setValue(behaviour->getComponent<flower::OfflineComponent>()->getMaxBounces());
 			apertureSpinbox_->setValue(profile->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->getAperture());
 
 			if (!behaviour->getProfile()->playerModule->dofTarget)

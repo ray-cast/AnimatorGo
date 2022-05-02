@@ -1,7 +1,7 @@
 #include "tool_window.h"
 #include <qscrollarea.h>
 
-namespace rabbit
+namespace flower
 {
 	ToolWindow::ToolWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept
 		: QWidget(parent)

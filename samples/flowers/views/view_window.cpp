@@ -1,9 +1,9 @@
 #include "views/view_window.h"
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 
-namespace rabbit
+namespace flower
 {
-	ViewWidget::ViewWidget(QWidget* parent, const std::shared_ptr<rabbit::RabbitProfile>& profile) noexcept
+	ViewWidget::ViewWidget(QWidget* parent, const std::shared_ptr<flower::FlowerProfile>& profile) noexcept
 		: QWidget(parent)
 		, timer(this)
 	{

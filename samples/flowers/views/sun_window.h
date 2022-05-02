@@ -1,20 +1,20 @@
-#ifndef RABBIT_SUN_WINDOW_H_
-#define RABBIT_SUN_WINDOW_H_
+#ifndef FLOWER_SUN_WINDOW_H_
+#define FLOWER_SUN_WINDOW_H_
 
 #include <qwidget.h>
 #include <qlayout.h>
 #include <qscrollarea.h>
 
-#include "rabbit_profile.h"
+#include "flower_profile.h"
 #include "color_dialog.h"
 
-namespace rabbit
+namespace flower
 {
 	class SunWindow final : public QWidget
 	{
 		Q_OBJECT
 	public:
-		SunWindow(const std::shared_ptr<rabbit::RabbitProfile>& profile);
+		SunWindow(const std::shared_ptr<flower::FlowerProfile>& profile);
 		~SunWindow();
 
 		void repaint();
@@ -62,7 +62,7 @@ namespace rabbit
 		QHBoxLayout* layoutRotationZ_;
 		QVBoxLayout* mainLayout_;
 		QToolButton* resetButton_;
-		std::shared_ptr<rabbit::RabbitProfile> profile_;
+		std::shared_ptr<flower::FlowerProfile> profile_;
 	};
 }
 

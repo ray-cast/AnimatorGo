@@ -1,5 +1,5 @@
-#ifndef RABBIT_PROFILE_H_
-#define RABBIT_PROFILE_H_
+#ifndef FLOWER_PROFILE_H_
+#define FLOWER_PROFILE_H_
 
 #include <memory>
 #include <string>
@@ -20,21 +20,21 @@
 #include "module/drag_module.h"
 #include "module/grid_module.h"
 
-namespace rabbit
+namespace flower
 {
-	class RabbitProfile
+	class FlowerProfile
 	{
 	public:
-		RabbitProfile() noexcept;
-		RabbitProfile(std::string_view path) noexcept(false);
-		virtual ~RabbitProfile() noexcept;
+		FlowerProfile() noexcept;
+		FlowerProfile(std::string_view path) noexcept(false);
+		virtual ~FlowerProfile() noexcept;
 
-		static std::unique_ptr<RabbitProfile> load(std::string_view path) noexcept(false);
-		static void save(std::string_view path, const RabbitProfile& profile) noexcept(false);
+		static std::unique_ptr<FlowerProfile> load(std::string_view path) noexcept(false);
+		static void save(std::string_view path, const FlowerProfile& profile) noexcept(false);
 
 	private:
-		RabbitProfile(const RabbitProfile&) = delete;
-		RabbitProfile& operator=(const RabbitProfile&) = delete;
+		FlowerProfile(const FlowerProfile&) = delete;
+		FlowerProfile& operator=(const FlowerProfile&) = delete;
 
 	public:
 		std::shared_ptr<CanvasModule> canvasModule;

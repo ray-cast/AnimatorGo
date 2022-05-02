@@ -8,7 +8,7 @@
 #include <qquicktextdocument.h>
 #include <qapplication.h>
 
-namespace rabbit
+namespace flower
 {
 	ApplicationListener::ApplicationListener(Application* app)
 		: application_(app)
@@ -24,7 +24,7 @@ namespace rabbit
 
 	Application::Application()
 		: behaviour_(octoon::GameObject::create())
-		, profile_(rabbit::RabbitProfile::load("./config/config.conf"))
+		, profile_(flower::FlowerProfile::load("./config/config.conf"))
 	{
 		timer_ = new Timer();
 		message_ = "Loading...";
@@ -62,7 +62,7 @@ namespace rabbit
 				gameApp_->open((octoon::WindHandle)widget->window()->winId(), w, h, w, h);
 				gameApp_->setActive(true);
 
-				behaviour_->addComponent<rabbit::RabbitBehaviour>(profile_);
+				behaviour_->addComponent<flower::FlowerBehaviour>(profile_);
 			}
 
 			return true;

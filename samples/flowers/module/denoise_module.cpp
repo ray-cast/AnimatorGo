@@ -1,6 +1,6 @@
 #include "denoise_module.h"
 
-namespace rabbit
+namespace flower
 {
 	DenoiseModule::DenoiseModule() noexcept
 	{

@@ -1,8 +1,8 @@
 #include "denoise_component.h"
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 #include <OpenImageDenoise/oidn.hpp>
 
-namespace rabbit
+namespace flower
 {
 	DenoiseComponent::DenoiseComponent() noexcept
 		: device_(nullptr)

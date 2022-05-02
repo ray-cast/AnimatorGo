@@ -1,5 +1,5 @@
-#ifndef RABBIT_TOOL_WINDOW_H_
-#define RABBIT_TOOL_WINDOW_H_
+#ifndef FLOWER_TOOL_WINDOW_H_
+#define FLOWER_TOOL_WINDOW_H_
 
 #include <qapplication.h>
 #include <qlayout.h>
@@ -11,10 +11,10 @@
 #include <qscrollarea.h>
 #include <QtGui/qevent.h>
 #include <qdockwidget.h>
-#include "rabbit_profile.h"
-#include "rabbit_behaviour.h"
+#include "flower_profile.h"
+#include "flower_behaviour.h"
 
-namespace rabbit
+namespace flower
 {
 	class ToolWindow final : public QWidget
 	{

@@ -1,15 +1,15 @@
-#ifndef RABBIT_ENTITIES_COMPONENT_H_
-#define RABBIT_ENTITIES_COMPONENT_H_
+#ifndef FLOWER_ENTITIES_COMPONENT_H_
+#define FLOWER_ENTITIES_COMPONENT_H_
 
 #include "../utils/pmm.h"
-#include "../rabbit_component.h"
+#include "../flower_component.h"
 #include "../module/file_module.h"
 #include "../module/entities_module.h"
 
 #include <optional>
 #include <octoon/octoon.h>
 
-namespace rabbit
+namespace flower
 {
 	class EntitiesComponent final : public RabbitComponent<EntitiesModule>
 	{

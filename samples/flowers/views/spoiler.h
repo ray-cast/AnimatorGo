@@ -1,5 +1,5 @@
-#ifndef RABBIT_SPOILER_H_
-#define RABBIT_SPOILER_H_
+#ifndef FLOWER_SPOILER_H_
+#define FLOWER_SPOILER_H_
 
 #include <qframe.h>
 #include <QParallelAnimationGroup>
@@ -7,7 +7,7 @@
 #include <qtoolbutton.h>
 #include <qgridlayout.h>
 
-namespace rabbit
+namespace flower
 {
 	class Spoiler final : public QWidget
 	{

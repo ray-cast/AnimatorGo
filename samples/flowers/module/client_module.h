@@ -1,11 +1,11 @@
-#ifndef RABBIT_CLIENT_MODULE_H_
-#define RABBIT_CLIENT_MODULE_H_
+#ifndef FLOWER_CLIENT_MODULE_H_
+#define FLOWER_CLIENT_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 
-namespace rabbit
+namespace flower
 {
-	class ClientModule final : public RabbitModule
+	class ClientModule final : public FlowerModule
 	{
 	public:
 		ClientModule() noexcept;

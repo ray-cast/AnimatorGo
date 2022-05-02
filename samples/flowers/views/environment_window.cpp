@@ -9,7 +9,7 @@
 #include <qfiledialog.h>
 #include <qfileinfo.h>
 
-namespace rabbit
+namespace flower
 {
 	class DoubleSpinBox final : public QDoubleSpinBox
 	{
@@ -27,7 +27,7 @@ namespace rabbit
 		}
 	};
 
-	EnvironmentWindow::EnvironmentWindow(QWidget* widget, const octoon::GameObjectPtr& behaviour, const std::shared_ptr<rabbit::RabbitProfile>& profile)
+	EnvironmentWindow::EnvironmentWindow(QWidget* widget, const octoon::GameObjectPtr& behaviour, const std::shared_ptr<flower::FlowerProfile>& profile)
 		: QWidget(widget)
 		, profile_(profile)
 		, behaviour_(behaviour)

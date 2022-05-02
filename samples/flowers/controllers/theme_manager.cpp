@@ -1,6 +1,6 @@
 #include "theme_manager.h"
 
-namespace rabbit
+namespace flower
 {
 	OctoonImplementSubClass(ThemeManager, octoon::GameComponent, "ThemeManager")
 

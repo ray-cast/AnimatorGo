@@ -4,7 +4,7 @@
 #include <octoon/ui/imgui.h>
 #include <octoon/editor_camera_component.h>
 
-namespace rabbit
+namespace flower
 {
 	OctoonImplementSubClass(CameraWindow, octoon::GameComponent, "CameraWindow")
 

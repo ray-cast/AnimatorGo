@@ -4,7 +4,7 @@
 #include <qmessagebox.h>
 #include "../controllers/client_component.h"
 
-namespace rabbit
+namespace flower
 {
 	class SpinBox final : public QSpinBox
 	{
@@ -38,7 +38,7 @@ namespace rabbit
 		}
 	};
 
-	SettingMainPlane::SettingMainPlane(QWidget* parent, const std::shared_ptr<rabbit::RabbitBehaviour>& behaviour)
+	SettingMainPlane::SettingMainPlane(QWidget* parent, const std::shared_ptr<flower::FlowerBehaviour>& behaviour)
 		: QWidget(parent)
 	{
 		infoLabel = std::make_unique<QLabel>(this);
@@ -148,7 +148,7 @@ namespace rabbit
 	{
 	}
 
-	SettingContextPlane::SettingContextPlane(QWidget* parent, const std::shared_ptr<rabbit::RabbitBehaviour>& behaviour) noexcept
+	SettingContextPlane::SettingContextPlane(QWidget* parent, const std::shared_ptr<flower::FlowerBehaviour>& behaviour) noexcept
 		: QWidget(parent)
 		, behaviour_(behaviour)
 	{
@@ -357,7 +357,7 @@ namespace rabbit
 		}
 	}
 
-	SettingWindow::SettingWindow(const std::shared_ptr<rabbit::RabbitBehaviour>& behaviour) noexcept
+	SettingWindow::SettingWindow(const std::shared_ptr<flower::FlowerBehaviour>& behaviour) noexcept
 		: settingTitleWindow_(std::make_unique<TitleBar>(this))
 		, settingContextPlane_(std::make_unique<SettingContextPlane>(this, behaviour))
 	{

@@ -1,13 +1,13 @@
-#ifndef RABBIT_CANVAS_MODULE_H_
-#define RABBIT_CANVAS_MODULE_H_
+#ifndef FLOWER_CANVAS_MODULE_H_
+#define FLOWER_CANVAS_MODULE_H_
 
 #include <vector>
-#include <rabbit_model.h>
+#include <flower_model.h>
 #include <octoon/math/vector3.h>
 
-namespace rabbit
+namespace flower
 {
-	class CanvasModule final : public RabbitModule
+	class CanvasModule final : public FlowerModule
 	{
 	public:
 		CanvasModule() noexcept;

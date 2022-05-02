@@ -1,6 +1,6 @@
 #include "entities_module.h"
 
-namespace rabbit
+namespace flower
 {
 	EntitiesModule::EntitiesModule() noexcept
 	{

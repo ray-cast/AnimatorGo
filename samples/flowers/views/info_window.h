@@ -1,5 +1,5 @@
-#ifndef RABBIT_INFO_WINDOW_H_
-#define RABBIT_INFO_WINDOW_H_
+#ifndef FLOWER_INFO_WINDOW_H_
+#define FLOWER_INFO_WINDOW_H_
 
 #include <qlayout.h>
 #include <qframe.h>
@@ -15,15 +15,15 @@
 #include <qtimer.h>
 #include <future>
 
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 
-namespace rabbit
+namespace flower
 {
 	class InfoWindow final : public QFrame
 	{
 		Q_OBJECT
 	public:
-		InfoWindow(QWidget* widget, const std::shared_ptr<rabbit::RabbitBehaviour>& behaviour) noexcept;
+		InfoWindow(QWidget* widget, const std::shared_ptr<flower::FlowerBehaviour>& behaviour) noexcept;
 		~InfoWindow() noexcept;
 
 	private:
@@ -83,7 +83,7 @@ namespace rabbit
 		std::unique_ptr<QHBoxLayout> selectLayout_;
 		std::unique_ptr<QHBoxLayout> lisenseLayout_;
 		std::unique_ptr<QVBoxLayout> layout_;
-		std::shared_ptr<rabbit::RabbitBehaviour> behaviour_;
+		std::shared_ptr<flower::FlowerBehaviour> behaviour_;
 	};
 }
 

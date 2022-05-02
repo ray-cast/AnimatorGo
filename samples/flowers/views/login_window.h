@@ -1,5 +1,5 @@
-#ifndef RABBIT_LOGIN_WINDOW_H_
-#define RABBIT_LOGIN_WINDOW_H_
+#ifndef FLOWER_LOGIN_WINDOW_H_
+#define FLOWER_LOGIN_WINDOW_H_
 
 #include <qlayout.h>
 #include <qframe.h>
@@ -14,9 +14,9 @@
 #include <qstackedwidget.h>
 #include <qpropertyanimation.h>
 
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 
-namespace rabbit
+namespace flower
 {
 	class LineEdit final : public QLineEdit
 	{
@@ -132,7 +132,7 @@ namespace rabbit
 	{
 		Q_OBJECT
 	public:
-		LoginWindow(const std::shared_ptr<rabbit::RabbitBehaviour>& behaviour) noexcept;
+		LoginWindow(const std::shared_ptr<flower::FlowerBehaviour>& behaviour) noexcept;
 		~LoginWindow() noexcept;
 
 	public Q_SLOTS:
@@ -174,7 +174,7 @@ namespace rabbit
 		std::unique_ptr<ForgetWidget> forgetWidget_;
 		std::unique_ptr<RegisterWidget> registerWidget_;
 
-		std::shared_ptr<rabbit::RabbitBehaviour> behaviour_;
+		std::shared_ptr<flower::FlowerBehaviour> behaviour_;
 	};
 }
 

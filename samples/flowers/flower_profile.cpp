@@ -1,11 +1,11 @@
-#include "rabbit_profile.h"
+#include "flower_profile.h"
 #include <fstream>
 #include <filesystem>
 #include <octoon/runtime/json.h>
 
-namespace rabbit
+namespace flower
 {
-	RabbitProfile::RabbitProfile() noexcept
+	FlowerProfile::FlowerProfile() noexcept
 		: denoiseModule(std::make_shared<DenoiseModule>())
 		, physicsModule(std::make_shared<PhysicsModule>())
 		, h265Module(std::make_shared<H265Module>())
@@ -24,8 +24,8 @@ namespace rabbit
 	{
 	}
 
-	RabbitProfile::RabbitProfile(std::string_view path) noexcept(false)
-		: RabbitProfile()
+	FlowerProfile::FlowerProfile(std::string_view path) noexcept(false)
+		: FlowerProfile()
 	{
 		std::ifstream stream(path);
 		if (stream)
@@ -49,18 +49,18 @@ namespace rabbit
 		}
 	}
 
-	RabbitProfile::~RabbitProfile() noexcept
+	FlowerProfile::~FlowerProfile() noexcept
 	{
 	}
 
-	std::unique_ptr<RabbitProfile>
-	RabbitProfile::load(std::string_view path) noexcept(false)
+	std::unique_ptr<FlowerProfile>
+	FlowerProfile::load(std::string_view path) noexcept(false)
 	{
-		return std::make_unique<RabbitProfile>(path);
+		return std::make_unique<FlowerProfile>(path);
 	}
 
 	void
-	RabbitProfile::save(std::string_view path, const RabbitProfile& profile) noexcept(false)
+	FlowerProfile::save(std::string_view path, const FlowerProfile& profile) noexcept(false)
 	{
 		std::ofstream stream(path);
 		if (stream)

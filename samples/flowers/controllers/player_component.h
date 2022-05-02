@@ -1,10 +1,10 @@
-#ifndef RABBIT_PLAYER_COMPONENT_H_
-#define RABBIT_PLAYER_COMPONENT_H_
+#ifndef FLOWER_PLAYER_COMPONENT_H_
+#define FLOWER_PLAYER_COMPONENT_H_
 
-#include "../rabbit_component.h"
+#include "../flower_component.h"
 #include "../module/time_module.h"
 
-namespace rabbit
+namespace flower
 {
 	class PlayerComponent final : public RabbitComponent<PlayerModule>
 	{

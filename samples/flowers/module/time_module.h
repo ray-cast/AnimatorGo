@@ -1,14 +1,14 @@
-#ifndef RABBIT_TIME_MODULE_H_
-#define RABBIT_TIME_MODULE_H_
+#ifndef FLOWER_TIME_MODULE_H_
+#define FLOWER_TIME_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 #include <octoon/raycaster.h>
 #include <octoon/game_object.h>
 #include <optional>
 
-namespace rabbit
+namespace flower
 {
-	class PlayerModule final : public RabbitModule
+	class PlayerModule final : public FlowerModule
 	{
 	public:
 		PlayerModule() noexcept;

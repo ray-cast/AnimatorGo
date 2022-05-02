@@ -1,13 +1,13 @@
-#ifndef RABBIT_ENVIRONMENT_MODULE_H_
-#define RABBIT_ENVIRONMENT_MODULE_H_
+#ifndef FLOWER_ENVIRONMENT_MODULE_H_
+#define FLOWER_ENVIRONMENT_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 #include <octoon/math/vector2.h>
 #include <octoon/math/vector3.h>
 
-namespace rabbit
+namespace flower
 {
-	class EnvironmentModule final : public RabbitModule
+	class EnvironmentModule final : public FlowerModule
 	{
 	public:
 		EnvironmentModule() noexcept;

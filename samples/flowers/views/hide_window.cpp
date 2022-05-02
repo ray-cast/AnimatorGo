@@ -1,6 +1,6 @@
 #include "hide_window.h"
 
-namespace rabbit
+namespace flower
 {
 	HideBar::HideBar(QWidget* parent)
 	{

@@ -1,7 +1,7 @@
-#ifndef RABBIT_MATERIAL_COMPONENT_H_
-#define RABBIT_MATERIAL_COMPONENT_H_
+#ifndef FLOWER_MATERIAL_COMPONENT_H_
+#define FLOWER_MATERIAL_COMPONENT_H_
 
-#include "../rabbit_component.h"
+#include "../flower_component.h"
 #include "../module/material_module.h"
 
 #include <set>
@@ -12,7 +12,7 @@
 #include <octoon/camera/perspective_camera.h>
 #include <octoon/material/material.h>
 
-namespace rabbit
+namespace flower
 {
 	class MaterialComponent final : public RabbitComponent<MaterialModule>
 	{

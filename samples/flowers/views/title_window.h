@@ -1,5 +1,5 @@
-#ifndef RABBIT_TITLE_WINDOW_H_
-#define RABBIT_TITLE_WINDOW_H_
+#ifndef FLOWER_TITLE_WINDOW_H_
+#define FLOWER_TITLE_WINDOW_H_
 
 #include <qapplication.h>
 #include <qlayout.h>
@@ -10,15 +10,15 @@
 #include <qlabel.h>
 #include <QtGui/qevent.h>
 
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 
-namespace rabbit
+namespace flower
 {
 	class TitleWindow final : public QWidget
 	{
 		Q_OBJECT
 	public:
-		TitleWindow(QWidget* parent, const std::shared_ptr<rabbit::RabbitProfile>& profile) noexcept;
+		TitleWindow(QWidget* parent, const std::shared_ptr<flower::FlowerProfile>& profile) noexcept;
 		~TitleWindow() noexcept;
 
 	public Q_SLOTS:
@@ -64,7 +64,7 @@ namespace rabbit
 		QToolButton vipButton_;
 		QPushButton logoButton_;
 
-		std::shared_ptr<rabbit::RabbitProfile> profile_;
+		std::shared_ptr<flower::FlowerProfile> profile_;
 	};
 }
 

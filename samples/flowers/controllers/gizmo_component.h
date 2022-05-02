@@ -1,7 +1,7 @@
-#ifndef RABBIT_GIZMO_COMPONENT_H_
-#define RABBIT_GIZMO_COMPONENT_H_
+#ifndef FLOWER_GIZMO_COMPONENT_H_
+#define FLOWER_GIZMO_COMPONENT_H_
 
-#include <rabbit_component.h>
+#include <flower_component.h>
 
 #include <octoon/raycaster.h>
 #include <octoon/game_object.h>
@@ -11,7 +11,7 @@
 
 #include <optional>
 
-namespace rabbit
+namespace flower
 {
 	class TransformGizmo
 	{

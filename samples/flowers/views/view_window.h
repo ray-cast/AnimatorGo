@@ -1,20 +1,20 @@
-#ifndef RABBIT_VIEW_WIDGET_H
-#define RABBIT_VIEW_WIDGET_H
+#ifndef FLOWER_VIEW_WIDGET_H
+#define FLOWER_VIEW_WIDGET_H
 
 #include <qwidget.h>
 #include <qtimer.h>
 #include <qdrag.h>
 
 #include <octoon/octoon.h>
-#include "rabbit_profile.h"
+#include "flower_profile.h"
 
-namespace rabbit
+namespace flower
 {
 	class ViewWidget final : public QWidget
 	{
 		Q_OBJECT
 	public:
-		ViewWidget(QWidget* parent, const std::shared_ptr<rabbit::RabbitProfile>& profile) noexcept;
+		ViewWidget(QWidget* parent, const std::shared_ptr<flower::FlowerProfile>& profile) noexcept;
 		~ViewWidget() noexcept;
 
 	private Q_SLOTS:
@@ -53,7 +53,7 @@ namespace rabbit
 		octoon::GameAppPtr gameApp_;
 		octoon::GameObjectPtr behaviour_;
 
-		std::shared_ptr<rabbit::RabbitProfile> profile_;
+		std::shared_ptr<flower::FlowerProfile> profile_;
 	};
 }
 

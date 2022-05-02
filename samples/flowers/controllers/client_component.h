@@ -1,12 +1,12 @@
-#ifndef RABBIT_CLIENT_COMPONENT_H_
-#define RABBIT_CLIENT_COMPONENT_H_
+#ifndef FLOWER_CLIENT_COMPONENT_H_
+#define FLOWER_CLIENT_COMPONENT_H_
 
 #include <optional>
 #include <future>
-#include "../rabbit_component.h"
+#include "../flower_component.h"
 #include "../module/client_module.h"
 
-namespace rabbit
+namespace flower
 {
 	class ClientComponent final : public RabbitComponent<ClientModule>
 	{

@@ -1,6 +1,6 @@
 #include "h265_module.h"
 
-namespace rabbit
+namespace flower
 {
 	H265Module::H265Module() noexcept
 	{
@@ -16,13 +16,13 @@ namespace rabbit
 	{
 		switch (quality_)
 		{
-		case rabbit::Low:
+		case flower::Low:
 			this->quality = quality_;
 			break;
-		case rabbit::Medium:
+		case flower::Medium:
 			this->quality = quality_;
 			break;
-		case rabbit::High:
+		case flower::High:
 			this->quality = quality_;
 			break;
 		default:

@@ -1,5 +1,5 @@
-#ifndef RABBIT_PMM_H_
-#define RABBIT_PMM_H_
+#ifndef FLOWER_PMM_H_
+#define FLOWER_PMM_H_
 
 #include <string>
 #include <vector>

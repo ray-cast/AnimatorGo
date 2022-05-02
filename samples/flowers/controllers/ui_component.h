@@ -1,11 +1,11 @@
-#ifndef RABBIT_UI_COMPONENT_H_
-#define RABBIT_UI_COMPONENT_H_
+#ifndef FLOWER_UI_COMPONENT_H_
+#define FLOWER_UI_COMPONENT_H_
 
 #include <octoon/game_object.h>
-#include <rabbit_component.h>
+#include <flower_component.h>
 #include <module/canvas_module.h>
 
-namespace rabbit
+namespace flower
 {
 	class UIComponent final : public RabbitComponent<CanvasModule>
 	{

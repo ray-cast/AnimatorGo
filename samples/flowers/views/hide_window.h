@@ -1,5 +1,5 @@
-#ifndef RABBIT_HIDE_WINDOW_H_
-#define RABBIT_HIDE_WINDOW_H_
+#ifndef FLOWER_HIDE_WINDOW_H_
+#define FLOWER_HIDE_WINDOW_H_
 
 #include <qapplication.h>
 #include <qlayout.h>
@@ -9,7 +9,7 @@
 #include <QtGui/qevent.h>
 #include <qdockwidget.h>
 
-namespace rabbit
+namespace flower
 {
 	class HideBar final : public QWidget
 	{

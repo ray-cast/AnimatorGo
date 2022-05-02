@@ -1,10 +1,10 @@
-#ifndef RABBIT_THEME_MANAGER_H_
-#define RABBIT_THEME_MANAGER_H_
+#ifndef FLOWER_THEME_MANAGER_H_
+#define FLOWER_THEME_MANAGER_H_
 
 #include <octoon/game_component.h>
 #include <octoon/ui/imgui.h>
 
-namespace rabbit
+namespace flower
 {
 	class ThemeManager final : public octoon::GameComponent
 	{

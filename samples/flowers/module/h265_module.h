@@ -1,10 +1,10 @@
-#ifndef RABBIT_H265_MODULE_H_
-#define RABBIT_H265_MODULE_H_
+#ifndef FLOWER_H265_MODULE_H_
+#define FLOWER_H265_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 #include <cstdint>
 
-namespace rabbit
+namespace flower
 {
 	enum VideoQuality
 	{
@@ -13,7 +13,7 @@ namespace rabbit
 		High
 	};
 
-	class H265Module final : public RabbitModule
+	class H265Module final : public FlowerModule
 	{
 	public:
 		H265Module() noexcept;

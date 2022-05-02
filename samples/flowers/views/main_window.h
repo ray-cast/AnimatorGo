@@ -1,5 +1,5 @@
-#ifndef RABBIT_MAIN_WINDOW_H
-#define RABBIT_MAIN_WINDOW_H
+#ifndef FLOWER_MAIN_WINDOW_H
+#define FLOWER_MAIN_WINDOW_H
 
 #include "view_window.h"
 #include "title_window.h"
@@ -7,7 +7,7 @@
 #include "hide_window.h"
 #include "setting_window.h"
 #include "color_dialog.h"
-#include "rabbit_profile.h"
+#include "flower_profile.h"
 #include "splash_screen.h"
 #include "light_window.h"
 #include "sun_window.h"
@@ -20,7 +20,7 @@
 #include <fstream>
 #include <octoon/game_listener.h>
 
-namespace rabbit
+namespace flower
 {
 	class MainListener : public octoon::GameListener
 	{
@@ -54,7 +54,7 @@ namespace rabbit
 		bool onOfflineModeSignal(bool enable) noexcept;
 		void onSettingSignal() noexcept;
 		void onCleanupSignal() noexcept;
-		void onProfileSignal(const rabbit::RabbitProfile& profile) noexcept;
+		void onProfileSignal(const flower::FlowerProfile& profile) noexcept;
 		void onLightSignal() noexcept;
 		void onSunSignal() noexcept;
 		void onEnvironmentSignal() noexcept;
@@ -93,7 +93,7 @@ namespace rabbit
 		octoon::GameObjectPtr behaviour_;
 
 		std::unique_ptr<QTimer> timer;
-		std::shared_ptr<rabbit::RabbitProfile> profile_;
+		std::shared_ptr<flower::FlowerProfile> profile_;
 		std::shared_ptr<MainListener> listener_;
 
 		std::unique_ptr<ToolWindow> toolBar_;

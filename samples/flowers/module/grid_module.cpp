@@ -1,6 +1,6 @@
 #include "grid_module.h"
 
-namespace rabbit
+namespace flower
 {
 	GridModule::GridModule() noexcept
 	{

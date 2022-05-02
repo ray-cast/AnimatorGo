@@ -1,12 +1,12 @@
-#ifndef RABBIT_SUN_MODULE_H_
-#define RABBIT_SUN_MODULE_H_
+#ifndef FLOWER_SUN_MODULE_H_
+#define FLOWER_SUN_MODULE_H_
 
-#include <rabbit_model.h>
+#include <flower_model.h>
 #include <octoon/math/vector3.h>
 
-namespace rabbit
+namespace flower
 {
-	class SunModule final : public RabbitModule
+	class SunModule final : public FlowerModule
 	{
 	public:
 		SunModule() noexcept;

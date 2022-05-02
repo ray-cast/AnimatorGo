@@ -1,5 +1,5 @@
 #include "main_window.h"
-#include "rabbit_behaviour.h"
+#include "flower_behaviour.h"
 #include <qmimedata.h>
 #include <qfiledialog.h>
 #include <qcolordialog.h>
@@ -12,7 +12,7 @@
 #include <filesystem>
 #include "controllers/offline_component.h"
 
-namespace rabbit
+namespace flower
 {
 	octoon::input::InputKey::Code KeyCodetoInputKey(int key) noexcept
 	{
@@ -157,7 +157,7 @@ namespace rabbit
 
 	MainWindow::MainWindow(SplashScreen* splash) noexcept(false)
 		: init_flag(false)
-		, profile_(rabbit::RabbitProfile::load("./config/config.conf"))
+		, profile_(flower::FlowerProfile::load("./config/config.conf"))
 		, behaviour_(octoon::GameObject::create())
 		, splash_(splash)
 		, listener_(std::make_shared<MainListener>(splash, "./log.txt"))
@@ -254,7 +254,7 @@ namespace rabbit
 		recordWindow_.reset();
 		materialWindow_.reset();
 		std::filesystem::create_directories("config");
-		rabbit::RabbitProfile::save("./config/config.conf", *profile_);
+		flower::FlowerProfile::save("./config/config.conf", *profile_);
 
 		profile_.reset();
 		behaviour_.reset();
@@ -284,7 +284,7 @@ namespace rabbit
 		{
 			if (behaviour_ && !profile_->playerModule->playing_)
 			{
-				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour)
 				{
 					QString fileName = QFileDialog::getOpenFileName(this, (const char*)u8"打开项目", "", tr("All Files(*.pmm *.pmx *.abc *.mdl);; PMM Files (*.pmm);; PMX Files (*.pmx);; Abc Files (*.abc);; Material Files (*.mdl)"));
@@ -327,7 +327,7 @@ namespace rabbit
 		{
 			if (behaviour_ && !profile_->h265Module->enable)
 			{
-				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour->isOpen())
 				{
 					if (enable)
@@ -372,7 +372,7 @@ namespace rabbit
 		{
 			if (behaviour_ && !profile_->playerModule->playing_)
 			{
-				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour->isOpen())
 				{
 					auto player = dynamic_cast<PlayerComponent*>(behaviour->getComponent<PlayerComponent>());
@@ -416,7 +416,7 @@ namespace rabbit
 		{
 			if (behaviour_ && !profile_->playerModule->playing_)
 			{
-				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour->isOpen())
 				{
 					auto player = dynamic_cast<PlayerComponent*>(behaviour->getComponent<PlayerComponent>());
@@ -454,7 +454,7 @@ namespace rabbit
 		{
 			if (behaviour_ && !profile_->playerModule->playing_)
 			{
-				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour->isOpen())
 				{
 					auto player = dynamic_cast<PlayerComponent*>(behaviour->getComponent<PlayerComponent>());
@@ -490,7 +490,7 @@ namespace rabbit
 	{
 		if (behaviour_ && (!profile_->playerModule->playing_ || profile_->h265Module->enable))
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
 			{
 				try
@@ -533,7 +533,7 @@ namespace rabbit
 		{
 			if (behaviour_ && (!profile_->playerModule->playing_ || profile_->h265Module->enable))
 			{
-				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour->isOpen())
 				{
 					if (recordWindow_->isHidden())
@@ -584,7 +584,7 @@ namespace rabbit
 		{
 			if (behaviour_ && !profile_->playerModule->playing_)
 			{
-				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour->isOpen())
 				{
 					QString fileName = QFileDialog::getSaveFileName(this, (const char*)u8"保存图像", "", tr("PNG Files (*.png)"));
@@ -622,7 +622,7 @@ namespace rabbit
 		{
 			if (behaviour_ && !profile_->h265Module->enable)
 			{
-				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour)
 				{
 					auto offline = behaviour->getComponent<OfflineComponent>();
@@ -659,7 +659,7 @@ namespace rabbit
 	{
 		try
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
 			{
 				if (profile_->entitiesModule->sunLight && !profile_->playerModule->playing_)
@@ -705,7 +705,7 @@ namespace rabbit
 	{
 		try
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
 			{
 				if (profile_->entitiesModule->sunLight && !profile_->playerModule->playing_)
@@ -751,7 +751,7 @@ namespace rabbit
 	{
 		try
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
 			{
 				if (profile_->entitiesModule->enviromentLight && !profile_->playerModule->playing_)
@@ -797,7 +797,7 @@ namespace rabbit
 	{
 		try
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
 			{
 				if (!profile_->playerModule->playing_)
@@ -845,7 +845,7 @@ namespace rabbit
 		{
 			if (behaviour_ && !profile_->playerModule->playing_)
 			{
-				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour->isOpen())
 					behaviour->close();
 			}
@@ -863,7 +863,7 @@ namespace rabbit
 	}
 
 	void
-	MainWindow::onProfileSignal(const rabbit::RabbitProfile& profile) noexcept
+	MainWindow::onProfileSignal(const flower::FlowerProfile& profile) noexcept
 	{
 	}
 
@@ -872,10 +872,10 @@ namespace rabbit
 	{
 		try
 		{
-			settingWindow_ = std::make_unique<SettingWindow>(behaviour_->getComponent<rabbit::RabbitBehaviour>());
+			settingWindow_ = std::make_unique<SettingWindow>(behaviour_->getComponent<flower::FlowerBehaviour>());
 			settingWindow_->move(this->pos().x() + (this->width() - settingWindow_->width()) / 2, this->pos().y() + (this->height() - settingWindow_->height()) / 2);
 			settingWindow_->exec();
-			rabbit::RabbitProfile::save("./config/config.conf", *profile_);
+			flower::FlowerProfile::save("./config/config.conf", *profile_);
 		}
 		catch (const std::exception& e)
 		{
@@ -896,14 +896,14 @@ namespace rabbit
 		{
 			if (profile_->clientModule->isLogin())
 			{
-				infoWindow_ = std::make_unique<InfoWindow>(this, behaviour_->getComponent<RabbitBehaviour>());
+				infoWindow_ = std::make_unique<InfoWindow>(this, behaviour_->getComponent<FlowerBehaviour>());
 				infoWindow_->connect(infoWindow_.get(), &InfoWindow::loginOut, this->titleBar_.get(), &TitleWindow::loginOut);
 				infoWindow_->show();
 				//infoWindow_->move(titleBar_->mapToGlobal(titleBar_->vipButton_->pos() + QPoint(-infoWindow_->size().width() + titleBar_->vipButton_->size().height(), titleBar_->vipButton_->size().height())));
 			}
 			else
 			{
-				loginWindow_ = std::make_unique<LoginWindow>(behaviour_->getComponent<RabbitBehaviour>());
+				loginWindow_ = std::make_unique<LoginWindow>(behaviour_->getComponent<FlowerBehaviour>());
 				loginWindow_->connect(loginWindow_.get(), &LoginWindow::loginSuccess, this->titleBar_.get(), &TitleWindow::loginSuccess);
 				loginWindow_->show();
 			}
@@ -1024,7 +1024,7 @@ namespace rabbit
 				auto lightData = event->mimeData()->data("object/light");
 				if (!lightData.isEmpty())
 				{
-					auto behaviour = behaviour_->getComponent<RabbitBehaviour>();
+					auto behaviour = behaviour_->getComponent<FlowerBehaviour>();
 					auto lightComponent = behaviour->getComponent<LightComponent>();
 
 					if (!lightComponent->createLight((LightType)lightData.toInt()))
@@ -1042,7 +1042,7 @@ namespace rabbit
 				auto materialData = event->mimeData()->data("object/material");
 				if (!materialData.isEmpty())
 				{
-					auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+					auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 					auto selectedItem = behaviour->getProfile()->dragModule->selectedItemHover_;
 					if (selectedItem)
 					{
@@ -1144,15 +1144,15 @@ namespace rabbit
 			gameApp_->setActive(true);
 			listener_->splash_ = nullptr;
 
-			auto behaviour = behaviour_->addComponent<rabbit::RabbitBehaviour>(profile_);
-			behaviour->addMessageListener("rabbit:project:open", [this](const std::any&)
+			auto behaviour = behaviour_->addComponent<flower::FlowerBehaviour>(profile_);
+			behaviour->addMessageListener("flower:project:open", [this](const std::any&)
 			{
 				recordWindow_->repaint();
 				sunWindow_->repaint();
 				environmentWindow_->repaint();
 			});
 
-			behaviour->addMessageListener("rabbit:player:finish", [this](const std::any&)
+			behaviour->addMessageListener("flower:player:finish", [this](const std::any&)
 			{
 				if (toolBar_->playEnable_)
 					toolBar_->stop();
@@ -1160,7 +1160,7 @@ namespace rabbit
 					recordWindow_->stopRecord();
 			});
 
-			behaviour->addMessageListener("rabbit:offline", [this](const std::any& enable)
+			behaviour->addMessageListener("flower:offline", [this](const std::any& enable)
 			{
 				if (std::any_cast<bool>(enable))
 				{

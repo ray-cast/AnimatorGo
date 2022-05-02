@@ -1,12 +1,12 @@
-#ifndef RABBIT_SPLASH_SCREEN_H_
-#define RABBIT_SPLASH_SCREEN_H_
+#ifndef FLOWER_SPLASH_SCREEN_H_
+#define FLOWER_SPLASH_SCREEN_H_
 
 #include <qlayout.h>
 #include <qframe>
 #include <qpushbutton.h>
 #include <qlabel.h>
 
-namespace rabbit
+namespace flower
 {
 	class SplashScreen final : public QFrame
 	{

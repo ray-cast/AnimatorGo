@@ -275,7 +275,7 @@ namespace octoon
 	}
 
 	void
-	RtxManager::generateWorkspace(std::uint32_t width, std::uint32_t height)
+	RtxManager::generateWorkspace(const std::shared_ptr<ScriptableRenderContext>& context, std::uint32_t width, std::uint32_t height)
 	{
 		if (width_ != width || height_ != height)
 		{
@@ -287,15 +287,15 @@ namespace octoon
 			colorTextureDesc.setHeight(this->height_);
 			colorTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
 			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32A32SFloat);
-			colorTexture_ = context_->getDevice()->createTexture(colorTextureDesc);
+			colorTexture_ = context->createTexture(colorTextureDesc);
 			if (!colorTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
-			normalTexture_ = context_->getDevice()->createTexture(colorTextureDesc);
+			normalTexture_ = context->createTexture(colorTextureDesc);
 			if (!normalTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
-			albedoTexture_ = context_->getDevice()->createTexture(colorTextureDesc);
+			albedoTexture_ = context->createTexture(colorTextureDesc);
 			if (!albedoTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
@@ -304,7 +304,7 @@ namespace octoon
 			depthTextureDesc.setHeight(this->height_);
 			depthTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
 			depthTextureDesc.setTexFormat(hal::GraphicsFormat::D32_SFLOAT);
-			auto depthTexture_ = context_->getDevice()->createTexture(depthTextureDesc);
+			auto depthTexture_ = context->createTexture(depthTextureDesc);
 			if (!depthTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
@@ -315,11 +315,11 @@ namespace octoon
 			hal::GraphicsFramebufferDesc framebufferDesc;
 			framebufferDesc.setWidth(this->width_);
 			framebufferDesc.setHeight(this->height_);
-			framebufferDesc.setFramebufferLayout(context_->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setFramebufferLayout(context->createFramebufferLayout(framebufferLayoutDesc));
 			framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_, 0, 0));
 			framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_, 0, 0));
 
-			this->framebuffer_ = context_->getDevice()->createFramebuffer(framebufferDesc);
+			this->framebuffer_ = context->createFramebuffer(framebufferDesc);
 			if (!this->framebuffer_)
 				throw runtime::runtime_error::create("createFramebuffer() failed");
 
@@ -358,7 +358,7 @@ namespace octoon
 		{
 			auto mainCamera = scene->getMainCamera();
 			auto viewport = mainCamera->getPixelViewport();
-			this->generateWorkspace((std::uint32_t)viewport.width, (std::uint32_t)viewport.height);
+			this->generateWorkspace(context, (std::uint32_t)viewport.width, (std::uint32_t)viewport.height);
 
 			CompiledScene& compiledScene = c.controller->getCachedScene(scene);
 
@@ -373,6 +373,6 @@ namespace octoon
 		}
 
 		math::float4 viewport(0, 0, static_cast<float>(this->width_), static_cast<float>(this->height_));
-		this->context_->blitFramebuffer(framebuffer_, viewport, nullptr, viewport);
+		context->blitFramebuffer(framebuffer_, viewport, nullptr, viewport);
 	}
 }

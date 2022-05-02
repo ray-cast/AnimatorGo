@@ -56,7 +56,7 @@ namespace octoon
 
 	private:
 		void prepareScene(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene) noexcept;
-		void generateWorkspace(std::uint32_t width, std::uint32_t height);
+		void generateWorkspace(const std::shared_ptr<ScriptableRenderContext>& context, std::uint32_t width, std::uint32_t height);
 
 	private:
 		struct Config
@@ -79,8 +79,6 @@ namespace octoon
 		void* colorFramebuffer_;
 		void* normalFramebuffer_;
 		void* albedoFramebuffer_;
-
-		hal::GraphicsContextPtr context_;
 
 		std::unique_ptr<Output> colorImage_;
 		std::unique_ptr<Output> normalImage_;

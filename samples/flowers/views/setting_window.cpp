@@ -349,7 +349,7 @@ namespace rabbit
 		{
 			QMessageBox msg(this);
 			msg.setWindowTitle(QString::fromUtf8(u8"提示"));
-			msg.setText(u8"您当前使用的兔叽渲染器已是最新版，无需更新！");
+			msg.setText(u8"您当前使用的花楹渲染器已是最新版，无需更新！");
 			msg.setIcon(QMessageBox::NoIcon);
 			msg.setStandardButtons(QMessageBox::Ok);
 

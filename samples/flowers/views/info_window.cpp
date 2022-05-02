@@ -70,7 +70,7 @@ namespace rabbit
 
 		vipButton_ = std::make_unique<QPushButton>();
 		vipButton_->setObjectName("vipLicense");
-		vipButton_->setText(u8"《兔叽会员用户协议》");
+		vipButton_->setText(u8"《花楹会员用户协议》");
 
 		licenseButton_ = std::make_unique<QPushButton>();
 		licenseButton_->setObjectName("license");

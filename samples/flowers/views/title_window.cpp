@@ -35,7 +35,7 @@ namespace rabbit
 		logoButton_.setObjectName("logo");
 
 		titleLabel_.setObjectName("title");
-		titleLabel_.setText(u8"ÍÃß´äÖÈ¾Æ÷£¨ÄÚ²â°æ£©");
+		titleLabel_.setText(u8"»¨éºäÖÈ¾Æ÷£¨ÄÚ²â°æ£©");
 
 		layout_.setObjectName("titleLayout");
 		layout_.addWidget(&logoButton_);

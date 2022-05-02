@@ -24,7 +24,7 @@ namespace rabbit
 
 		copyrightInfo = new QLabel(widget);
 		copyrightInfo->setObjectName("copyright");
-		copyrightInfo->setText(u8"© 2019-2020 Flowers-Softwares. All Rights Reserved.");
+		copyrightInfo->setText(u8"© 2022 Flowers-Softwares. All Rights Reserved.");
 		copyrightInfo->setAlignment(Qt::AlignLeft);
 
 		vlayout = new QVBoxLayout(widget);

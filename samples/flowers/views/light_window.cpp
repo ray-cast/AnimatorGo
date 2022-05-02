@@ -87,7 +87,10 @@ namespace flower
 
 		listWidget_ = new LightListWindow;
 
-		std::vector<char*> lights = { u8"点光源", u8"聚光灯", u8"平行光" };
+		std::vector<const char*> lights;
+		lights.push_back(u8"点光源");
+		lights.push_back(u8"聚光灯");
+		lights.push_back(u8"平行光");
 
 		for (int i = 0; i < 3; i++)
 		{
@@ -101,7 +104,7 @@ namespace flower
 			QLabel* txtLabel = new QLabel(lights[i]);
 
 			QVBoxLayout* widgetLayout = new QVBoxLayout;
-			widgetLayout->setMargin(0);
+			widgetLayout->setContentsMargins(0, 0, 0, 0);
 			widgetLayout->setSpacing(0);
 			widgetLayout->addWidget(imageLabel, 0, Qt::AlignCenter);
 			widgetLayout->addWidget(txtLabel, 0, Qt::AlignCenter);

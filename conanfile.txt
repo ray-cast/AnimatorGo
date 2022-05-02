@@ -2,6 +2,25 @@
 physx/4.1.1
 libjpeg-turbo/2.1.2
 libpng/1.6.37
+vorbis/1.3.7
+libcurl/7.82.0
+freetype/2.11.1
+openal/1.21.1
+bullet3/3.22a
+glew/2.2.0
+alembic/1.8.3
+tinyobjloader/1.0.6
+libiconv/1.16
+glfw/3.3.7
+qt/6.3.0
+ffmpeg/5.0
+libx264/20191217
+libx265/20191217
+
+[options]
+qt6:shared=True
 
 [generators]
 cmake
+cmake_find_package
+cmake_paths

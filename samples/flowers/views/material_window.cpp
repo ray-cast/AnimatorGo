@@ -1109,7 +1109,7 @@ namespace flower
 		textLabel_->setText(u8"material");
 
 		QVBoxLayout* summaryLayout = new QVBoxLayout;
-		summaryLayout->setMargin(0);
+		summaryLayout->setContentsMargins(0, 0, 0, 0);
 		summaryLayout->setSpacing(4);
 		summaryLayout->addWidget(imageLabel_, 0, Qt::AlignCenter);
 		summaryLayout->addWidget(textLabel_, 0, Qt::AlignCenter);
@@ -1755,7 +1755,7 @@ namespace flower
 				txtLabel->setToolTip(txtLabel->text());
 
 				QVBoxLayout* widgetLayout = new QVBoxLayout;
-				widgetLayout->setMargin(0);
+				widgetLayout->setContentsMargins(0, 0, 0, 0);
 				widgetLayout->setSpacing(0);
 				widgetLayout->addWidget(imageLabel, 0, Qt::AlignCenter);
 				widgetLayout->addWidget(txtLabel, 0, Qt::AlignCenter);

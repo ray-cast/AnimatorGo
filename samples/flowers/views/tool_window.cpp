@@ -20,7 +20,7 @@ namespace flower
 		, gpuOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/gpu-on.png")))
 		, recordIcon_(QIcon::fromTheme("res", QIcon(":res/icons/record.png")))
 		, recordOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/record-on.png")))
-		, audioIcon_(QIcon::fromTheme("res", QIcon(":res/icons/music.png")))
+		, audioIcon_(QIcon::fromTheme("res", QIcon(":res/icons/music.svg")))
 		, audioOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/music-on.png")))
 		, sunIcon_(QIcon::fromTheme("res", QIcon(":res/icons/sun.png")))
 		, sunOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/sun-on.png")))

@@ -218,13 +218,13 @@ QWidget#SplashWindow{
 }
 QWidget#SplashWindow > QPushButton#logo{
 	qproperty-icon: url(":res/icons/splash.png");
-	qproperty-iconSize: 110px 110px;
+	qproperty-iconSize: 128px 128px;
 	margin: 0 0 0 0;
 }
 QWidget#SplashWindow QLabel#title{
 	font-family: "Microsoft YaHei";
-	font-size:18px;
-	color:#c78ced;
+	font-size:22px;
+	color:rgb(222,94,136);
 }
 QWidget#SplashWindow QLabel#copyright{
 	font-family: "Microsoft YaHei";
@@ -278,7 +278,7 @@ QWidget#TitleWindow > QToolButton#setting{
 	qproperty-icon: url(":res/icons/setting.png");
 }
 QWidget#TitleWindow > QPushButton#logo{
-	qproperty-icon: url(":res/icons/rabbit.png");
+	qproperty-icon: url(":res/icons/logo.svg");
 	qproperty-iconSize: 24px 24px;
 }
 QWidget#TitleWindow > QToolButton#vip{
@@ -414,7 +414,7 @@ QWidget#loginWidget > QToolButton#close{
 	margin:0px,5px,0px,5px;
 }
 QWidget#loginWidget > QPushButton#logo{
-	qproperty-icon: url(":res/icons/logo.png");
+	qproperty-icon: url(":res/icons/logo.svg");
 }
 QWidget#loginWidget > QToolButton#login{
 	width:240;

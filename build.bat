@@ -1,4 +1,4 @@
-sif exist build (
+if exist build (
   cd build
 ) else (
   mkdir build && cd build

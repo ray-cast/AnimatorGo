@@ -14,14 +14,14 @@ libiconv/1.16
 glfw/3.3.7
 qt/6.3.0
 ffmpeg/5.0
+nvcloth/1.1.6@xiahan/stable
 
 [options]
 qt:shared=True
-qt:qtshadertools=True
-qt:qt5compat=True
 qt:qtdeclarative=True
+qt:gui=True
+qt:qtshadertools=True
 
 [generators]
-cmake
 cmake_find_package
 cmake_paths

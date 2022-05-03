@@ -488,7 +488,7 @@ namespace flower
 	bool
 	MainWindow::onAudioSignal(bool enable) noexcept
 	{
-		if (behaviour_ && (!profile_->playerModule->playing_ || profile_->h265Module->enable))
+		if (behaviour_ && !profile_->playerModule->playing_ && !profile_->recordModule->active)
 		{
 			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
@@ -531,7 +531,7 @@ namespace flower
 	{
 		try
 		{
-			if (behaviour_ && (!profile_->playerModule->playing_ || profile_->h265Module->enable))
+			if (behaviour_ && !profile_->playerModule->playing_ && !profile_->recordModule->active)
 			{
 				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour->isOpen())
@@ -620,7 +620,7 @@ namespace flower
 	{
 		try
 		{
-			if (behaviour_ && !profile_->h265Module->enable)
+			if (behaviour_ && !profile_->recordModule->active)
 			{
 				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour)

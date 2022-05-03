@@ -35,6 +35,10 @@ Rabbit Toolbox 的多层材质描述基于双向散射分布函数（bsdf），�
 * 音频播放（OpenAL、Wav、Flac、Mp3、Ogg）
 * 材质文件支持（[NVIDIA's Material Definition Language](https://developer.nvidia.com/mdl-sdk)）
 
+下载：
+------
+* https://github.com/ray-cast/flowers/releases/download/Demo/Demo.zip
+
 系统需求：
 ------
 1. 支持SSE4.1的CPU，如i5，用于AI 降噪

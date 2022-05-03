@@ -13,6 +13,7 @@ Rabbit Toolbox 的多层材质描述基于双向散射分布函数（bsdf），�
 <img style="vertical-align: top;" src="./coffee_maker.png">
 <img style="vertical-align: top;" src="./ajax.png">
 <img style="vertical-align: top;" src="./staircase.png">
+<img style="vertical-align: top;" src="./record.gif">
 
 特性：
 ------

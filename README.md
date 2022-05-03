@@ -10,10 +10,10 @@ Rabbit Toolbox 拥有一个快速高效的全局照明渲染器，基于分离�
 Rabbit Toolbox 的多层材质描述基于双向散射分布函数（bsdf），能够很好的引入[NVIDIA's Material Definition Language](https://developer.nvidia.com/mdl-sdk)材质定义语言所带来的生态系统，如程序纹理，木材，织物，半透明塑料等。
 
 <img style="vertical-align: top;" src="./screenshot.png">
+<img style="vertical-align: top;" src="./record.gif">
 <img style="vertical-align: top;" src="./coffee_maker.png">
 <img style="vertical-align: top;" src="./ajax.png">
 <img style="vertical-align: top;" src="./staircase.png">
-<img style="vertical-align: top;" src="./record.gif">
 
 特性：
 ------

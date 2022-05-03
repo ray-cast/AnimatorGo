@@ -3,7 +3,7 @@
 
 #include <octoon/game_object.h>
 #include <flower_component.h>
-#include <module/canvas_module.h>
+#include "module/record_module.h"
 
 namespace flower
 {

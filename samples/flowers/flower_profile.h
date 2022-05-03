@@ -10,7 +10,7 @@
 #include "module/file_module.h"
 #include "module/entities_module.h"
 #include "module/offline_module.h"
-#include "module/canvas_module.h"
+#include "module/record_module.h"
 #include "module/mark_module.h"
 #include "module/sun_module.h"
 #include "module/environment_module.h"

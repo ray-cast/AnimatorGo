@@ -1,5 +1,5 @@
-#ifndef FLOWER_CANVAS_MODULE_H_
-#define FLOWER_CANVAS_MODULE_H_
+#ifndef FLOWER_RECORD_MODULE_H_
+#define FLOWER_RECORD_MODULE_H_
 
 #include <vector>
 #include <flower_model.h>

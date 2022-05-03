@@ -2,7 +2,7 @@
 #define FLOWER_RECORD_COMPONENT_H_
 
 #include <flower_component.h>
-#include <module/canvas_module.h>
+#include "module/record_module.h"
 
 typedef struct OIDNFilterImpl* OIDNFilter;
 typedef struct OIDNDeviceImpl* OIDNDevice;

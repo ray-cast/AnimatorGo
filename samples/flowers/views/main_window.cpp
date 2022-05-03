@@ -582,24 +582,13 @@ namespace flower
 	{
 		try
 		{
-			if (behaviour_ && !profile_->playerModule->playing_)
+			if (behaviour_ && !profile_->playerModule->playing_ && !profile_->recordModule->active)
 			{
-				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
-				if (behaviour->isOpen())
+				QString fileName = QFileDialog::getSaveFileName(this, (const char*)u8"保存图像", "", tr("PNG Files (*.png)"));
+				if (!fileName.isEmpty())
 				{
-					QString fileName = QFileDialog::getSaveFileName(this, (const char*)u8"保存图像", "", tr("PNG Files (*.png)"));
-					if (!fileName.isEmpty())
-						behaviour->renderPicture(fileName.toUtf8().data());
-				}
-				else
-				{
-					QMessageBox msg(this);
-					msg.setWindowTitle((const char*)u8"提示");
-					msg.setText((const char*)u8"请加载一个.pmm工程");
-					msg.setIcon(QMessageBox::Information);
-					msg.setStandardButtons(QMessageBox::Ok);
-
-					msg.exec();
+					auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
+					behaviour->renderPicture(fileName.toUtf8().data());
 				}
 			}
 		}

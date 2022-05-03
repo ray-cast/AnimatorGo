@@ -523,6 +523,7 @@ namespace flower
 		camera->setFov(60.0f);
 		camera->setCameraType(octoon::CameraType::Main);
 		camera->setClearColor(octoon::math::float4(0.0f, 0.0f, 0.0f, 1.0f));
+		camera->setupFramebuffers(this->getContext()->profile->recordModule->width, this->getContext()->profile->recordModule->height, 0, octoon::hal::GraphicsFormat::R32G32B32SFloat);
 
 		this->getContext()->profile->entitiesModule->camera = mainCamera;
 		this->getContext()->profile->entitiesModule->sunLight = mainLight;

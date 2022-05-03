@@ -176,12 +176,18 @@ SET(OIDN_LIST
 )
 SOURCE_GROUP("flowers\\libs\\oidn" FILES ${OIDN_LIST})
 
-SET(Qt6_DIR "" CACHE PATH "Directory that contains Qt for the selected compiler, e.g., ../Qt/6.3.0/msvc2017_64")
-ADD_DEFINITIONS(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
-FIND_PACKAGE(Qt6 REQUIRED COMPONENTS Core Network Widgets QML HINTS ${Qt6_DIR})
-IF(NOT ${Qt6_FOUND})
-    MESSAGE(FATAL_ERROR "The dependency \"qt\" could not be resolved. Install Qt on your system or specify the 'Qt6_DIR' variable.")
+# SET(Qt6_DIR "" CACHE PATH "Directory that contains Qt for the selected compiler, e.g., ../Qt/6.3.0/msvc2017_64")
+# work around
+IF(POLICY CMP0057)
+	cmake_policy(SET CMP0057 NEW)
 ENDIF()
+SET(QT_NO_CREATE_VERSIONLESS_FUNCTIONS True)
+
+ADD_DEFINITIONS(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
+FIND_PACKAGE(Qt6 REQUIRED COMPONENTS Core Network Widgets Qml)
+# IF(NOT ${Qt6_FOUND})
+#     MESSAGE(FATAL_ERROR "The dependency \"qt\" could not be resolved. Install Qt on your system or specify the 'Qt6_DIR' variable.")
+# ENDIF()
 
 # GET_TARGET_PROPERTY(_qmake_executable Qt6::qmake IMPORTED_LOCATION)
 # GET_FILENAME_COMPONENT(_qt_bin_dir "${_qmake_executable}" DIRECTORY)

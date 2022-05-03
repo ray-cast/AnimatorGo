@@ -8,7 +8,7 @@ namespace flower
 {
 	LoginWidget::LoginWidget(QWidget* parent) noexcept
 		: QWidget(parent)
-		, validator_(std::make_unique<QRegExpValidator>(QRegExp(R"([a-zA-Z0-9\~\!\@\#\гд\%\&\*\_]+$)")))
+		, validator_(std::make_unique<QRegularExpressionValidator>(QRegularExpression(R"([a-zA-Z0-9\~\!\@\#\гд\%\&\*\_]+$)")))
 	{
 		this->setObjectName("loginWidget");
 		this->setMouseTracking(true);
@@ -139,7 +139,7 @@ namespace flower
 
 	ForgetWidget::ForgetWidget(QWidget* parent) noexcept
 		: QWidget(parent)
-		, validator_(std::make_unique<QRegExpValidator>(QRegExp("[a-zA-Z0-9]+$")))
+		, validator_(std::make_unique<QRegularExpressionValidator>(QRegularExpression("[a-zA-Z0-9]+$")))
 	{
 		this->setObjectName("loginWidget");
 		this->setMouseTracking(true);
@@ -234,7 +234,7 @@ namespace flower
 
 	RegisterWidget::RegisterWidget(QWidget* parent) noexcept
 		: QWidget(parent)
-		, validator_(std::make_unique<QRegExpValidator>(QRegExp("[a-zA-Z0-9]+$")))
+		, validator_(std::make_unique<QRegularExpressionValidator>(QRegularExpression("[a-zA-Z0-9]+$")))
 	{
 		this->setObjectName("loginWidget");
 		this->setMouseTracking(true);

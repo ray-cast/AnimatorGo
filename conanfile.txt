@@ -18,10 +18,11 @@ nvcloth/1.1.6@xiahan/stable
 
 [options]
 qt:shared=True
-qt:qtdeclarative=True
 qt:gui=True
 qt:qtshadertools=True
+qt:qtdeclarative=True
 
 [generators]
+cmake
 cmake_find_package
 cmake_paths

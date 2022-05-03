@@ -181,7 +181,7 @@ namespace flower
 
 		titleBar_ = std::make_unique<TitleWindow>(this, profile_);
 		hideBar_ = std::make_unique<HideBar>(this);
-		toolBar_ = std::make_unique<ToolWindow>(this, behaviour_);
+		toolBar_ = std::make_unique<ToolWindow>(this, behaviour_, profile_);
 		viewPanel_ = std::make_unique<ViewWidget>(this, profile_);
 		lightWindow_ = std::make_unique<LightWindow>(profile_);
 		sunWindow_ = std::make_unique<SunWindow>(profile_);

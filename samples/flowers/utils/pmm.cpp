@@ -297,8 +297,7 @@ namespace octoon
 	}
 
 	PmmKeyframe::PmmKeyframe()
-		: data_index(-1)
-		, frame(-1)
+		: frame(-1)
 		, pre_index(-1)
 		, next_index(-1)
 		, is_selected(0)
@@ -309,10 +308,10 @@ namespace octoon
 	PmmKeyframe::load(istream& reader)
 	{
 		auto data = PmmKeyframe();
-		reader.read((char*)& data.data_index, sizeof(data.data_index));
 		reader.read((char*)& data.frame, sizeof(data.frame));
 		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
 		reader.read((char*)& data.next_index, sizeof(data.next_index));
+		data.body.load(reader);
 		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
 
 		return data;
@@ -321,7 +320,7 @@ namespace octoon
 	std::optional<std::vector<PmmKeyframe>>
 	PmmKeyframe::load_arrays(istream& reader)
 	{
-		std::uint8_t len = 0;
+		std::uint32_t len = 0;
 		reader.read((char*)& len, sizeof(len));
 
 		auto data = std::vector<PmmKeyframe>(len);
@@ -872,7 +871,6 @@ namespace octoon
 
 	PmmDataBody::PmmDataBody()
 		: transparency(0)
-		, is_visible(0)
 		, parent_model_index(0)
 		, parent_bone_index(0)
 		, translation(PmmVector3(0.0, 0.0, 0.0))
@@ -1078,9 +1076,6 @@ namespace octoon
 
 			for (std::size_t i = 0; i < pmm.accessory_count; i++)
 				pmm.accessory_datas.push_back(PmmAccessoryData::load(reader).value());
-
-			if (pmm.accessory_count > 0.0f)
-				return pmm;
 
 			reader.read((char*)& pmm.current_frame_position, sizeof(pmm.current_frame_position));
 			reader.read((char*)& pmm.h_scroll_position, sizeof(pmm.h_scroll_position));

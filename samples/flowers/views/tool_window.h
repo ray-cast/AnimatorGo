@@ -20,7 +20,7 @@ namespace flower
 	{
 		Q_OBJECT
 	public:
-		ToolWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept;
+		ToolWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour, std::shared_ptr<FlowerProfile> profile) noexcept;
 		~ToolWindow() noexcept;
 
 		void play();
@@ -61,6 +61,7 @@ namespace flower
 		void environmentSignal();
 
 	private:
+		void paintEvent(QPaintEvent* e) noexcept override;
 		void mousePressEvent(QMouseEvent* e) noexcept override;
 		void mouseReleaseEvent(QMouseEvent* e) noexcept override;
 		void mouseMoveEvent(QMouseEvent* e) noexcept override;
@@ -120,6 +121,7 @@ namespace flower
 		QScrollArea* contentWidgetArea;
 
 		octoon::GameObjectPtr behaviour_;
+		std::shared_ptr<flower::FlowerProfile> profile_;
 	};
 }
 

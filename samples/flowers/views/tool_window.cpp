@@ -3,8 +3,9 @@
 
 namespace flower
 {
-	ToolWindow::ToolWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept
+	ToolWindow::ToolWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour, std::shared_ptr<FlowerProfile> profile) noexcept
 		: QWidget(parent)
+		, profile_(profile)
 		, gpuEnable_(false)
 		, playEnable_(false)
 		, audioEnable_(false)
@@ -350,6 +351,27 @@ namespace flower
 	ToolWindow::environmentEvent() noexcept
 	{
 		emit environmentSignal();
+	}
+
+	void
+	ToolWindow::paintEvent(QPaintEvent* e) noexcept
+	{
+		if (this->profile_->entitiesModule->sound)
+		{
+			if (!audioEnable_)
+			{
+				audioButton.setIcon(audioOnIcon_);
+				audioEnable_ = true;
+			}
+		}
+		else
+		{
+			if (audioEnable_)
+			{
+				audioButton.setIcon(audioIcon_);
+				audioEnable_ = false;
+			}
+		}
 	}
 
 	void

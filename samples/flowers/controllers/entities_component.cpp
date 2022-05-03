@@ -104,12 +104,17 @@ namespace flower
 	bool
 	EntitiesComponent::importAudio(std::string_view path) noexcept
 	{
-		auto audio = octoon::GameObject::create();
-		audio->setName(path);
-		audio->addComponent<octoon::AudioSourceComponent>()->setAudioReader(AudioLoader::load(path));
+		if (!path.empty())
+		{
+			auto audio = octoon::GameObject::create();
+			audio->setName(path);
+			audio->addComponent<octoon::AudioSourceComponent>()->setAudioReader(AudioLoader::load(path));
 
-		this->getContext()->profile->entitiesModule->sound = audio;
-		return true;
+			this->getContext()->profile->entitiesModule->sound = audio;
+			return true;
+		}
+
+		return false;
 	}
 
 	bool
@@ -203,6 +208,11 @@ namespace flower
 				throw std::runtime_error(u8"无法找到文件:" + it.path);
 			}
 		}
+
+		if (pmm.is_wave_enabled)
+			this->importAudio(pmm.wave_path);
+		else
+			this->clearAudio();
 
 		context->profile->sunModule->rotation = octoon::math::degrees(octoon::math::eulerAngles(rotation));
 		context->profile->entitiesModule->camera = this->createCamera(pmm);

@@ -37,7 +37,7 @@ namespace flower
 	}
 
 	void
-	UIComponent::init(const std::shared_ptr<RabbitContext>& context, const std::shared_ptr<CanvasModule>& model) noexcept
+	UIComponent::init(const std::shared_ptr<RabbitContext>& context, const std::shared_ptr<RecordModule>& model) noexcept
 	{
 		this->setContext(context);
 		this->setModel(model);

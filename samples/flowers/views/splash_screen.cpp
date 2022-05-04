@@ -18,7 +18,7 @@ namespace flower
 
 		englishName = new QLabel(widget);
 		englishName->setObjectName("title");
-		englishName->setText(u8"Flowers Toolbox 2022");
+		englishName->setText(u8"花楹渲染器 2022");
 		englishName->setAlignment(Qt::AlignLeft);
 
 		copyrightInfo = new QLabel(widget);
@@ -29,13 +29,13 @@ namespace flower
 		vlayout = new QVBoxLayout(widget);
 		vlayout->addWidget(englishName);
 		vlayout->addWidget(copyrightInfo);
-		vlayout->setContentsMargins(0, 0, 0, 10);
+		vlayout->setContentsMargins(0, 10, 0, 0);
 
 		hlayout = new QHBoxLayout();
 		hlayout->addWidget(logo, 0, Qt::AlignRight);
 		hlayout->addWidget(widget, 0, Qt::AlignLeft);
-		hlayout->setContentsMargins(0, 0, 0, 0);
-		hlayout->setSpacing(20);
+		hlayout->setContentsMargins(20, 0, 0, 10);
+		hlayout->setSpacing(10);
 
 		versionInfo = new QLabel(this);
 		versionInfo->setObjectName("version");

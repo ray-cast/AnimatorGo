@@ -3,6 +3,7 @@
 
 #include "module/h265_module.h"
 #include "flower_component.h"
+#include <octoon/math/vector3.h>
 
 struct x265_param;
 struct x265_encoder;
@@ -18,7 +19,10 @@ namespace flower
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 
-		bool record(std::string_view filepath) noexcept(false);
+		bool create(std::string_view filepath) noexcept(false);
+		void close() noexcept;
+
+		void write(const octoon::math::Vector3* data) noexcept(false);
 
 		virtual const std::type_info& type_info() const noexcept
 		{
@@ -28,8 +32,6 @@ namespace flower
 	private:
 		void onEnable() noexcept override;
 		void onDisable() noexcept override;
-
-		void onPostProcess() noexcept(false) override;
 
 	private:
 		void convert(float* rgb, int w, int h, std::uint8_t* yuvBuf) noexcept;

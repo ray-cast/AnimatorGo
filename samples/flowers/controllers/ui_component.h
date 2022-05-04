@@ -3,11 +3,11 @@
 
 #include <octoon/game_object.h>
 #include <flower_component.h>
-#include <module/canvas_module.h>
+#include "module/record_module.h"
 
 namespace flower
 {
-	class UIComponent final : public RabbitComponent<CanvasModule>
+	class UIComponent final : public RabbitComponent<RecordModule>
 	{
 	public:
 		UIComponent() noexcept;
@@ -19,7 +19,7 @@ namespace flower
 		void addMessageListener(const std::string& event, std::function<void(const std::any&)> listener) noexcept;
 		void removeMessageListener(const std::string& event, std::function<void(const std::any&)> listener) noexcept;
 
-		virtual void init(const std::shared_ptr<RabbitContext>& context, const std::shared_ptr<CanvasModule>& model) noexcept override;
+		virtual void init(const std::shared_ptr<RabbitContext>& context, const std::shared_ptr<RecordModule>& model) noexcept override;
 
 		virtual const std::type_info& type_info() const noexcept
 		{

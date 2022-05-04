@@ -120,12 +120,28 @@ namespace octoon
 		static std::optional<PmmHeader> load(istream& reader);
 	};
 
+	struct PmmDataBody
+	{
+		std::uint8_t transparency;
+		std::int32_t parent_model_index;
+		std::int32_t parent_bone_index;
+		PmmVector3 translation;
+		PmmVector3 rotation;
+		float scale;
+		std::uint8_t is_shadow_enabled;
+
+		PmmDataBody();
+
+		static std::optional<PmmDataBody> load(istream& reader);
+		static std::optional<std::vector<PmmDataBody>> load_arrays(istream& reader);
+	};
+
 	struct PmmKeyframe
 	{
-		std::int32_t data_index;
 		std::int32_t frame;
 		std::int32_t pre_index;
 		std::int32_t next_index;
+		PmmDataBody body;
 		std::uint8_t is_selected;
 
 		PmmKeyframe();
@@ -355,23 +371,6 @@ namespace octoon
 
 		static std::optional<PmmLight> load(istream& reader);
 		static std::optional<std::vector<PmmLight>> load_arrays(istream& reader);
-	};
-
-	struct PmmDataBody
-	{
-		std::uint8_t transparency;
-		std::uint8_t is_visible;
-		std::int32_t parent_model_index;
-		std::int32_t parent_bone_index;
-		PmmVector3 translation;
-		PmmVector3 rotation;
-		float scale;
-		std::uint8_t is_shadow_enabled;
-
-		PmmDataBody();
-
-		static std::optional<PmmDataBody> load(istream& reader);
-		static std::optional<std::vector<PmmDataBody>> load_arrays(istream& reader);
 	};
 
 	struct PmmAccessoryData

@@ -181,7 +181,7 @@ namespace flower
 
 		titleBar_ = std::make_unique<TitleWindow>(this, profile_);
 		hideBar_ = std::make_unique<HideBar>(this);
-		toolBar_ = std::make_unique<ToolWindow>(this, behaviour_);
+		toolBar_ = std::make_unique<ToolWindow>(this, behaviour_, profile_);
 		viewPanel_ = std::make_unique<ViewWidget>(this, profile_);
 		lightWindow_ = std::make_unique<LightWindow>(profile_);
 		sunWindow_ = std::make_unique<SunWindow>(profile_);
@@ -325,7 +325,7 @@ namespace flower
 	{
 		try
 		{
-			if (behaviour_ && !profile_->h265Module->enable)
+			if (behaviour_ && !profile_->recordModule->active)
 			{
 				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour->isOpen())
@@ -488,7 +488,7 @@ namespace flower
 	bool
 		MainWindow::onAudioSignal(bool enable) noexcept
 	{
-		if (behaviour_ && (!profile_->playerModule->playing_ || profile_->h265Module->enable))
+		if (behaviour_ && !profile_->playerModule->playing_ && !profile_->recordModule->active)
 		{
 			auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 			if (behaviour)
@@ -531,7 +531,7 @@ namespace flower
 	{
 		try
 		{
-			if (behaviour_ && (!profile_->playerModule->playing_ || profile_->h265Module->enable))
+			if (behaviour_ && !profile_->playerModule->playing_ && !profile_->recordModule->active)
 			{
 				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour->isOpen())
@@ -582,24 +582,13 @@ namespace flower
 	{
 		try
 		{
-			if (behaviour_ && !profile_->playerModule->playing_)
+			if (behaviour_ && !profile_->playerModule->playing_ && !profile_->recordModule->active)
 			{
-				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
-				if (behaviour->isOpen())
+				QString fileName = QFileDialog::getSaveFileName(this, (const char*)u8"保存图像", "", tr("PNG Files (*.png)"));
+				if (!fileName.isEmpty())
 				{
-					QString fileName = QFileDialog::getSaveFileName(this, (const char*)u8"保存图像", "", tr("PNG Files (*.png)"));
-					if (!fileName.isEmpty())
-						behaviour->renderPicture(fileName.toUtf8().data());
-				}
-				else
-				{
-					QMessageBox msg(this);
-					msg.setWindowTitle((const char*)u8"提示");
-					msg.setText((const char*)u8"请加载一个.pmm工程");
-					msg.setIcon(QMessageBox::Information);
-					msg.setStandardButtons(QMessageBox::Ok);
-
-					msg.exec();
+					auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
+					behaviour->renderPicture(fileName.toUtf8().data());
 				}
 			}
 		}
@@ -620,7 +609,7 @@ namespace flower
 	{
 		try
 		{
-			if (behaviour_ && !profile_->h265Module->enable)
+			if (behaviour_ && !profile_->recordModule->active)
 			{
 				auto behaviour = behaviour_->getComponent<flower::FlowerBehaviour>();
 				if (behaviour)

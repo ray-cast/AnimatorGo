@@ -201,7 +201,6 @@ namespace octoon
 		}
 		else
 		{
-			context_->cleanCache();
 			context_->compileScene(scene);
 
 			forwardRenderer_->render(this->context_, this->context_->getRenderingData());

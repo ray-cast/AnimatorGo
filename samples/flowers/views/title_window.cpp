@@ -33,6 +33,7 @@ namespace flower
 		vipButton_.setToolTip(u8"会员");
 
 		logoButton_.setObjectName("logo");
+		logoButton_.setContentsMargins(0, 0, 5, 0);
 
 		titleLabel_.setObjectName("title");
 		titleLabel_.setText(u8"花楹渲染器（内测版）");

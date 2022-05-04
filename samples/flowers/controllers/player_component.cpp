@@ -8,10 +8,7 @@
 namespace flower
 {
 	PlayerComponent::PlayerComponent() noexcept
-		: time_(0)
-		, timeCount_(0)
-		, needUpdate_(false)
-		, animationLerp_(0)
+		: needAnimationEvaluate_(false)
 	{
 	}
 
@@ -113,7 +110,7 @@ namespace flower
 
 		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
 		if (timeFeature)
-			timeFeature->setTimeStep(1.0f / model->recordFps / 5.0f);
+			timeFeature->setTimeStep(1.0f / model->recordFps);
 
 		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
 		if (physicsFeature)
@@ -174,6 +171,24 @@ namespace flower
 				}
 			}
 		}
+
+		for (auto& it : this->getContext()->profile->entitiesModule->objects)
+		{
+			for (auto& component : it->getComponents())
+			{
+				if (component->isA<octoon::SkinnedMeshRendererComponent>())
+				{
+					auto smr = component->downcast<octoon::SkinnedMeshRendererComponent>();
+
+					for (auto& transform : smr->getTransforms())
+					{
+						auto solver = transform->getComponent<octoon::CCDSolverComponent>();
+						if (solver)
+							solver->solve();
+					}
+				}
+			}
+		}
 	}
 
 	void
@@ -199,6 +214,24 @@ namespace flower
 					auto animation = component->downcast<octoon::AnimationComponent>();
 					animation->setTime(model->curTime);
 					animation->sample();
+				}
+			}
+		}
+
+		for (auto& it : this->getContext()->profile->entitiesModule->objects)
+		{
+			for (auto& component : it->getComponents())
+			{
+				if (component->isA<octoon::SkinnedMeshRendererComponent>())
+				{
+					auto smr = component->downcast<octoon::SkinnedMeshRendererComponent>();
+
+					for (auto& transform : smr->getTransforms())
+					{
+						auto solver = transform->getComponent<octoon::CCDSolverComponent>();
+						if (solver)
+							solver->solve();
+					}
 				}
 			}
 		}
@@ -242,6 +275,24 @@ namespace flower
 					auto animation = component->downcast<octoon::AnimationComponent>();
 					animation->setTime(model->curTime);
 					animation->evaluate();
+				}
+			}
+		}
+
+		for (auto& it : this->getContext()->profile->entitiesModule->objects)
+		{
+			for (auto& component : it->getComponents())
+			{
+				if (component->isA<octoon::SkinnedMeshRendererComponent>())
+				{
+					auto smr = component->downcast<octoon::SkinnedMeshRendererComponent>();
+					
+					for (auto& transform : smr->getTransforms())
+					{
+						auto solver = transform->getComponent<octoon::CCDSolverComponent>();
+						if (solver)
+							solver->solve();
+					}
 				}
 			}
 		}
@@ -345,42 +396,26 @@ namespace flower
 		auto& profile = this->getContext()->profile;
 
 		if (!model->playing_)
-		{
-			time_ = 0;
 			return;
-		}
 
 		if (profile->offlineModule->offlineEnable)
 		{
-			if (animationLerp_ == 0)
-			{
-				timeCount_++;
+			model->sppCount_++;
 
-				if (timeCount_ >= model->spp)
-				{
-					needUpdate_ = true;
-					timeCount_ = 0;
-				}
+			if (model->sppCount_ >= model->spp)
+			{
+				needAnimationEvaluate_ = true;
+
+				this->sendMessage("flower:player:record");
+
+				model->sppCount_ = 0;
 			}
 		}
 		else
 		{
-			needUpdate_ = true;
-		}
+			needAnimationEvaluate_ = true;
 
-		if (profile->h265Module->enable)
-		{
-			if (needUpdate_)
-			{
-				for (auto& it : this->getContext()->behaviour->getComponents())
-				{
-					if (it->getActive())
-						it->onPostProcess();
-				}
-
-				needUpdate_ = false;
-				animationLerp_ = 5;
-			}
+			this->sendMessage("flower:player:record");
 		}
 	}
 
@@ -393,29 +428,17 @@ namespace flower
 		this->updateDofTarget();
 
 		if (!model->playing_)
-		{
-			time_ = 0;
 			return;
-		}
 
 		if (model->curTime < model->endFrame / 30.0f)
 		{
-			if (profile->h265Module->enable)
-			{
-				if (animationLerp_ > 0)
-				{
-					auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
-					if (timeFeature)
-						this->evaluate(timeFeature->delta());
-
-					animationLerp_--;
-				}
-			}
-			else
+			if (needAnimationEvaluate_)
 			{
 				auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
 				if (timeFeature)
 					this->evaluate(timeFeature->delta());
+
+				needAnimationEvaluate_ = false;
 			}
 		}
 		else

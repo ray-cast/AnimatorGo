@@ -309,6 +309,7 @@ namespace octoon
 			auto iksolver = std::make_shared<CCDSolverComponent>();
 			iksolver->setTarget(bones[it->targetBoneIndex]);
 			iksolver->setIterations(it->iterations);
+			iksolver->setAutomaticUpdate(false);
 
 			for (auto& child : it->child)
 			{

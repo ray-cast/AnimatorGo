@@ -328,7 +328,7 @@ namespace octoon
 					}
 
 					math::float3 eular = math::float3::Zero;
-					eular[component] = math::clamp(newAngle, low.x, upper.x);
+					eular[component] = math::clamp(newAngle, low[component], upper[component]);
 
 					transform->setLocalEulerAngles(eular);
 				}

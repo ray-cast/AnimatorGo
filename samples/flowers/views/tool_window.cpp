@@ -3,8 +3,9 @@
 
 namespace flower
 {
-	ToolWindow::ToolWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept
+	ToolWindow::ToolWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour, std::shared_ptr<FlowerProfile> profile) noexcept
 		: QWidget(parent)
+		, profile_(profile)
 		, gpuEnable_(false)
 		, playEnable_(false)
 		, audioEnable_(false)
@@ -19,7 +20,7 @@ namespace flower
 		, gpuOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/gpu-on.png")))
 		, recordIcon_(QIcon::fromTheme("res", QIcon(":res/icons/record.png")))
 		, recordOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/record-on.png")))
-		, audioIcon_(QIcon::fromTheme("res", QIcon(":res/icons/music.png")))
+		, audioIcon_(QIcon::fromTheme("res", QIcon(":res/icons/music.svg")))
 		, audioOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/music-on.png")))
 		, sunIcon_(QIcon::fromTheme("res", QIcon(":res/icons/sun.png")))
 		, sunOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/sun-on.png")))
@@ -350,6 +351,27 @@ namespace flower
 	ToolWindow::environmentEvent() noexcept
 	{
 		emit environmentSignal();
+	}
+
+	void
+	ToolWindow::paintEvent(QPaintEvent* e) noexcept
+	{
+		if (this->profile_->entitiesModule->sound)
+		{
+			if (!audioEnable_)
+			{
+				audioButton.setIcon(audioOnIcon_);
+				audioEnable_ = true;
+			}
+		}
+		else
+		{
+			if (audioEnable_)
+			{
+				audioButton.setIcon(audioIcon_);
+				audioEnable_ = false;
+			}
+		}
 	}
 
 	void

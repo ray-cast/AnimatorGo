@@ -104,12 +104,17 @@ namespace flower
 	bool
 	EntitiesComponent::importAudio(std::string_view path) noexcept
 	{
-		auto model = octoon::GameObject::create();
-		model->setName(path);
-		model->addComponent<octoon::AudioSourceComponent>()->setAudioReader(AudioLoader::load(path));
+		if (!path.empty())
+		{
+			auto audio = octoon::GameObject::create();
+			audio->setName(path);
+			audio->addComponent<octoon::AudioSourceComponent>()->setAudioReader(AudioLoader::load(path));
 
-		this->getContext()->profile->entitiesModule->sound = model;
-		return true;
+			this->getContext()->profile->entitiesModule->sound = audio;
+			return true;
+		}
+
+		return false;
 	}
 
 	bool
@@ -203,6 +208,11 @@ namespace flower
 				throw std::runtime_error(u8"无法找到文件:" + it.path);
 			}
 		}
+
+		if (pmm.is_wave_enabled)
+			this->importAudio(pmm.wave_path);
+		else
+			this->clearAudio();
 
 		context->profile->sunModule->rotation = octoon::math::degrees(octoon::math::eulerAngles(rotation));
 		context->profile->entitiesModule->camera = this->createCamera(pmm);
@@ -298,6 +308,7 @@ namespace flower
 		camera->setCameraType(CameraType::Main);
 		camera->setClearFlags(hal::GraphicsClearFlagBits::AllBit);
 		camera->setClearColor(math::float4(0.0f, 0.0f, 0.0f, 1.0f));
+		camera->setupFramebuffers(this->getContext()->profile->recordModule->width, this->getContext()->profile->recordModule->height, 0, octoon::hal::GraphicsFormat::R32G32B32SFloat);
 
 		auto transform = mainCamera->getComponent<TransformComponent>();
 		transform->setQuaternion(quat);
@@ -512,6 +523,7 @@ namespace flower
 		camera->setFov(60.0f);
 		camera->setCameraType(octoon::CameraType::Main);
 		camera->setClearColor(octoon::math::float4(0.0f, 0.0f, 0.0f, 1.0f));
+		camera->setupFramebuffers(this->getContext()->profile->recordModule->width, this->getContext()->profile->recordModule->height, 0, octoon::hal::GraphicsFormat::R32G32B32SFloat);
 
 		this->getContext()->profile->entitiesModule->camera = mainCamera;
 		this->getContext()->profile->entitiesModule->sunLight = mainLight;

@@ -36,6 +36,9 @@ namespace flower
 
 	Application::~Application()
 	{
+		behaviour_.reset();
+		profile_.reset();
+		gameApp_.reset();
 		engine_.reset();
 	}
 

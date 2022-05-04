@@ -2,7 +2,7 @@
 #define FLOWER_PLAYER_COMPONENT_H_
 
 #include "../flower_component.h"
-#include "../module/time_module.h"
+#include "../module/player_module.h"
 
 namespace flower
 {
@@ -41,11 +41,7 @@ namespace flower
 		void updateDofTarget() noexcept;
 
 	private:
-		bool needUpdate_;
-		std::uint32_t animationLerp_;
-
-		float time_;
-		float timeCount_;
+		bool needAnimationEvaluate_;
 	};
 }
 

@@ -359,10 +359,12 @@ namespace octoon
 			});
 
 			auto camera = scene->getMainCamera();
-			if (camera->isDirty())
+			bool should_update_camera = out.camera != camera || camera->isDirty();
+
+			if (should_update_camera)
 				this->updateCamera(scene, out);
 			
-			if (should_update_lights || camera->isDirty())
+			if (should_update_lights || should_update_camera)
 				this->updateLights(scene, out);
 
 			if (should_update_materials)

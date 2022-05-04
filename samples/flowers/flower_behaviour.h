@@ -4,9 +4,8 @@
 #include "flower_profile.h"
 #include "flower_context.h"
 
-#include "controllers/denoise_component.h"
 #include "controllers/entities_component.h"
-#include "controllers/canvas_component.h"
+#include "controllers/record_component.h"
 #include "controllers/offline_component.h"
 #include "controllers/player_component.h"
 #include "controllers/h265_component.h"
@@ -65,7 +64,6 @@ namespace flower
 
 		virtual octoon::GameComponentPtr clone() const noexcept override;
 
-
 	private:
 		void onActivate() noexcept(false) override;
 		void onDeactivate() noexcept override;
@@ -86,11 +84,10 @@ namespace flower
 		std::shared_ptr<FlowerProfile> profile_;
 		std::shared_ptr<RabbitContext> context_;
 
-		std::unique_ptr<CanvasComponent> canvasComponent_;
+		std::unique_ptr<RecordComponent> recordComponent_;
 		std::unique_ptr<EntitiesComponent> entitiesComponent_;
 		std::unique_ptr<OfflineComponent> offlineComponent_;
 		std::unique_ptr<PlayerComponent> playerComponent_;
-		std::unique_ptr<DenoiseComponent> denoiseComponent_;
 		std::unique_ptr<H265Component> h265Component_;
 		std::unique_ptr<UIComponent> uiComponent_;
 		std::unique_ptr<MarkComponent> markComponent_;

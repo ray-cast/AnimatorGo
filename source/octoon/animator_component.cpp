@@ -125,6 +125,8 @@ namespace octoon
 					{
 						auto transform = child->getComponent<octoon::TransformComponent>();
 						rigidbody->setPositionAndRotation(transform->getTranslate(), transform->getQuaternion());
+						rigidbody->clearForce();
+						rigidbody->clearTorque();
 					}
 				}
 			}

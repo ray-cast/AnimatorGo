@@ -13,11 +13,6 @@ namespace flower
 	}
 
 	void
-	IFlowerComponent::onPostProcess() noexcept(false)
-	{
-	}
-
-	void
 	IFlowerComponent::onFixedUpdate() noexcept(false)
 	{
 	}

@@ -5,7 +5,6 @@
     	<file>res/qml/Splash.qml</file>
     	<file>res/qml/images/splash.png</file>
     	<file>res/qml/images/logo.png</file>
-    	<file>res/qml/images/rabbit.png</file>
 	    <file>res/qml/images/maximize.png</file>
 		<file>res/qml/images/minimize.png</file>
 		<file>res/qml/images/setting.png</file>
@@ -21,6 +20,7 @@
 		<file>res/icons/append2.png</file>
 		<file>res/icons/hide.png</file>
 		<file>res/icons/music.png</file>
+		<file>res/icons/music.svg</file>
 		<file>res/icons/music-on.png</file>
 		<file>res/icons/play.png</file>
 		<file>res/icons/play-on.png</file>
@@ -35,8 +35,7 @@
 		<file>res/icons/shot.png</file>
 		<file>res/icons/save.png</file>
 		<file>res/icons/logo.png</file>
-		<file>res/icons/rabbit.svg</file>
-		<file>res/icons/rabbit.png</file>
+		<file>res/icons/logo.svg</file>
 		<file>res/icons/show.png</file>
 		<file>res/icons/splash.png</file>
 		<file>res/icons/cleanup.png</file>

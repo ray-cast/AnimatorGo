@@ -292,7 +292,7 @@ ENDIF()
 ADD_SUBDIRECTORY(contrib)
 
 if(MSVC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /permissive-")
 endif(MSVC)
 
 IF(CMAKE_GENERATOR MATCHES "Visual Studio")

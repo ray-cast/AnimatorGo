@@ -2,6 +2,7 @@
 #include <qqmlcontext.h>
 #include <qquickview.h>
 #include <qqmlapplicationengine.h>
+#include <QFile>
 
 #include "bindings/application.h"
 

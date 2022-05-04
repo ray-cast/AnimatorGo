@@ -71,8 +71,8 @@ namespace octoon
 		if (position_ != position || rotation_ != quat)
 		{
 			if (rigidbody_)
-				rigidbody_->setPositionAndRotation(position_, rotation_);
-			
+				rigidbody_->setPositionAndRotation(position, quat);
+
 			rotation_ = quat;
 			position_ = position;
 		}
@@ -412,8 +412,8 @@ namespace octoon
 
 			PhysicsRigidbodyDesc desc;
 			desc.type = isKinematic_ ? PhysicsRigidbodyType::Static : PhysicsRigidbodyType::Dynamic;
-			desc.position = position_ = transform->getTranslate();
-			desc.rotation = rotation_ = transform->getQuaternion();
+			desc.position = center_ = position_ = transform->getTranslate();
+			desc.rotation = quaternion_ = rotation_ = transform->getQuaternion();
 			desc.mass = mass_;
 
 			rigidbody_ = physicsFeature->getContext()->createRigidbody(desc);

@@ -245,7 +245,9 @@ namespace octoon
 	{
 		if (kinematic)
 		{
-			this->setMass(0.0f);
+			btVector3 inertia(0.0f, 0.0f, 0.0f);
+			this->rigidbody_->setMassProps(0, inertia);
+			this->rigidbody_->updateInertiaTensor();
 			this->rigidbody_->setCollisionFlags(rigidbody_->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
 			this->rigidbody_->setActivationState(DISABLE_DEACTIVATION);
 		}
@@ -253,6 +255,7 @@ namespace octoon
 		{
 			this->setMass(mass_);
 			this->rigidbody_->setCollisionFlags(rigidbody_->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
+			this->rigidbody_->setActivationState(WANTS_DEACTIVATION);
 		}
 	}
 

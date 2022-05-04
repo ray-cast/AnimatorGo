@@ -41,9 +41,10 @@ namespace octoon
 		if (!physics)
 				throw runtime::runtime_error::create("PxCreatePhysics failed!");
 
-		cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, physx::PxCookingParams(scale));
-		if (!cooking)
-			throw runtime::runtime_error::create("PxCreateCooking failed!");
+		// FIXME
+		// cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, physx::PxCookingParams(scale));
+		// if (!cooking)
+		// 	throw runtime::runtime_error::create("PxCreateCooking failed!");
 
 		if (!PxInitExtensions(*physics, pvd))
 			throw runtime::runtime_error::create("PxInitExtensions failed!");

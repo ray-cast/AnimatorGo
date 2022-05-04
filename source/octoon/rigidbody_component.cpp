@@ -149,12 +149,7 @@ namespace octoon
 		if (isKinematic_ != isKinematic)
 		{
 			if (rigidbody_)
-			{
 				rigidbody_->setKinematic(isKinematic);
-
-				auto transform = this->getComponent<TransformComponent>();
-				transform->setAllowRelativeMotion(isKinematic);
-			}
 
 			isKinematic_ = isKinematic;
 		}
@@ -408,7 +403,6 @@ namespace octoon
 		if (physicsFeature && !rigidbody_)
 		{
 			auto transform = this->getComponent<TransformComponent>();
-			transform->setAllowRelativeMotion(this->getIsKinematic());
 
 			PhysicsRigidbodyDesc desc;
 			desc.type = isKinematic_ ? PhysicsRigidbodyType::Static : PhysicsRigidbodyType::Dynamic;

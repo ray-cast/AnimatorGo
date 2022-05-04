@@ -9,16 +9,15 @@ namespace octoon
 		: position_(desc.position.x, desc.position.y, desc.position.z)
 		, quaternion_(desc.rotation.x, desc.rotation.y, desc.rotation.z, desc.rotation.w)
 		, mass_(desc.mass)
+		, transform_(btTransform(btQuaternion(quaternion_.x, quaternion_.y, quaternion_.z, quaternion_.w), btVector3(position_.x, position_.y, position_.z)))
 	{
 		btVector3 localInertia(0.0f, 0.0f, 0.0f);
-		btVector3 position(position_.x, position_.y, position_.z);
-		btQuaternion quaternion(quaternion_.x, quaternion_.y, quaternion_.z, quaternion_.w);
 
-		rigidbody_ = std::make_unique<btRigidBody>(1.0f, new btDefaultMotionState(btTransform(quaternion, position)), nullptr, localInertia);
+		rigidbody_ = std::make_unique<btRigidBody>(1.0f, nullptr, nullptr, localInertia);
 		rigidbody_->setUserPointer(this);
 		rigidbody_->setMassProps(desc.mass, localInertia);
 		rigidbody_->updateInertiaTensor();
-		rigidbody_->getMotionState()->getWorldTransform(transform_);
+		rigidbody_->setWorldTransform(transform_);
 
 		if (desc.type == PhysicsRigidbodyType::Static)
 			this->setKinematic(true);
@@ -26,7 +25,6 @@ namespace octoon
 
 	BulletRigidbody::~BulletRigidbody()
 	{
-		delete rigidbody_->getMotionState();
 	}
 
 	void
@@ -41,7 +39,7 @@ namespace octoon
 
 		this->localTransformInverse_ = this->localTransform_.inverse();
 
-		this->rigidbody_->getMotionState()->setWorldTransform(transform_ * localTransform_);
+		this->rigidbody_->setWorldTransform(transform_ * localTransform_);
 		this->rigidbody_->setCollisionShape(std::dynamic_pointer_cast<BulletShape>(shape)->getShape());
 
 		this->setMass(this->getMass());
@@ -51,7 +49,7 @@ namespace octoon
 	BulletRigidbody::detachShape(std::shared_ptr<PhysicsShape> shape)
 	{
 		this->rigidbody_->setCollisionShape(nullptr);
-		this->rigidbody_->getMotionState()->setWorldTransform(transform_);
+		this->rigidbody_->setWorldTransform(transform_);
 
 		this->setMass(this->getMass());
 	}
@@ -62,7 +60,7 @@ namespace octoon
 		transform_.setOrigin(btVector3(position.x, position.y, position.z));
 
 		this->position_ = position;
-		this->rigidbody_->getMotionState()->setWorldTransform(transform_ * localTransform_);
+		this->rigidbody_->setWorldTransform(transform_ * localTransform_);
 	}
 
 	void
@@ -71,7 +69,7 @@ namespace octoon
 		transform_.setRotation(btQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
 
 		this->quaternion_ = quaternion;
-		this->rigidbody_->getMotionState()->setWorldTransform(transform_ * localTransform_);
+		this->rigidbody_->setWorldTransform(transform_ * localTransform_);
 	}
 
 	void
@@ -83,14 +81,13 @@ namespace octoon
 
 		this->position_ = position;
 		this->quaternion_ = quaternion;
-		this->rigidbody_->getMotionState()->setWorldTransform(transform_ * localTransform_);
+		this->rigidbody_->setWorldTransform(transform_ * localTransform_);
 	}
 
 	math::float3
 	BulletRigidbody::getPosition()
 	{
-		btTransform transform;
-		rigidbody_->getMotionState()->getWorldTransform(transform);
+		btTransform transform = rigidbody_->getWorldTransform();
 
 		auto origin = transform.getOrigin();
 		origin += transform.getBasis() * localTransformInverse_.getOrigin();
@@ -102,8 +99,7 @@ namespace octoon
 	math::Quaternion
 	BulletRigidbody::getRotation()
 	{
-		btTransform transform;
-		rigidbody_->getMotionState()->getWorldTransform(transform);
+		btTransform transform = rigidbody_->getWorldTransform();
 		
 		auto basis = transform.getBasis();
 		basis *= localTransformInverse_.getBasis();

@@ -71,9 +71,6 @@ namespace octoon
 		void move(float speed) noexcept;
 		void move(const math::float3& speed) noexcept;
 
-		void setAllowRelativeMotion(bool enable) noexcept;
-		bool isAllowRelativeMotion() const noexcept;
-
 		GameComponentPtr clone() const noexcept override;
 
 	private:
@@ -89,8 +86,6 @@ namespace octoon
 		void updateParentTransform() const noexcept;
 
 	private:
-		bool allowRelativeMotion_;
-
 		mutable math::float3 translate_;
 		mutable math::float3 scaling_;
 		mutable math::float3 euler_angles_;

@@ -12,7 +12,7 @@ alembic/1.8.3
 tinyobjloader/1.0.6
 libiconv/1.16
 glfw/3.3.7
-qt/6.3.0
+qt/6.3.0@xiahan/stable
 ffmpeg/5.0
 nvcloth/1.1.6@xiahan/stable
 

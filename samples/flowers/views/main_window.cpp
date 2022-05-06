@@ -262,7 +262,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onHideToolBarSignal() noexcept
+	MainWindow::onHideToolBarSignal() noexcept
 	{
 		toolBar_->hide();
 		this->setFixedWidth(this->width() - toolBar_->width() + hideBar_->width());
@@ -270,7 +270,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onShowToolbarSignal() noexcept
+	MainWindow::onShowToolbarSignal() noexcept
 	{
 		hideBar_->hide();
 		this->setFixedWidth(this->width() + toolBar_->width() - hideBar_->width());
@@ -278,7 +278,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onImportSignal() noexcept
+	MainWindow::onImportSignal() noexcept
 	{
 		try
 		{
@@ -321,7 +321,7 @@ namespace flower
 	}
 
 	bool
-		MainWindow::onPlaySignal(bool enable) noexcept
+	MainWindow::onPlaySignal(bool enable) noexcept
 	{
 		try
 		{
@@ -366,7 +366,7 @@ namespace flower
 	}
 
 	bool
-		MainWindow::onResetSignal() noexcept
+	MainWindow::onResetSignal() noexcept
 	{
 		try
 		{
@@ -410,7 +410,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onLeftSignal() noexcept
+	MainWindow::onLeftSignal() noexcept
 	{
 		try
 		{
@@ -448,7 +448,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onRightSignal() noexcept
+	MainWindow::onRightSignal() noexcept
 	{
 		try
 		{
@@ -486,7 +486,7 @@ namespace flower
 	}
 
 	bool
-		MainWindow::onAudioSignal(bool enable) noexcept
+	MainWindow::onAudioSignal(bool enable) noexcept
 	{
 		if (behaviour_ && !profile_->playerModule->playing_ && !profile_->recordModule->active)
 		{
@@ -527,7 +527,7 @@ namespace flower
 	}
 
 	bool
-		MainWindow::onRecordSignal(bool enable) noexcept
+	MainWindow::onRecordSignal(bool enable) noexcept
 	{
 		try
 		{
@@ -578,7 +578,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onScreenShotSignal() noexcept
+	MainWindow::onScreenShotSignal() noexcept
 	{
 		try
 		{
@@ -605,7 +605,7 @@ namespace flower
 	}
 
 	bool
-		MainWindow::onOfflineModeSignal(bool enable) noexcept
+	MainWindow::onOfflineModeSignal(bool enable) noexcept
 	{
 		try
 		{
@@ -644,7 +644,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onLightSignal() noexcept
+	MainWindow::onLightSignal() noexcept
 	{
 		try
 		{
@@ -690,7 +690,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onSunSignal() noexcept
+	MainWindow::onSunSignal() noexcept
 	{
 		try
 		{
@@ -736,7 +736,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onEnvironmentSignal() noexcept
+	MainWindow::onEnvironmentSignal() noexcept
 	{
 		try
 		{
@@ -782,7 +782,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onMaterialSignal() noexcept
+	MainWindow::onMaterialSignal() noexcept
 	{
 		try
 		{
@@ -828,7 +828,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onCleanupSignal() noexcept
+	MainWindow::onCleanupSignal() noexcept
 	{
 		try
 		{
@@ -852,12 +852,12 @@ namespace flower
 	}
 
 	void
-		MainWindow::onProfileSignal(const flower::FlowerProfile& profile) noexcept
+	MainWindow::onProfileSignal(const flower::FlowerProfile& profile) noexcept
 	{
 	}
 
 	void
-		MainWindow::onSettingSignal() noexcept
+	MainWindow::onSettingSignal() noexcept
 	{
 		try
 		{
@@ -879,7 +879,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onVipSignal() noexcept
+	MainWindow::onVipSignal() noexcept
 	{
 		try
 		{
@@ -910,21 +910,21 @@ namespace flower
 	}
 
 	void
-		MainWindow::onResizeSignal(QResizeEvent* e) noexcept
+	MainWindow::onResizeSignal(QResizeEvent* e) noexcept
 	{
 		if (gameApp_)
 			gameApp_->doWindowResize((octoon::WindHandle)viewPanel_->winId(), viewPanel_->width(), viewPanel_->height());
 	}
 
 	void
-		MainWindow::onMouseMoveSignal(QMouseEvent* e) noexcept
+	MainWindow::onMouseMoveSignal(QMouseEvent* e) noexcept
 	{
 		if (gameApp_ && !profile_->playerModule->playing_)
 			gameApp_->doWindowMouseMotion((octoon::WindHandle)viewPanel_->winId(), e->pos().x(), e->pos().y());
 	}
 
 	void
-		MainWindow::onMousePressSignal(QMouseEvent* e) noexcept
+	MainWindow::onMousePressSignal(QMouseEvent* e) noexcept
 	{
 		if (gameApp_ && !profile_->playerModule->playing_)
 		{
@@ -938,7 +938,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onMouseReleaseSignal(QMouseEvent* e) noexcept
+	MainWindow::onMouseReleaseSignal(QMouseEvent* e) noexcept
 	{
 		if (gameApp_ && !profile_->playerModule->playing_)
 		{
@@ -952,7 +952,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::onMouseDoubleClickSignal(QMouseEvent* e) noexcept
+	MainWindow::onMouseDoubleClickSignal(QMouseEvent* e) noexcept
 	{
 		if (gameApp_ && !profile_->playerModule->playing_)
 		{
@@ -966,27 +966,27 @@ namespace flower
 	}
 
 	void
-		MainWindow::onWheelSignal(QWheelEvent* e) noexcept
+	MainWindow::onWheelSignal(QWheelEvent* e) noexcept
 	{
 		if (gameApp_ && !profile_->playerModule->playing_)
 			gameApp_->doWindowScrool((octoon::WindHandle)viewPanel_->winId(), e->angleDelta().x(), e->angleDelta().y());
 	}
 
 	void
-		MainWindow::onShowSignal(QShowEvent* event) noexcept
+	MainWindow::onShowSignal(QShowEvent* event) noexcept
 	{
 		onUpdateSignal();
 	}
 
 	void
-		MainWindow::onDragEnterSignal(QDragEnterEvent* event) noexcept
+	MainWindow::onDragEnterSignal(QDragEnterEvent* event) noexcept
 	{
 		if (!profile_->playerModule->playing_)
 			event->acceptProposedAction();
 	}
 
 	void
-		MainWindow::onDropSignal(QDropEvent* event) noexcept
+	MainWindow::onDropSignal(QDropEvent* event) noexcept
 	{
 		if (gameApp_)
 		{
@@ -1055,14 +1055,14 @@ namespace flower
 	}
 
 	void
-		MainWindow::onDragMoveSignal(QDragMoveEvent* e) noexcept
+	MainWindow::onDragMoveSignal(QDragMoveEvent* e) noexcept
 	{
 		if (gameApp_ && !profile_->playerModule->playing_)
 			gameApp_->doWindowMouseMotion((octoon::WindHandle)viewPanel_->winId(), e->pos().x(), e->pos().y());
 	}
 
 	void
-		MainWindow::onUpdateSignal() noexcept
+	MainWindow::onUpdateSignal() noexcept
 	{
 		if (!init_flag)
 		{
@@ -1075,14 +1075,14 @@ namespace flower
 	}
 
 	void
-		MainWindow::keyPressEvent(QKeyEvent* event) noexcept
+	MainWindow::keyPressEvent(QKeyEvent* event) noexcept
 	{
 		if (gameApp_ && !profile_->playerModule->playing_)
 			gameApp_->doWindowKeyDown((octoon::WindHandle)viewPanel_->winId(), KeyCodetoInputKey(event->key()), 0, 0);
 	}
 
 	void
-		MainWindow::keyReleaseEvent(QKeyEvent* event) noexcept
+	MainWindow::keyReleaseEvent(QKeyEvent* event) noexcept
 	{
 		if (!event->isAutoRepeat())
 		{
@@ -1092,22 +1092,25 @@ namespace flower
 	}
 
 	void
-		MainWindow::showEvent(QShowEvent* event) noexcept
+	MainWindow::showEvent(QShowEvent* event) noexcept
 	{
-		// int currentScreen = QApplication::desktop()->screenNumber(this);
-		// FIXME
-		QRect rect = QGuiApplication::screens().at(0)->geometry();
+#if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))
+		QRect rect = QApplication::primaryScreen()->geometry();
+#else
+		int currentScreen = QApplication::desktop()->screenNumber(this);
+		QRect rect = QGuiApplication::screens().at(currentScreen)->geometry();
+#endif
 		this->move((rect.width() - this->width()) / 2, (rect.height() - this->height()) / 2);
 	}
 
 	void
-		MainWindow::resizeEvent(QResizeEvent* event) noexcept
+	MainWindow::resizeEvent(QResizeEvent* event) noexcept
 	{
 		this->resize(this->viewPanel_->size());
 	}
 
 	bool
-		MainWindow::eventFilter(QObject* watched, QEvent* event)
+	MainWindow::eventFilter(QObject* watched, QEvent* event)
 	{
 		if (watched == this)
 		{
@@ -1122,7 +1125,7 @@ namespace flower
 	}
 
 	bool
-		MainWindow::open(int w, int h) noexcept
+	MainWindow::open(int w, int h) noexcept
 	{
 		assert(!gameApp_);
 
@@ -1186,7 +1189,7 @@ namespace flower
 	}
 
 	void
-		MainWindow::hideSliderWindow() noexcept
+	MainWindow::hideSliderWindow() noexcept
 	{
 		if (!recordWindow_->isHidden())
 		{

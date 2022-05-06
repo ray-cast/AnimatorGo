@@ -22,6 +22,10 @@ qt:gui=True
 qt:qtshadertools=True
 qt:qtdeclarative=True
 
+[imports]
+bin, *.dll -> ../lib/binaries/win86_Release
+bin, *.dll -> ../lib/binaries/win86_Debug
+
 [generators]
 cmake
 cmake_find_package

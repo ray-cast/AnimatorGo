@@ -63,9 +63,13 @@ namespace flower
 	void
 	SplashScreen::showEvent(QShowEvent* event) noexcept
 	{
-		// int currentScreen = QApplication::desktop()->screenNumber(this);
-		// FIXME
-		QRect rect = QGuiApplication::screens().at(0)->geometry();
+#if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))
+		QRect rect = QApplication::primaryScreen()->geometry();
+#else
+		int currentScreen = QApplication::desktop()->screenNumber(this);
+		QRect rect = QGuiApplication::screens().at(currentScreen)->geometry();
+#endif
+		
 		this->move((rect.width() - this->width()) / 2, (rect.height() - this->height()) / 2);
 	}
 }

@@ -15,6 +15,10 @@ int main(int argc, char *argv[])
 	::SetConsoleOutputCP(CP_UTF8);
 #endif
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))
+	QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
+#endif
+
 #if 0
 
 	QGuiApplication app(argc, argv);

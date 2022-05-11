@@ -15,7 +15,7 @@ Flowers
 <img style="vertical-align: top;" src="./ajax.png">
 <img style="vertical-align: top;" src="./staircase.png">
 
-特性：
+特性
 ------
 * 完整的多层物理材质描述（金属，光滑，布料，清漆，次表面散射，自发光，等）
 * 基于重要性采样的图像照明
@@ -36,11 +36,11 @@ Flowers
 * 音频播放（OpenAL、Wav、Flac、Mp3、Ogg）
 * 材质文件支持（[NVIDIA's Material Definition Language](https://developer.nvidia.com/mdl-sdk)）
 
-下载：
+下载
 ------
 * https://github.com/ray-cast/flowers/releases/download/Demo/Demo.zip
 
-系统需求：
+系统需求
 ------
 1. 支持SSE4.1的CPU，如i5，用于AI 降噪
 2. NVIDIA的独显用于GPGPU的光线追踪 
@@ -49,7 +49,7 @@ Flowers
 6. 参与测试过的CPU，Intel i3, i5, i7, AMD 2600, 2600X
 7. 参与测试过的显卡，GeFroce GTX 650, 1050, 1060, 2060
 
-支持的编译器:
+支持的编译器
 ------
 * Visual Studio 2017 (Only tested on 15.5.7 version)
 * GNU GCC (Only tested on 5.4.0, 6.2.0, 7.3.0, 8.1.0 version)
@@ -57,19 +57,19 @@ Flowers
 * Emscripten (Only tested on 1.37.40)
 * Vcpkg (2020-11-1)
 
-支持的平台:
+支持的平台
 ------
 * Windows (Only tested on XP, Vista, 7, 8, 10)
-* Linux (Only tested on Ubuntu, Centos)
+* Linux (Only tested on Ubuntu, CentOS)
 * HTML5
 * Android (future)
 * ios (Requires : automake autoconf)
 * mac (future)
 
-支持的渲染后端:
+支持的渲染后端
 ------
-* OpenGL 330
-* OpenGL 450
+* OpenGL 3.3
+* OpenGL 4.5
 * OpenGL ES 2.0
 * OpenGL ES 3.0
 * OpenGL ES 3.2

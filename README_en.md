@@ -1,7 +1,7 @@
 Flowers
 ======
 ###### [English](https://github.com/octoon/octoon/blob/master/README.md) &nbsp; [中文](https://github.com/octoon/octoon/blob/master/README_zh_cn.md)
-Rabbit Toolbox is a cross-platform graphic engine. It is free and open-source under [CC BY NC](http://creativecommons.org/licenses/by-nc-sa/4.0/) lisence.  Users can easily create graphic applications by using a set of unified API. Applications can be exported to lots of platforms, including Linux, Mac OSX, Windows, Android and HTML5.
+Rabbit Toolbox is a cross-platform graphic engine. It is free and open-source under [CC BY NC](http://creativecommons.org/licenses/by-nc-sa/4.0/) lisence.  Users can easily create graphic applications by using a set of unified API. Applications can be exported to lots of platforms, including Linux, macOS, Windows, Android and HTML5.
 
 Rabbit Toolbox provides a modern and powerful ECS framework to make development simple. A number of features are supported as the form of ECS system such as graphic, physics, audio and video. By attaching various component, objects can perform different tasks flexibly.
 
@@ -11,26 +11,26 @@ Rabbit Toolbox provides a modern and powerful ECS framework to make development 
 <img style="vertical-align: top;" src="./ajax.png">
 <img style="vertical-align: top;" src="./staircase.png">
 
-Supported compilers:
+Supported compilers
 ------
 * Visual Studio 2017 (Only tested on 15.5.7 version)
 * GNU GCC (Only tested on 5.4.0, 6.2.0, 7.3.0, 8.1.0 version)
 * Clang & LLVM (Only tested on 5.0.0 version)
 * Emscripten (Only tested on 1.37.40)
 
-Support platforms:
+Support platforms
 ------
 * Windows (Only tested on XP, Vista, 7, 8, 10)
-* Linux (Only tested on Ubuntu 16.10, Ubuntu 18.04, Centos 7.3)
-* HTML5 (Only tested on Google chrome with WebGL 2.0)
+* Linux (Only tested on Ubuntu 16.10, Ubuntu 18.04, CentOS 7.3)
+* HTML5 (Only tested on Google Chrome with WebGL 2.0)
 * Android (Future)
 * ios (Future)
 * mac (Future)
 
-Support rendering backends:
+Support rendering backends
 ------
-* OpenGL 330
-* OpenGL 450
+* OpenGL 3.3
+* OpenGL 4.5
 * OpenGL ES 2.0
 * OpenGL ES 3.0
 * OpenGL ES 3.2
@@ -38,7 +38,7 @@ Support rendering backends:
 
 Contribution
 ------
-This project is still under development. You can submit code by using Pull Requests or Feel free to contact us via e-mail or issues. Any questions or good suggestions are welcomed to be addressed to us in Issues. We would be grateful for your contribution.
+This project is still under development. You can submit code by using Pull Requests or feel free to contact us via e-mail or issues. Any questions or good suggestions are welcomed to be addressed to us in Issues. We would be grateful for your contribution.
 
 [License](https://github.com/octoon/octoon/blob/master/LICENSE)
 -------------------------------------------------------------------------------

@@ -36,7 +36,7 @@ Rabbit Toolbox的多层材质描述基于双向散射分布函数（BSDF），�
 
 下载：
 ------
-* https://github.com/ray-cast/Rabbit-Toolbox/releases/download/Alpha1.0.0/Demo.exe
+* https://github.com/ray-cast/Rabbit-Toolbox/releases/download/alpha/Rabbit-Toolbox.exe
 
 编译依赖：
 ------

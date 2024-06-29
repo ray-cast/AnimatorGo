@@ -1,0 +1,29 @@
+#define IDR_VERSION1 1
+
+IDI_ICON1 ICON DISCARDABLE "res/icons/logo.ico"
+
+IDR_VERSION1 VERSIONINFO
+FILEVERSION 1,0,0,3
+PRODUCTVERSION 1,0,0,3
+FILEOS 0x00000004
+FILETYPE 0x00000000
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "FFFF0000"
+    BEGIN
+      VALUE "FileVersion", "1.0.0.3\0"
+      VALUE "ProductVersion", "1.0.0.3\0"
+      VALUE "CompanyName", "AnimatorGo Software\0"
+      VALUE "FileDescription", "AnimatorGo 2022\0"
+      VALUE "LegalCopyright", "Copyright (c) 2019 AnimatorGo Software.\0"
+      VALUE "OriginalFilename", "Animator.exe\0"
+      VALUE "ProductName", "AnimatorGo Lite 2022\0"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0xFFFF, 0x0000
+  END
+END
+

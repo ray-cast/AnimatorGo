@@ -1,0 +1,722 @@
+QLabel{
+	color: rgb(255,255,255);
+}
+QToolButton{
+	color:rgb(200,200,200);
+	background-color: rgba(0,0,0,0);
+	border:none;
+}
+QToolButton:hover{
+	background-color: rgba(255,255,255,30);
+	border:none;
+}
+QToolButton#back{
+	qproperty-icon: url(":res/icons/back.png");
+}
+QToolButton#close{
+	qproperty-icon: url(":res/icons/close.png");
+}
+QTabWidget{
+	color:rgb(200,200,200);
+	border:none;
+	background:transparent;
+}
+QTabWidget::pane { 
+   border: none;
+}
+QTabBar::tab {
+	color:rgb(200,200,200);
+  	background: rgb(45, 45, 45); 
+}
+QTabBar::tab:selected {
+	color:rgb(200,200,200);
+ 	background: rgb(75, 75, 75); 
+}
+QSlider{
+	border-radius:10px;
+}
+QSlider::groove:Horizontal{
+	background:transparent;
+	height:20px;
+}
+QSlider::handle:Horizontal{
+	height:20px;
+	width:20px;
+	background:transparent;
+	border-image: url(:/res/icons/handle.png);
+}
+QSlider::add-page:Horizontal{
+	background-color: rgb(87, 97, 106);
+	border-radius:10px;
+	border-top-left-radius:0px;
+	border-bottom-left-radius:0px;
+}
+QSlider::add-page:Horizontal#H, QSlider::sub-page:Horizontal#H{
+	background-color:transparent;
+}
+QSlider::sub-page:Horizontal{
+	background-color: rgb(87, 97, 106);
+	border-radius:10px;
+	border-top-right-radius:0px;
+	border-bottom-right-radius:0px;
+}
+QSlider::sub-page:Horizontal#S{
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(180,220,255,255), stop:1 rgba(50,150,224,255));
+}
+QSlider::sub-page:Horizontal#Value{
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,0,0,255), stop:1 rgba(220,220,220,220));
+}
+QSlider::sub-page:Horizontal#Intensity{
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,0,0,255), stop:1 rgba(220,220,220,220));
+}
+QSlider#H{
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 0, 0, 255),stop:0.15 rgba(255, 255, 0, 255),stop:0.33 rgba(0, 255, 0, 255),stop:0.49 rgba(1, 255, 255, 255),stop:0.67 rgba(0, 0, 255, 255),stop:0.84 rgba(255, 0, 255, 255),stop:1 rgba(255, 0, 0, 255));
+}
+QScrollArea{
+	border:none;
+	background-color:rgb(40,40,40);
+}
+QScrollBar
+{
+	width:8px;
+    background:rgb(45,45,45);
+    margin:0px,0px,0px,0px;
+    padding-top:9px;
+    padding-bottom:9px;
+}
+QScrollBar:vertical{
+    background:rgb(45,45,45);
+    margin:0px,0px,0px,0px;
+    padding-top:9px;
+    padding-bottom:9px;
+}
+QScrollBar#settingScrollBar:vertical{
+    width:8px;
+    background:rgb(40,40,40);
+    margin:0px,0px,0px,0px;
+    padding-top:9px;
+    padding-bottom:9px;
+}
+QScrollBar::handle:vertical{
+    width:8px;
+    background:rgb(68,68,68);
+    border-radius:3px;
+    min-height:20;
+}
+QScrollBar::handle:vertical:hover{
+    width:8px;
+    background:rgb(84,84,84);
+    border-radius:4px;
+    min-height:20;
+}
+QScrollBar::add-line:vertical{
+    height:9px;width:8px;
+    border-image:url(:/images/a/3.png);
+    subcontrol-position:bottom;
+}
+QScrollBar::sub-line:vertical{
+    height:9px;width:8px;
+    border-image:url(:/images/a/1.png);
+    subcontrol-position:top;
+}
+QScrollBar::add-line:vertical:hover{
+    height:9px;width:8px;
+    border-image:url(:/images/a/4.png);
+    subcontrol-position:bottom;
+}
+QScrollBar::sub-line:vertical:hover{
+    height:9px;width:8px;
+    border-image:url(:/images/a/2.png);
+    subcontrol-position:top;
+}
+QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical{
+    background:rgba(0,0,0,10%);
+    border-radius:4px;
+}
+QListWidget{
+	border:none;
+	color: rgb(220,220,220);
+	background:transparent;
+}
+QListWidget::Item:hover{
+	color: rgb(220,220,220);
+	background-color: rgb(60,60,60);
+}
+QListWidget::Item:selected{
+	color: rgb(220,220,220);
+	background-color: rgb(195,34,68);
+	border-width: 0px;
+}
+QCheckBox{
+	color:rgb(200, 200, 200);
+}
+QColorDialog{
+	color:rgb(48,48,48);
+	background-color:rgb(48,48,48);
+}
+QColorDialog > QColorLuminancePicker{
+  background-color: transparent;
+}
+QColorDialog > QLabel{
+	color:rgb(150,150,150);
+	background-color: transparent;
+}
+QColorDialog > QTextEdit,QLineEdit,QPushButton{
+  color:rgb(150,150,150);
+  background-color: transparent;
+  border: 1px solid #1c1c1c;
+}
+QWidget{
+	background: rgb(40, 40, 40);
+}
+QWidget#SplashWindow{
+	min-width:500px;
+	max-width:500px;
+	min-height:300px;
+	max-height:300px;
+	background: rgb(30, 30, 30);
+	border:none;
+}
+QWidget#SplashWindow > QPushButton#logo{
+	qproperty-icon: url(":res/icons/splash.png");
+	qproperty-iconSize: 128px 128px;
+	margin: 0 0 0 0;
+	background: rgb(30, 30, 30);
+}
+QWidget#SplashWindow QWidget#text{
+	background: rgb(30, 30, 30);
+}
+QWidget#SplashWindow QLabel#title{
+	font-family: "Microsoft YaHei";
+	font-size:22px;
+	color:rgb(222,94,136);
+	background: rgb(30, 30, 30);
+}
+QWidget#SplashWindow QLabel#copyright{
+	font-family: "Microsoft YaHei";
+	font-size:12px;
+	color:#a5a5a5;
+	background: rgb(30, 30, 30);
+}
+QWidget#SplashWindow QLabel#version{
+	font-family: "Microsoft YaHei";
+	font-size:12px;
+	color:#505050;
+	margin: 10px 10px 0 0;
+	background: rgb(30, 30, 30);
+}
+QWidget#SplashWindow QLabel#message{
+	min-width:500px;
+	max-width:500px;
+	font-family: "Microsoft YaHei";
+	font-size:12px;
+	color:#505050;
+	margin: 10px 10px 10px 10px;
+	background: rgb(30, 30, 30);
+}
+QWidget#MainDock{
+}
+QWidget#StatusBar{
+	min-height:32;
+	color:#808080;
+	font-family: "Microsoft YaHei";
+	font-size:16px;
+	background: rgb(30, 30, 30);
+}
+QWidget#ViewDock{
+	width:1280;
+	height:720;
+}
+QWidget#ToplevelBar{
+	min-height:36;
+	max-height:36;
+	margin-bottom: 4px;
+}
+QWidget#ToplevelBar QToolButton{
+	min-width:28px;
+	min-height:28px;
+	max-width:28px;
+	max-height:28px;
+}
+QWidget#ToplevelBar QToolButton#play{
+	qproperty-icon: url(":res/icons/play.png");
+	qproperty-iconSize: 24px 24px;
+}
+QWidget#ToplevelBar QToolButton#play-on{
+	qproperty-icon: url(":res/icons/play-on.png");
+	qproperty-iconSize: 24px 24px;
+}
+QWidget#ToplevelBar QToolButton#pause{
+	qproperty-icon: url(":res/icons/pause.png");
+	qproperty-iconSize: 24px 24px;
+}
+QWidget#ToplevelBar QToolButton#stop{
+	qproperty-icon: url(":res/icons/stop.png");
+	qproperty-iconSize: 24px 24px;
+}
+QWidget#ToplevelBar QToolButton#reset{
+	qproperty-icon: url(":res/icons/reset.png");
+	qproperty-iconSize: 24px 24px;
+}
+QWidget#ToplevelBar QToolButton#left{
+	qproperty-icon: url(":res/icons/left.png");
+	qproperty-iconSize: 24px 24px;
+}
+QWidget#ToplevelBar QToolButton#right{
+	qproperty-icon: url(":res/icons/right.png");
+	qproperty-iconSize: 24px 24px;
+}
+QWidget#ToplevelBar QToolButton#volumeMiddle{
+	qproperty-icon: url(":res/icons/volumeMiddle.png");
+	qproperty-iconSize: 24px 24px;
+}
+QWidget#ToplevelBar QToolButton#volumeCross{
+	qproperty-icon: url(":res/icons/volumeCross.png");
+	qproperty-iconSize: 24px 24px;
+}
+QWidget#ToolDock, QWidget#ThumbnailDock{
+	min-width:50;
+	max-width:50;
+	border-radius:1px;
+	border:1px solid #a5a5a5;
+}
+QWidget#ToolDock QToolButton, QWidget#ThumbnailDock QToolButton{
+	min-width:50px;
+	max-width:50px;
+	min-height:46px;
+	max-height:46px;
+	font-size:14px;
+	font-family: "Microsoft YaHei";
+}
+QWidget#ToolDock QToolButton#import{
+	qproperty-icon: url(":res/icons/append.png");
+}
+QWidget#ToolDock QToolButton#save{
+	qproperty-icon: url(":res/icons/save.png");
+}
+QWidget#ToolDock QToolButton#shot{
+	qproperty-icon: url(":res/icons/shot.png");
+}
+QWidget#ToolDock QToolButton#audio{
+	qproperty-icon: url(":res/icons/music.png");
+}
+QWidget#ToolDock QToolButton#gpu{
+	qproperty-icon: url(":res/icons/gpu.png");
+}
+QWidget#ToolDock QToolButton#gpu-on{
+	qproperty-icon: url(":res/icons/gpu-on.png");
+}
+QWidget#ToolDock QToolButton#hdr{
+	qproperty-icon: url(":res/icons/hdr.png");
+}
+QWidget#ToolDock QToolButton#cleanup{
+	qproperty-icon: url(":res/icons/cleanup.png");
+}
+QWidget#ThumbnailDock QToolButton#record{
+	qproperty-icon: url(":res/icons/record.png");
+}
+QWidget#ThumbnailDock QToolButton#record-on{
+	qproperty-icon: url(":res/icons/record-on.png");
+}
+QWidget#ThumbnailDock QToolButton#environment{
+	qproperty-icon: url(":res/icons/environment.png");
+	qproperty-iconSize: 22px 22px;
+}
+QWidget#ThumbnailDock QToolButton#sun{
+	qproperty-icon: url(":res/icons/sun.png");
+	qproperty-iconSize: 27px 27px;
+}
+QWidget#ThumbnailDock QToolButton#material{
+	qproperty-icon: url(":res/icons/material.png");
+}
+QWidget#ThumbnailDock QToolButton#camera{
+	qproperty-icon: url(":res/icons/camera.png");
+}
+QWidget#ThumbnailDock QToolButton#setting{
+	qproperty-icon: url(":res/icons/setting.png");
+}
+QWidget#ThumbnailDock QToolButton#motion{
+	qproperty-icon: url(":res/icons/dance.png");
+}
+QWidget#ThumbnailDock QToolButton#model{
+	qproperty-icon: url(":res/icons/model.png");
+}
+QWidget#MainLightDock, QWidget#EnvironmentDock, QWidget#MaterialDock, QWidget#RecordDock, QWidget#CameraDock, QWidget#LightDock, QWidget#ModelDock, QWidget#MotionDock
+{
+	color: rgb(200, 200, 200);
+	min-width:340;
+}
+QWidget#MainLightDock QScrollBar, QWidget#MaterialDock QScrollBar
+{
+	width:8px;
+    background:rgb(45,45,45);
+    margin:0px,0px,0px,0px;
+    padding-top:9px;
+    padding-bottom:9px;
+}
+QWidget#CameraDock QToolButton#Load{
+	width:210;
+	height:35;
+	color:rgb(200,200,200);
+	background-color:rgb(60,60,60);
+}
+QWidget#CameraDock QToolButton#Unload{
+	width:50;
+	height:35;
+	color:rgb(200,200,200);
+	background-color:rgb(60,60,60);
+}
+QWidget#CameraDock QToolButton#Unload:disabled {
+    color:rgb(150,150,150);
+}
+QWidget#settingTitle{
+	min-height:32;
+	max-height:32;
+}
+QWidget#settingTitle > QToolButton{
+	width:32px;
+	height:32px;
+}
+QWidget#settingTitle > QPushButton#setting{
+	qproperty-icon: url(":res/icons/setting.png");
+}
+QWidget#settingTitle > QToolButton#close{
+	qproperty-icon: url(":res/icons/close.png");
+}
+QWidget#settingTitle > QLabel#title{
+	font-family: "Microsoft YaHei";
+	font-size:12px;
+}
+QWidget#showWidget{
+	min-width:8;
+	max-width:8;
+}
+QWidget#showWidget > QPushButton#show{
+	qproperty-icon: url(":res/icons/show.png");
+}
+QWidget#showWidget > QPushButton#show:hover{
+	background-color:rgba(0,122,204,255);
+}
+QWidget#loginWidget{
+	border:1px solid #101010;
+	border-radius:5px;
+	min-width:380;
+	min-height:500;
+	color: rgb(30, 30, 30);
+}
+QWidget#loginWidget > QToolButton#close{
+	qproperty-icon: url(":res/icons/close2.png");
+	margin:0px,5px,0px,5px;
+}
+QWidget#loginWidget > QPushButton#logo{
+	qproperty-icon: url(":res/icons/logo.svg");
+}
+QWidget#loginWidget > QToolButton#login{
+	width:240;
+	height:35;
+	color:rgb(150,150,150);
+	background-color:rgb(60,60,64);
+}
+QWidget#loginWidget > QLabel#selector{
+	color:rgb(100,100,100);
+	min-height:24;
+	max-height:24;
+	margin:0px,0px,0px,0px;
+}
+QWidget#loginWidget > QLabel#valid{
+	color:rgb(200,50,50);
+	min-height:24;
+	max-height:24;
+	margin:0px,0px,0px,0px;
+}
+QWidget#loginWidget > QLineEdit#username{
+	min-width:240;
+	max-width:240;
+	min-height:35;
+	max-height:35;
+	border-radius:3px;
+	border:1px solid #a5a5a5;
+	border-bottom:0px;
+	border-bottom-right-radius:0px;
+	border-bottom-left-radius:0px;
+	margin:0px,0px,0px,0px;
+}
+QWidget#loginWidget > QLineEdit#password{
+	min-width:240;
+	max-width:240;
+	min-height:35;
+	max-height:35;
+	border-radius:3px;
+	border:1px solid #a5a5a5;
+	border-top-right-radius:0px;
+	border-top-left-radius:0px;
+	margin:0px,0px,0px,0px;
+}
+QWidget#loginWidget > QToolButton#login{
+	border-radius:3px;
+}
+QWidget#loginWidget > QCheckBox{
+	color:rgb(200,200,200);
+}
+QWidget#loginWidget > QPushButton#register{
+	color:rgb(200,200,200);
+}
+QWidget#loginWidget > QPushButton#register{
+	color:rgb(200,200,200);
+}
+QWidget#loginWidget > QPushButton#register:hover{
+	text-decoration: underline;
+}
+QWidget#loginWidget > QPushButton#forget{
+	color:rgb(200,200,200);
+}
+QWidget#loginWidget > QPushButton#forget:hover{
+	text-decoration: underline;
+}
+QWidget#registerWidget > QToolButton#close{
+	qproperty-icon: url(":res/icons/close2.png");
+	margin:0px,5px,0px,5px;
+}
+QWidget#infoWindow{
+	border:1px solid #101010;
+	border-radius:5px;
+	min-width:660;
+	max-width:660;
+	min-height:560;
+	max-height:560;
+	color: rgb(30, 30, 30);
+	background: rgb(30, 30, 30);
+}
+QWidget#infoWindow > QPushButton#logo{
+	qproperty-icon: url(":res/icons/vip-on.png");
+	qproperty-iconSize: 36px 36px;
+}
+QWidget#infoWindow > QToolButton#close{
+	qproperty-icon: url(":res/icons/close.png");
+}
+QWidget#infoWindow > QToolButton,QLabel{
+	color:rgb(200,200,200);
+}
+QWidget#infoWindow > QPushButton#count{
+	font-size:18px;
+	font-family: "Microsoft YaHei";
+}
+QWidget#infoWindow > QToolButton#select1,QToolButton#select2,QToolButton#select3{
+	border:2px solid #a5a5a5;
+	border-radius:5px;
+	font-size:18px;
+	font-family: "Microsoft YaHei";
+}
+QWidget#infoWindow > QToolButton#select1:checked,QToolButton#select2:checked,QToolButton#select3:checked{
+	border:2px solid #00DBFF;
+}
+QWidget#infoWindow > QPushButton#vipLicense:hover{
+	text-decoration: underline;
+}
+QWidget#infoWindow > QPushButton#license:hover{
+	text-decoration: underline;
+}
+QWidget#infoWindow > QPushButton#user{
+	font-family: "Microsoft YaHei";
+	font-size:24px;
+}
+QWidget#infoWindow > QPushButton#qrcode{
+	min-width:180;
+	max-width:180;
+	min-height:180;
+	max-height:180;
+	background-color: rgb(255,255,255);
+}
+QWidget#ColorDialog > QLabel{
+	color:rgb(200,200,200);
+	font-family: "Microsoft YaHei";
+}
+QWidget#ColorDialog > ColorPlane{
+	color: rgb(255,255,255);
+	background-color: rgb(255,255,255);
+}
+QWidget#EnvironmentDialog > QToolButton, QWidget#MaterialDialog > QToolButton{
+	color:rgb(200,200,200);
+	background-color: rgb(50,50,50);
+	border:none;
+}
+QWidget#EnvironmentDialog > QToolButton:hover, QWidget#MaterialDialog > QToolButton:hover{
+	background-color: rgba(255,255,255,30);
+	border:none;
+}
+QWidget#EnvironmentDialog > QToolButton#Import{
+	width:60;
+	height:30;
+}
+QWidget#EnvironmentDialog > QToolButton#Ok, QWidget#EnvironmentDialog > QToolButton#Close{
+	width:50;
+	height:30;
+}
+QWidget#ModelWidget > QToolButton#Import, QWidget#MotionWidget > QToolButton#Import, QWidget#MaterialAssetPanel > QToolButton#Import{
+	width:60;
+	height:30;
+}
+
+unreal--UComboBox {
+	color: rgb(220,220,220);
+    border-radius:2px;
+    padding:1px 18px 1px 3px;
+    max-width:220px;
+	border:1px solid rgb(80,80,80);
+}
+
+unreal--UComboBox:editable {
+    background: rgb(80,80,80);
+}
+
+unreal--UComboBox:on {
+    padding-top: 3px;
+    padding-left: 4px;
+}
+
+unreal--UComboBox::drop-down {
+    subcontrol-origin: padding;
+
+    subcontrol-position: top right;
+
+    width: 25px;
+
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+unreal--UComboBox::down-arrow:on {
+    top: 1px;
+    left: 1px;
+}
+
+unreal--UComboBox QAbstractItemView {
+	color: rgb(220,220,220);
+    border: 2px solid rgb(80,80,80);
+    selection-background-color: green;
+}
+
+unreal--ULabel {
+	color: rgb(220,220,220);
+}
+
+unreal--UPushButton {
+	background: rgb(50,50,50);
+	border:2px solid #646464;
+	border-radius:4px;
+	color: rgb(200,200,200);
+}
+
+unreal--UPushButton:hover{
+	background: rgb(200,200,200);
+	color: rgb(20,20,20);
+}
+
+unreal--UDoubleSpinBox {
+	color: rgb(220,220,220);
+	border: 1px solid #242424;
+	border-radius:2px;
+	padding:1px 18px 1px 3px;
+	max-width:220px;
+	background: rgb(60, 60, 60);
+}
+unreal--UDoubleSpinBox::up-button{
+	height: 0px;
+	width: 0px;
+}
+unreal--UDoubleSpinBox::down-button{
+	height: 0px;
+	width: 0px;
+}
+
+unreal--USpinBox {
+	color: rgb(220,220,220);
+	border: 1px solid #242424;
+	border-radius:2px;
+	padding:1px 18px 1px 3px;
+	max-width:220px;
+	background: rgb(60, 60, 60);
+}
+unreal--USpinBox::up-button{
+	height: 0px;
+	width: 0px;
+}
+unreal--USpinBox::down-button{
+	height: 0px;
+	width: 0px;
+}
+QWidget#RecordDock QRadioButton{
+	color:rgb(200,200,200);
+}
+QWidget#RecordDock unreal--UPushButton#render{
+	width:240;
+	height:35;
+	color:rgb(150,150,150);
+	background-color:rgb(60,60,64);
+}
+QWidget#RecordDock unreal--UPushButton#select1{
+	min-width:120;
+	min-height:35;
+	border:1px solid #a5a5a5;
+	border-radius:5px;
+	font-size:18px;
+	font-family: "Microsoft YaHei";
+}
+QWidget#RecordDock unreal--UPushButton#select2{
+	min-width:120;
+	min-height:35;
+	border:1px solid #a5a5a5;
+	border-radius:5px;
+	font-size:18px;
+	font-family: "Microsoft YaHei";
+}
+QWidget#RecordDock unreal--UPushButton#select1:checked{
+	border:2px solid #009ACC;
+}
+QWidget#RecordDock unreal--UPushButton#select2:checked{
+	border:2px solid #009ACC;
+}
+QWidget#RecordDock unreal--UPushButton#speed1{
+	min-width:66;
+	min-height:25;
+	border:1px solid #a5a5a5;
+	border-radius:5px;
+	border-top-right-radius:0px;
+	border-bottom-right-radius:0px;
+	font-size:18px;
+	font-family: "Microsoft YaHei";
+}
+QWidget#RecordDock unreal--UPushButton#speed2, unreal--UPushButton#speed3{
+	min-width:66;
+	min-height:25;
+	border:1px solid #a5a5a5;
+	font-size:18px;
+	font-family: "Microsoft YaHei";
+}
+QWidget#RecordDock unreal--UPushButton#speed4{
+	min-width:66;
+	min-height:25;
+	border:1px solid #a5a5a5;
+	border-radius:5px;
+	border-top-left-radius:0px;
+	border-bottom-left-radius:0px;
+	font-size:18px;
+	font-family: "Microsoft YaHei";
+}
+QWidget#RecordDock unreal--UPushButton#speed1:checked{
+	border:2px solid #009ACC;
+}
+QWidget#RecordDock unreal--UPushButton#speed2:checked{
+	border:2px solid #009ACC;
+}
+QWidget#RecordDock unreal--UPushButton#speed3:checked{
+	border:2px solid #009ACC;
+}
+QWidget#RecordDock unreal--UPushButton#speed4:checked{
+	border:2px solid #009ACC;
+}
+QWidget#RecordDock QLineEdit{
+	max-width:60;
+	max-height:25;
+	border:1px solid #959595;
+}
